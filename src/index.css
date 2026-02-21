@@ -13,6 +13,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+div {
+  border: 1px solid ;
+  border-color: #535bf2;
+  border-radius: 8px;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
