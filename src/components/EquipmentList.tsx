@@ -1,18 +1,123 @@
 import { useState } from 'react';
-import { Table, Group, Title, Button, Text } from '@mantine/core';
+import { Table, Group, Title, Button, Text, Stack } from '@mantine/core';
 import { EquipmentRecordModal } from './EquipmentRecordModal';
+
+type EquipmentType = 'pipe' | 'valve' | 'other';
+
+interface PipeData {
+    length: number;
+    diameter: number;
+    material: string;
+    placement: string;
+}
+
+interface ValveData {
+    quantity: number;
+    diameter: number;
+}
+
+interface EquipmentRow {
+    id: number;
+    name: string;
+    type: EquipmentType;
+    balance: any[];
+    fact: any[];
+    inCut: any[];
+}
+
+const MOCK_EQUIPMENT: EquipmentRow[] = [
+    {
+        id: 1,
+        name: 'Inlet pipe (gas pipeline-inlet)',
+        type: 'pipe',
+        balance: [{ length: 50.5, diameter: 159, material: 'Steel', placement: 'Underground' }],
+        fact: [
+            { length: 47.0, diameter: 159, material: 'Steel', placement: 'Underground' },
+            { length: 2.0, diameter: 159, material: 'Steel', placement: 'Underground' },
+            { length: 0.7, diameter: 159, material: 'Steel', placement: 'Underground' }
+        ],
+        inCut: []
+    },
+    {
+        id: 2,
+        name: 'Distribution pipe',
+        type: 'pipe',
+        balance: [{ length: 120.0, diameter: 100, material: 'Polyethylene', placement: 'Underground' }],
+        fact: [{ length: 115.0, diameter: 100, material: 'Polyethylene', placement: 'Underground' }],
+        inCut: [{ length: 5.0, diameter: 100, material: 'Polyethylene', placement: 'Above ground' }]
+    },
+    {
+        id: 3,
+        name: 'Valve №1 at exit',
+        type: 'valve',
+        balance: [{ quantity: 1, diameter: 100 }],
+        fact: [{ quantity: 1, diameter: 100 }],
+        inCut: []
+    }
+];
+
+const PipeItem = ({ data }: { data: PipeData }) => (
+    <Stack gap={5}>
+        <Group justify="space-between">
+            <Text size="sm">L: {data.length}</Text>
+            <Text size="sm" fw={500}>{data.diameter}</Text>
+        </Group>
+        <Group justify="space-between">
+            <Text size="xs" c="dimmed">{data.material}</Text>
+            <Text size="xs" c="dimmed" tt="uppercase">{data.placement}</Text>
+        </Group>
+    </Stack>
+);
+
+const ValveItem = ({ data }: { data: ValveData }) => (
+    <Stack gap={5}>
+        <Group justify="space-between">
+            <Text size="sm" c="dimmed">Qty:</Text>
+            <Text size="sm">{data.quantity}</Text>
+        </Group>
+        <Group justify="space-between">
+            <Text size="sm" c="dimmed">Ø:</Text>
+            <Text size="sm">{data.diameter}</Text>
+        </Group>
+    </Stack>
+);
+
+// Versatile cell: iterate through the array entries and render the desired component
+const EquipmentCell = ({ type, items }: { type: EquipmentType, items: any[] }) => {
+    if (!items || items.length === 0) {
+        return <Text c="dimmed" ta="center">-</Text>;
+    }
+
+    return (
+        <Stack gap="sm">
+            {items.map((item, index) => (
+                <div 
+                    key={index} 
+                    style={{ 
+                        borderBottom: index !== items.length - 1 ? '1px dashed #ced4da' : 'none', 
+                        paddingBottom: index !== items.length - 1 ? '8px' : '0' 
+                    }}
+                >
+                    {type === 'pipe' && <PipeItem data={item} />}
+                    {type === 'valve' && <ValveItem data={item} />}
+                    {type === 'other' && <Text size="sm">Qty: {item.quantity}</Text>}
+                </div>
+            ))}
+        </Stack>
+    );
+};
 
 export const EquipmentList = () => {
     const [modalOpened, setModalOpened] = useState(false);
 
     return (
         <div>
-            <Group justify="space-between">
+            <Group justify="space-between" mb="md">
                 <Title order={3}>Equipment</Title>
                 <Button variant="subtle" onClick={() => setModalOpened(true)}>+ Add record</Button>
             </Group>
 
-            <Table>
+            <Table verticalSpacing="md">
                 <Table.Thead>
                     <Table.Tr>
                         <Table.Th>NAME</Table.Th>
@@ -22,55 +127,26 @@ export const EquipmentList = () => {
                     </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                    <Table.Tr>
-                        <Table.Td>
-                            <Text fw={700}>Inlet pipe (gas pipeline-inlet)</Text>
-                            <Text size="sm">PIPE</Text>
-                        </Table.Td>
-                        <Table.Td>
-                            <Group>
-                                <Text>L: 50.5</Text>
-                                <Text>Ø: 159</Text>
-                            </Group>
-                            <Group>
-                                <Text>Steel</Text>
-                                <Text>Underground</Text>
-                            </Group>
-                        </Table.Td>
-                        <Table.Td>
-                            <Group>
-                                <Text>L: 47.0</Text>
-                                <Text>Ø: 159</Text>
-                            </Group>
-                            <Group>
-                                <Text>Steel</Text>
-                                <Text>Underground</Text>
-                            </Group>
-                        </Table.Td>
-                        <Table.Td>
-                            {/* Empty value in this case of 'cut' */}
-                        </Table.Td>
-                    </Table.Tr>
-
-                    <Table.Tr>
-                        <Table.Td>
-                            <Text fw={700}>Valve №1 at exit</Text>
-                            <Text size="sm">VALVE</Text>
-                        </Table.Td>
-                        <Table.Td>
-                            <Group>
-                                <Text>Qty: 1</Text>
-                                <Text>Ø: 100</Text>
-                            </Group>
-                        </Table.Td>
-                        <Table.Td>
-                            <Group>
-                                <Text>Qty: 1</Text>
-                                <Text>Ø: 100</Text>
-                            </Group>
-                        </Table.Td>
-                        <Table.Td></Table.Td>
-                    </Table.Tr>
+                    {MOCK_EQUIPMENT.map((row) => (
+                        <Table.Tr key={row.id}>
+                            <Table.Td>
+                                <Text fw={700} size="sm">{row.name}</Text>
+                                <Text size="xs" c="dimmed" tt="uppercase">{row.type}</Text>
+                            </Table.Td>
+                            
+                            <Table.Td>
+                                <EquipmentCell type={row.type} items={row.balance} />
+                            </Table.Td>
+                            
+                            <Table.Td>
+                                <EquipmentCell type={row.type} items={row.fact} />
+                            </Table.Td>
+                            
+                            <Table.Td>
+                                <EquipmentCell type={row.type} items={row.inCut} />
+                            </Table.Td>
+                        </Table.Tr>
+                    ))}
                 </Table.Tbody>
             </Table>
 
