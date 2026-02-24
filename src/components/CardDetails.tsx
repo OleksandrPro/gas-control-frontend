@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Button, SimpleGrid, Group, Stack, Grid, Text, Title, TextInput, Select } from "@mantine/core";
 import { type Card } from "../types";
 import { EditableText } from './EditableText';
 import { EditableSelect } from './EditableSelect';
 import { EquipmentList } from './EquipmentList';
 import { useDictionaries } from '../hooks/useDictionaries';
+import { usePageNavigation } from '../hooks/usePageNavigation';
 
 interface CardDetailsProps {
     cardData: Card
@@ -15,13 +15,8 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState(cardData);
 
-    const navigate = useNavigate()
-
     const { districts, properties, cuts } = useDictionaries();
-
-    const goHome = () => {
-        navigate("/")
-    }
+    const { goToHome } = usePageNavigation()
 
     const handleCancel = () => {
         setFormData(cardData);
@@ -36,7 +31,7 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
     return (
         <Stack>
             <Group justify="space-between">
-                <Button variant="default" onClick={goHome}>{'< Back to registry'}</Button>
+                <Button variant="default" onClick={goToHome}>{'< Back to registry'}</Button>
                 
                 {isEditing ? (
                     <Group>
