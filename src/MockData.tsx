@@ -34,15 +34,31 @@ export const MOCK_FULL_CARDS: Card[] = Array.from({ length: 15 }, (_, i) => {
   };
 });
 
-export const MOCK_CARDS: CardDisplay[] = MOCK_FULL_CARDS.map((card) => ({
-  id: card.id,
-  inventory_number: card.inventory_number,
-  inventory_number_eskd: card.inventory_number_eskd,
-  address: card.address,
-  district: card.district,
-  property: card.property,
-  cut: card.cut
-}));
+export const MOCK_CARDS: CardDisplay[] = MOCK_FULL_CARDS.map((card) => {
+  const date = card.build_date_dn;
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  const formattedDate = `${day}.${month}.${year}`;
+
+  const parsedLength = Number(card.total_length_balance.replace(',', '.'));
+
+  return {
+    id: card.id,
+    inventory_number: card.inventory_number,
+    inventory_number_eskd: card.inventory_number_eskd,
+    balanceName: card.described_name,
+    pressure: card.pressure,
+    address: card.address,
+    district: card.district,
+    property: card.property,
+    objectName: card.object_name,
+    buildDate: formattedDate,
+    totalLength: parsedLength,
+    cut: card.cut,
+    folder: card.folder
+  };
+});
 
 export const getCard = (id: number): Card | undefined => {
   return MOCK_FULL_CARDS.find((card) => card.id === id);

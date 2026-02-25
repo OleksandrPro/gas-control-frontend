@@ -1,12 +1,18 @@
 export type CardDisplay = {
-  id: number,
+  id: number;
   inventory_number: string;
   inventory_number_eskd: string;
+  balanceName: string;
+  pressure: string;
   address: string;
   district: string;
   property: string;
+  objectName: string;
+  buildDate: string;
+  totalLength: number;
   cut: string;
-};
+  folder: string;
+}
 
 export type Card = {
   id: number,

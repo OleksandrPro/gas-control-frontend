@@ -26,25 +26,49 @@ export const CardList = ({cards}:CardListProps) => {
         accessorKey: 'inventory_number',
         header: 'Inventory Number',
       },
-    {
+      {
         accessorKey: 'inventory_number_eskd',
         header: 'Inventory Number (ESKD)',
+      },
+      {
+        accessorKey: 'pressure',
+        header: 'Pressure',
+      },
+      {
+        accessorKey: 'balanceName',
+        header: 'Balance name',
       },
       {
         accessorKey: 'address',
         header: 'Address',
       },
-    {
+      {
         accessorKey: 'district',
         header: 'District',
       },
-            {
+      {
         accessorKey: 'property',
         header: 'Property',
       },
-            {
+      {
+        accessorKey: 'objectName',
+        header: 'Object name',
+      },
+      {
+        accessorKey: 'buildDate',
+        header: 'Build Date',
+      },
+      {
+        accessorKey: 'totalLength',
+        header: 'Total length, km',
+      },
+      {
         accessorKey: 'cut',
         header: 'Cut',
+      },
+      {
+        accessorKey: 'folder',
+        header: 'Folder',
       },
     ],
 
