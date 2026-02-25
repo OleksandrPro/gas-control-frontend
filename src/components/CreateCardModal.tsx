@@ -1,17 +1,16 @@
-import { Modal, TextInput, Select, Button, SimpleGrid } from '@mantine/core';
+import { Modal, TextInput, Select, Button, SimpleGrid, NumberInput } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { IconCalendar } from '@tabler/icons-react';
+import { useDictionaries } from '../hooks/useDictionaries';
 
 interface CreateCardModalProps {
   opened: boolean;
   onClose: () => void;
-  districts: string[];
-  objectNames: string[];
-  properties: string[];
-  cuts: string[];
 }
 
-export const CreateCardModal = ({ opened, onClose, districts, objectNames, properties, cuts }: CreateCardModalProps) => {
+export const CreateCardModal = ({ opened, onClose }: CreateCardModalProps) => {
+  const { districts, properties, pressures, objectNames, cuts } = useDictionaries();
+
   return (
     <Modal 
       opened={opened} 
@@ -38,11 +37,22 @@ export const CreateCardModal = ({ opened, onClose, districts, objectNames, prope
           placeholder="Enter address" 
           style={{ gridColumn: '1 / -1' }} 
         />
+        <TextInput 
+          label="Balance name" 
+          placeholder="Enter balance name" 
+          style={{ gridColumn: '1 / -1' }} 
+        />
         <Select 
           label="DISTRICT" 
           placeholder="Select" 
           data={districts} 
           defaultValue={districts[0]}
+        />
+        <Select 
+          label="Pressures" 
+          placeholder="Select" 
+          data={pressures} 
+          defaultValue={pressures[0]}
         />
         <Select 
           label="Object Name" 
@@ -55,6 +65,11 @@ export const CreateCardModal = ({ opened, onClose, districts, objectNames, prope
           placeholder="Select" 
           data={properties} 
           defaultValue={properties[0]}
+        />
+        <NumberInput 
+          label="Total length"
+          placeholder="e.g. 1.7412"
+          allowDecimal={true} 
         />
         <TextInput 
           label="FOLDER" 
