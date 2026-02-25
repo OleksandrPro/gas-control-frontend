@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { Burger, Group, Flex, Text, Button } from '@mantine/core';
 import { usePageNavigation } from '../hooks/usePageNavigation';
-import { CalculatorModal } from './CalculatorModal';
 
 export function Header() {
   const [isOpened, setIsOpened] = useState(false);
-  const [calcOpened, setCalcOpened] = useState(false);
 
   const { goToHome, goToDictionaries } = usePageNavigation()
 
@@ -21,13 +19,8 @@ export function Header() {
         <Group justify="flex-end">
           <Button onClick={goToHome}>Home</Button>
           <Button onClick={goToDictionaries}>Dictionaries</Button>
-          <Button onClick={() => setCalcOpened(true)}>
-            Calculator
-          </Button>
         </Group>
       </Flex>
-
-      <CalculatorModal opened={calcOpened} onClose={() => setCalcOpened(false)} />
     </header>
   );
 }
