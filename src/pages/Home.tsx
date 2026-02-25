@@ -36,11 +36,7 @@ export const HomePage = () => {
 
             <CreateCardModal 
                 opened={opened} 
-                onClose={() => setOpened(false)} 
-                districts={districts}
-                properties={properties}
-                objectNames={objectNames}
-                cuts={cuts}
+                onClose={() => setOpened(false)}
             />
         </div>
     );
