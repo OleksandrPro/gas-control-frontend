@@ -82,6 +82,11 @@ export const CardList = ({cards}:CardListProps) => {
 
         enableColumnFilters: false,
         enableFullScreenToggle: false,
+        enableColumnActions: false,
+        enableSorting: false,
+        enableGlobalFilter: false,
+        enableDensityToggle: false,
+        enablePagination: false,
 
         mantineTableProps: {    
             striped: 'odd',
