@@ -18,21 +18,6 @@ export const CalculatorModal = ({
       <Text>Calculation of total length by filters</Text>
       <SimpleGrid cols={2}>
         <Select 
-            label="DISTRICT" 
-            placeholder="All districts" 
-            data={districts} 
-        />
-        <Select 
-            label="OWNERSHIP" 
-            placeholder="All districts" 
-            data={properties} 
-        />
-        <Select 
-            label="PRESSURES" 
-            placeholder="All districts" 
-            data={pressures} 
-        />
-        <Select 
             label="MATERIAL" 
             placeholder="All materials" 
             data={materials} 
@@ -48,7 +33,7 @@ export const CalculatorModal = ({
         />
         <Select 
             label="CUTS" 
-            placeholder="All materials" 
+            placeholder="All cuts" 
             data={cuts} 
         />
         <Select 
