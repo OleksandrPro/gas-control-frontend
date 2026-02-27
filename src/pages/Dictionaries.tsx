@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Grid, Stack, Title, Text, Button, NavLink, Table, Group, Center, Loader } from '@mantine/core';
+import { Grid, Stack, Title, Text, NavLink, Table, Group, Center, Loader, TextInput, ActionIcon } from '@mantine/core';
+import { IconPlus } from '@tabler/icons-react';
+
 import { MOCK_DICTIONARIES } from '../MockData';
 
 const DICTIONARY_REGISTRY = [
@@ -18,6 +20,9 @@ export const DictionariesPage = () => {
     const [dictItems, setDictItems] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
+    const [newValue, setNewValue] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
+
     const getDictionary = () => {
             setTimeout(() => {
                 setDictItems(MOCK_DICTIONARIES[activeDictionary.mockKey] || []);
@@ -25,14 +30,37 @@ export const DictionariesPage = () => {
             }, 300);
     }
 
+    const saveNewData = (trimmedValue: string) => {
+        setTimeout(() => {
+            setDictItems([...dictItems, trimmedValue]);
+            setNewValue('');
+            setIsSaving(false);
+        }, 400);
+    }
+
+    const handleAddItem = () => {
+        const trimmedValue = newValue.trim();
+        if (!trimmedValue) return;
+
+        setIsSaving(true);
+        saveNewData(trimmedValue)        
+    };
+
     useEffect(() => {
         const fetchDictionary = async () => {
             setIsLoading(true);
+            setNewValue('');
             getDictionary();
         };
 
         fetchDictionary();
     }, [activeDictionary]);
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleAddItem();
+        }
+    };
 
     return (
         <Stack>
@@ -57,7 +85,6 @@ export const DictionariesPage = () => {
                 <Grid.Col span={9}>
                     <Group justify="space-between">
                         <Title order={3}>{activeDictionary.label}</Title>
-                        <Button>+ Add</Button>
                     </Group>
                     
                     {isLoading ? (
@@ -72,6 +99,32 @@ export const DictionariesPage = () => {
                                         <Table.Td>{value}</Table.Td>
                                     </Table.Tr>
                                 ))}
+                                <Table.Tr>
+                                    <Table.Td>
+                                        <TextInput
+                                            placeholder="Type to add new record... (Press Enter)"
+                                            value={newValue}
+                                            onChange={(e) => setNewValue(e.currentTarget.value)}
+                                            onKeyDown={handleKeyDown}
+                                            disabled={isSaving}
+                                            variant="unstyled"
+                                            rightSection={
+                                                isSaving ? (
+                                                    <Loader size="xs" color="blue" />
+                                                ) : (
+                                                    <ActionIcon 
+                                                        color="blue" 
+                                                        variant="subtle" 
+                                                        onClick={handleAddItem}
+                                                        disabled={!newValue.trim()}
+                                                    >
+                                                        <IconPlus size={18} />
+                                                    </ActionIcon>
+                                                )
+                                            }
+                                        />
+                                    </Table.Td>
+                                </Table.Tr>
                             </Table.Tbody>
                         </Table>
                     )}
