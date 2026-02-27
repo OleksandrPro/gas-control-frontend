@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Table, Group, Title, Button, Text, Stack } from '@mantine/core';
+import { Table, Group, Title, Button, Text, Stack, UnstyledButton } from '@mantine/core';
+import { type EquipmentType, type ColumnType } from '../types';
 import { EquipmentRecordModal } from './EquipmentRecordModal';
+import { EditEquipmentModal } from './EditEquipmentModal';
+import { EditableClickText } from './EditableClickText';
 
-type EquipmentType = 'pipe' | 'valve' | 'other';
 
 interface PipeData {
     length: number;
@@ -110,6 +112,55 @@ const EquipmentCell = ({ type, items }: { type: EquipmentType, items: any[] }) =
 export const EquipmentList = () => {
     const [modalOpened, setModalOpened] = useState(false);
 
+    const [editModalOpened, setEditModalOpened] = useState(false);
+    const [editingContext, setEditingContext] = useState<{
+        rowId: number;
+        type: EquipmentType;
+        column: ColumnType;
+        itemIndex: number;
+        data: any;
+    } | null>(null);
+
+    const handleEditClick = (rowId: number, type: EquipmentType, column: ColumnType, itemIndex: number, data: any) => {
+        setEditingContext({ rowId, type, column, itemIndex, data });
+        setEditModalOpened(true);
+    };
+
+    const handleSaveEdit = (newData: any) => {
+        console.log("Saving new data for item:", editingContext, "New data:", newData);
+        // В будущем здесь будет логика обновления MOCK_EQUIPMENT стейта 
+        // или отправки запроса на сервер
+    };
+
+    const renderCell = (row: EquipmentRow, column: ColumnType) => {
+        const items = row[column];
+        if (!items || items.length === 0) return <Text c="dimmed" ta="center">-</Text>;
+
+        return (
+            <Stack gap={4}>
+                {items.map((item, index) => (
+                    <UnstyledButton
+                        key={index}
+                        w="100%"
+                        p="xs"
+                        onClick={() => handleEditClick(row.id, row.type, column, index, item)}
+                        style={{ 
+                            borderBottom: index !== items.length - 1 ? '1px dashed #ced4da' : 'none', 
+                            borderRadius: '4px',
+                            transition: 'background-color 0.15s ease'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f3f5'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    >
+                        {row.type === 'pipe' && <PipeItem data={item} />}
+                        {row.type === 'valve' && <ValveItem data={item} />}
+                        {row.type === 'other' && <Text size="sm">Qty: {item.quantity}</Text>}
+                    </UnstyledButton>
+                ))}
+            </Stack>
+        );
+    };
+
     return (
         <div>
             <Group justify="space-between" mb="md">
@@ -130,27 +181,28 @@ export const EquipmentList = () => {
                     {MOCK_EQUIPMENT.map((row) => (
                         <Table.Tr key={row.id}>
                             <Table.Td>
-                                <Text fw={700} size="sm">{row.name}</Text>
+                                <EditableClickText initialValue={row.name}/>
                                 <Text size="xs" c="dimmed" tt="uppercase">{row.type}</Text>
                             </Table.Td>
-                            
-                            <Table.Td>
-                                <EquipmentCell type={row.type} items={row.balance} />
-                            </Table.Td>
-                            
-                            <Table.Td>
-                                <EquipmentCell type={row.type} items={row.fact} />
-                            </Table.Td>
-                            
-                            <Table.Td>
-                                <EquipmentCell type={row.type} items={row.inCut} />
-                            </Table.Td>
+                            <Table.Td>{renderCell(row, 'balance')}</Table.Td>
+                            <Table.Td>{renderCell(row, 'fact')}</Table.Td>
+                            <Table.Td>{renderCell(row, 'inCut')}</Table.Td>
                         </Table.Tr>
                     ))}
                 </Table.Tbody>
             </Table>
 
             <EquipmentRecordModal opened={modalOpened} onClose={() => setModalOpened(false)} />
+            {editingContext && (
+                <EditEquipmentModal
+                    opened={editModalOpened}
+                    onClose={() => setEditModalOpened(false)}
+                    type={editingContext.type}
+                    column={editingContext.column}
+                    initialData={editingContext.data}
+                    onSave={handleSaveEdit}
+                />
+            )}
         </div>
     );
 };

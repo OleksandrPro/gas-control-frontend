@@ -32,3 +32,6 @@ export type Card = {
   pressure: string;
   cut: string;
 };
+
+export type EquipmentType = 'pipe' | 'valve' | 'other';
+export type ColumnType = 'balance' | 'fact' | 'inCut';
