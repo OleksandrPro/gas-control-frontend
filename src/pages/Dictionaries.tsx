@@ -23,6 +23,10 @@ export const DictionariesPage = () => {
     const [newValue, setNewValue] = useState('');
     const [isSaving, setIsSaving] = useState(false);
 
+    const [editingIndex, setEditingIndex] = useState<number | null>(null);
+    const [editValue, setEditValue] = useState('');
+    const [isUpdating, setIsUpdating] = useState(false);
+
     const getDictionary = () => {
             setTimeout(() => {
                 setDictItems(MOCK_DICTIONARIES[activeDictionary.mockKey] || []);
@@ -45,6 +49,39 @@ export const DictionariesPage = () => {
         setIsSaving(true);
         saveNewData(trimmedValue)        
     };
+    
+
+    const startEditing = (index: number, currentValue: string) => {
+        setEditingIndex(index);
+        setEditValue(currentValue);
+    };
+
+    const cancelEditing = () => {
+        setEditingIndex(null);
+        setEditValue('');
+    };
+
+    const handleSaveEdit = () => {
+        if (editingIndex === null) return;
+        
+        const trimmedValue = editValue.trim();
+        
+        if (!trimmedValue || trimmedValue === dictItems[editingIndex]) {
+            cancelEditing();
+            return;
+        }
+
+        setIsUpdating(true);
+        
+        setTimeout(() => {
+            const updatedItems = [...dictItems];
+            updatedItems[editingIndex] = trimmedValue;
+            
+            setDictItems(updatedItems);
+            setEditingIndex(null);
+            setIsUpdating(false);
+        }, 400);
+    };
 
     useEffect(() => {
         const fetchDictionary = async () => {
@@ -60,6 +97,11 @@ export const DictionariesPage = () => {
         if (e.key === 'Enter') {
             handleAddItem();
         }
+    };
+
+    const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') handleSaveEdit();
+        if (e.key === 'Escape') cancelEditing();
     };
 
     return (
@@ -94,9 +136,31 @@ export const DictionariesPage = () => {
                     ) : (
                         <Table striped highlightOnHover>
                             <Table.Tbody>
-                                {dictItems.map((value) => (
-                                    <Table.Tr key={value}>
-                                        <Table.Td>{value}</Table.Td>
+                                {dictItems.map((value, index) => (
+                                    <Table.Tr key={index}>
+                                        <Table.Td 
+                                            onClick={() => {
+                                                if (editingIndex !== index && !isUpdating) {
+                                                    startEditing(index, value);
+                                                }
+                                            }}
+                                            style={{ cursor: editingIndex === index ? 'default' : 'pointer' }}
+                                        >
+                                            {editingIndex === index ? (
+                                                <TextInput
+                                                    autoFocus
+                                                    value={editValue}
+                                                    onChange={(e) => setEditValue(e.currentTarget.value)}
+                                                    onKeyDown={handleEditKeyDown}
+                                                    onBlur={handleSaveEdit}
+                                                    disabled={isUpdating}
+                                                    variant="unstyled"
+                                                    rightSection={isUpdating ? <Loader size="xs" color="blue" /> : null}
+                                                />
+                                            ) : (
+                                                value
+                                            )}
+                                        </Table.Td>
                                     </Table.Tr>
                                 ))}
                                 <Table.Tr>
