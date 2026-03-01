@@ -49,7 +49,11 @@ export const DictionariesPage = () => {
         setIsSaving(true);
         saveNewData(trimmedValue)        
     };
-    
+
+    const cancelAdding = () => {
+        setNewValue('');
+        setIsSaving(false);
+    };
 
     const startEditing = (index: number, currentValue: string) => {
         setEditingIndex(index);
@@ -94,9 +98,8 @@ export const DictionariesPage = () => {
     }, [activeDictionary]);
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            handleAddItem();
-        }
+        if (e.key === 'Enter') handleAddItem();
+        if (e.key === 'Escape') cancelAdding();
     };
 
     const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
