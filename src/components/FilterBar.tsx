@@ -18,7 +18,9 @@ export const FilterBar = () => {
             <Stack>
                 <Group>
                     <TextInput placeholder="Search by inv. number or address..." />
-                    <Button onClick={toggleFilterBar}>Hide filters</Button>
+                    <Button onClick={toggleFilterBar}>
+                        {isFilterBarOpen ? 'Hide filters': 'Open filters'}
+                    </Button>
                     <Button>Search</Button>
                 </Group>
                 {isFilterBarOpen &&
