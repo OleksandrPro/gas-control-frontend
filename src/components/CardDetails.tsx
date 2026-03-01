@@ -3,6 +3,7 @@ import { Button, SimpleGrid, Group, Stack, Grid, Text, Title, TextInput, Select 
 import { type Card } from "../types";
 import { EditableText } from './EditableText';
 import { EditableSelect } from './EditableSelect';
+import { EditableDate } from './EditableDate';
 import { EquipmentList } from './EquipmentList';
 import { useDictionaries } from '../hooks/useDictionaries';
 import { usePageNavigation } from '../hooks/usePageNavigation';
@@ -128,6 +129,14 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
                         isEditing={isEditing}
                         value={formData.folder}
                         onChange={(val) => setFormData({...formData, folder: val})}
+                    />
+                </div>
+                <div>
+                    <Text>BUILD DATE</Text>
+                    <EditableDate 
+                        isEditing={isEditing}
+                        value={formData.build_date_dn}
+                        onChange={(val) => setFormData({...formData, build_date_dn: val || new Date()})}
                     />
                 </div>
                 <div>
