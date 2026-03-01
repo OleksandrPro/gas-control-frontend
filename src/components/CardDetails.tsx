@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, SimpleGrid, Group, Stack, Grid, Text, Title, TextInput, Select } from "@mantine/core";
 import { type Card } from "../types";
 import { EditableText } from './EditableText';
@@ -12,6 +12,7 @@ interface CardDetailsProps {
 }
 
 export const CardDetails = ({cardData}: CardDetailsProps) => {
+    const [initialCardData, setInitialCardData] = useState(cardData)
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState(cardData);
 
@@ -19,14 +20,32 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
     const { goToHome } = usePageNavigation()
 
     const handleCancel = () => {
-        setFormData(cardData);
+        setFormData(initialCardData);
         setIsEditing(false);
     };
 
     const handleSave = () => {
         console.log("Saving changes:", formData);
+        setInitialCardData(formData);   
         setIsEditing(false);
     };
+
+    useEffect(() => {
+        const handleGlobalKeyDown = (e: KeyboardEvent) => {
+            if (!isEditing) return;
+            if (e.key === 'Enter') handleSave();
+            if (e.key === 'Escape') handleCancel();
+        };
+
+        window.addEventListener('keydown', handleGlobalKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', handleGlobalKeyDown);
+        };
+
+    }, [isEditing, formData])
+
+    
 
     return (
         <Stack>
@@ -35,8 +54,8 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
                 
                 {isEditing ? (
                     <Group>
-                        <Button variant="default" onClick={() => setIsEditing(false)}>Cancel</Button>
-                        <Button color="green" onClick={() => setIsEditing(false)}>Save</Button>
+                        <Button variant="default" onClick={handleCancel}>Cancel</Button>
+                        <Button color="green" onClick={handleSave}>Save</Button>
                     </Group>
                 ) : (
                     <Button variant="default" onClick={() => setIsEditing(true)}>Edit</Button>
