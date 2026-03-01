@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TextInput, MultiSelect, Button, Group, Stack, SimpleGrid, Paper, Text } from '@mantine/core';
+import { TextInput, MultiSelect, Button, Group, Stack, SimpleGrid, Paper, Text, Tooltip } from '@mantine/core';
 import { NumberFilter } from './NumberFilter';
 import { useDictionaries } from '../hooks/useDictionaries';
 
@@ -17,7 +17,14 @@ export const FilterBar = () => {
         <Paper bg="gray.1" p="md" radius="md" withBorder>
             <Stack>
                 <Group>
-                    <TextInput placeholder="Search by inv. number or address..." />
+                    <Tooltip 
+                        label="You can filter by ..."
+                        position="bottom-start"
+                        openDelay={500}
+                        closeDelay={200}
+                        withArrow>
+                        <TextInput placeholder="Search by inv. number or address..." />
+                    </Tooltip>
                     <Button onClick={toggleFilterBar}>
                         {isFilterBarOpen ? 'Hide filters': 'Open filters'}
                     </Button>
@@ -32,6 +39,7 @@ export const FilterBar = () => {
                             <MultiSelect label="OWNERSHIP" placeholder="Any" data={properties} />
                             <MultiSelect label="Object Names" placeholder="Any" data={objectNames} />
                             <MultiSelect label="PRESSURES" placeholder="Any" data={pressures} />
+                            <TextInput label="FOLDER" placeholder="Enter folder"/>
                             <MultiSelect label="CUT TYPE" placeholder="Any" data={cuts} />
                         </SimpleGrid>
                     </Paper>

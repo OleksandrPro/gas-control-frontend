@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Table, Group, Title, Button, Text, Stack, UnstyledButton } from '@mantine/core';
+import { Table, Group, Title, Button, Text, Stack, UnstyledButton, TextInput } from '@mantine/core';
 import { type EquipmentType, type ColumnType } from '../types';
 import { EquipmentRecordModal } from './EquipmentRecordModal';
 import { EditEquipmentModal } from './EditEquipmentModal';
 import { EditableClickText } from './EditableClickText';
+import { EditableText } from './EditableText';
 
 
 interface PipeData {
@@ -109,7 +110,21 @@ const EquipmentCell = ({ type, items }: { type: EquipmentType, items: any[] }) =
     );
 };
 
-export const EquipmentList = () => {
+interface EquipmentListProps {
+    isEditing?: boolean;
+    balanceTotal?: string;
+    factTotal?: string;
+    onBalanceTotalChange?: (val: string) => void;
+    onFactTotalChange?: (val: string) => void;
+}
+
+export const EquipmentList = ({ 
+    isEditing = false, 
+    balanceTotal = '', 
+    factTotal = '', 
+    onBalanceTotalChange, 
+    onFactTotalChange 
+}: EquipmentListProps) => {
     const [modalOpened, setModalOpened] = useState(false);
 
     const [editModalOpened, setEditModalOpened] = useState(false);
@@ -128,8 +143,7 @@ export const EquipmentList = () => {
 
     const handleSaveEdit = (newData: any) => {
         console.log("Saving new data for item:", editingContext, "New data:", newData);
-        // В будущем здесь будет логика обновления MOCK_EQUIPMENT стейта 
-        // или отправки запроса на сервер
+        // equipment update logic
     };
 
     const renderCell = (row: EquipmentRow, column: ColumnType) => {
@@ -170,6 +184,32 @@ export const EquipmentList = () => {
 
             <Table verticalSpacing="md">
                 <Table.Thead>
+                    <Table.Tr>
+                        <Table.Th style={{ borderBottom: 'none' }}></Table.Th>
+                        <Table.Th style={{ borderBottom: 'none', paddingBottom: 0 }}>
+                            <Stack gap={0}>
+                                <Text size="xs" c="dimmed">TOTAL LENGTH</Text>
+                                <EditableText 
+                                    isEditing={isEditing}
+                                    value={balanceTotal}
+                                    onChange={(val) => onBalanceTotalChange?.(val)}
+                                    renderText={(val)=><Title order={4} c="blue">{val} m</Title>}
+                                />
+                            </Stack>
+                        </Table.Th>
+                        <Table.Th style={{ borderBottom: 'none', paddingBottom: 0 }}>
+                            <Stack gap={0}>
+                                <Text size="xs" c="dimmed">TOTAL LENGTH</Text>
+                                <EditableText 
+                                    isEditing={isEditing}
+                                    value={factTotal}
+                                    onChange={(val) => onFactTotalChange?.(val)}
+                                    renderText={(val)=><Title order={4} c="green">{val} m</Title>}
+                                />
+                            </Stack>
+                        </Table.Th>
+                        <Table.Th style={{ borderBottom: 'none' }}></Table.Th>
+                    </Table.Tr>
                     <Table.Tr>
                         <Table.Th>NAME</Table.Th>
                         <Table.Th>BALANCE</Table.Th>

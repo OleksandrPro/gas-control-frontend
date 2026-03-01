@@ -82,18 +82,6 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
                     />
                 </Grid.Col>
                 
-                <Grid.Col span={4}>
-                    <Group>
-                        <Stack>
-                            <Text>BALANCE (TOTAL)</Text>
-                            <Title order={3}>100.0 m</Title>
-                        </Stack>
-                        <Stack>
-                            <Text>FACT (TOTAL)</Text>
-                            <Title order={3}>95.0 m</Title>
-                        </Stack>
-                    </Group>
-                </Grid.Col>
             </Grid>
 
             <SimpleGrid cols={4}>
@@ -150,7 +138,13 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
                 </div>
             </SimpleGrid>
 
-            <EquipmentList />
+            <EquipmentList 
+                isEditing={isEditing}
+                balanceTotal={formData.total_length_balance}
+                factTotal={formData.total_length_fact}
+                onBalanceTotalChange={(val) => setFormData({...formData, total_length_balance: val})}
+                onFactTotalChange={(val) => setFormData({...formData, total_length_fact: val})}
+            />
         </Stack>
     );
 };
