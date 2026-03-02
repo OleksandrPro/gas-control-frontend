@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, SimpleGrid, Group, Stack, Grid, Text, Title, TextInput, Select } from "@mantine/core";
+import { Button, SimpleGrid, Group, Stack, Grid, Text, Title } from "@mantine/core";
 import { type Card } from "../types";
 import { EditableText } from './EditableText';
 import { EditableSelect } from './EditableSelect';
