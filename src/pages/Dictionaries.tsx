@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Grid, Stack, Title, Text, NavLink, Table, Group, Center, Loader, TextInput, ActionIcon } from '@mantine/core';
-import { IconPlus } from '@tabler/icons-react';
+import { useState } from 'react';
+import { Grid, Stack, Title, Text, NavLink, Group } from '@mantine/core';
 
-import { MOCK_DICTIONARIES } from '../MockData';
+import { DictionaryEditor } from '../components/DictionaryEditor';
 
 const DICTIONARY_REGISTRY = [
     { id: 'districts', label: 'Districts', endpoint: 'districts', mockKey: 'Districts' },
@@ -16,96 +15,6 @@ const DICTIONARY_REGISTRY = [
 
 export const DictionariesPage = () => {
     const [activeDictionary, setActiveDictionary] = useState(DICTIONARY_REGISTRY[0]);
-
-    const [dictItems, setDictItems] = useState<string[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-
-    const [newValue, setNewValue] = useState('');
-    const [isSaving, setIsSaving] = useState(false);
-
-    const [editingIndex, setEditingIndex] = useState<number | null>(null);
-    const [editValue, setEditValue] = useState('');
-    const [isUpdating, setIsUpdating] = useState(false);
-
-    const getDictionary = () => {
-            setTimeout(() => {
-                setDictItems(MOCK_DICTIONARIES[activeDictionary.mockKey] || []);
-                setIsLoading(false);
-            }, 300);
-    }
-
-    const saveNewData = (trimmedValue: string) => {
-        setTimeout(() => {
-            setDictItems([...dictItems, trimmedValue]);
-            setNewValue('');
-            setIsSaving(false);
-        }, 400);
-    }
-
-    const handleAddItem = () => {
-        const trimmedValue = newValue.trim();
-        if (!trimmedValue) return;
-
-        setIsSaving(true);
-        saveNewData(trimmedValue)        
-    };
-
-    const cancelAdding = () => {
-        setNewValue('');
-        setIsSaving(false);
-    };
-
-    const startEditing = (index: number, currentValue: string) => {
-        setEditingIndex(index);
-        setEditValue(currentValue);
-    };
-
-    const cancelEditing = () => {
-        setEditingIndex(null);
-        setEditValue('');
-    };
-
-    const handleSaveEdit = () => {
-        if (editingIndex === null) return;
-        
-        const trimmedValue = editValue.trim();
-        
-        if (!trimmedValue || trimmedValue === dictItems[editingIndex]) {
-            cancelEditing();
-            return;
-        }
-
-        setIsUpdating(true);
-        
-        setTimeout(() => {
-            const updatedItems = [...dictItems];
-            updatedItems[editingIndex] = trimmedValue;
-            
-            setDictItems(updatedItems);
-            setEditingIndex(null);
-            setIsUpdating(false);
-        }, 400);
-    };
-
-    useEffect(() => {
-        const fetchDictionary = async () => {
-            setIsLoading(true);
-            setNewValue('');
-            getDictionary();
-        };
-
-        fetchDictionary();
-    }, [activeDictionary]);
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') handleAddItem();
-        if (e.key === 'Escape') cancelAdding();
-    };
-
-    const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') handleSaveEdit();
-        if (e.key === 'Escape') cancelEditing();
-    };
 
     return (
         <Stack>
@@ -132,69 +41,7 @@ export const DictionariesPage = () => {
                         <Title order={3}>{activeDictionary.label}</Title>
                     </Group>
                     
-                    {isLoading ? (
-                        <Center h={200}>
-                            <Loader color="blue" />
-                        </Center>
-                    ) : (
-                        <Table striped highlightOnHover>
-                            <Table.Tbody>
-                                {dictItems.map((value, index) => (
-                                    <Table.Tr key={index}>
-                                        <Table.Td 
-                                            onClick={() => {
-                                                if (editingIndex !== index && !isUpdating) {
-                                                    startEditing(index, value);
-                                                }
-                                            }}
-                                            style={{ cursor: editingIndex === index ? 'default' : 'pointer' }}
-                                        >
-                                            {editingIndex === index ? (
-                                                <TextInput
-                                                    autoFocus
-                                                    value={editValue}
-                                                    onChange={(e) => setEditValue(e.currentTarget.value)}
-                                                    onKeyDown={handleEditKeyDown}
-                                                    onBlur={handleSaveEdit}
-                                                    disabled={isUpdating}
-                                                    variant="unstyled"
-                                                    rightSection={isUpdating ? <Loader size="xs" color="blue" /> : null}
-                                                />
-                                            ) : (
-                                                value
-                                            )}
-                                        </Table.Td>
-                                    </Table.Tr>
-                                ))}
-                                <Table.Tr>
-                                    <Table.Td>
-                                        <TextInput
-                                            placeholder="Type to add new record... (Press Enter)"
-                                            value={newValue}
-                                            onChange={(e) => setNewValue(e.currentTarget.value)}
-                                            onKeyDown={handleKeyDown}
-                                            disabled={isSaving}
-                                            variant="unstyled"
-                                            rightSection={
-                                                isSaving ? (
-                                                    <Loader size="xs" color="blue" />
-                                                ) : (
-                                                    <ActionIcon 
-                                                        color="blue" 
-                                                        variant="subtle" 
-                                                        onClick={handleAddItem}
-                                                        disabled={!newValue.trim()}
-                                                    >
-                                                        <IconPlus size={18} />
-                                                    </ActionIcon>
-                                                )
-                                            }
-                                        />
-                                    </Table.Td>
-                                </Table.Tr>
-                            </Table.Tbody>
-                        </Table>
-                    )}
+                    <DictionaryEditor dictionary={activeDictionary}/>
                 </Grid.Col>
             </Grid>
         </Stack>
