@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Table, Group, Title, Button, Text, Stack, UnstyledButton, TextInput } from '@mantine/core';
+import { Table, Group, Title, Button, Text, Stack, UnstyledButton } from '@mantine/core';
 import { type EquipmentType, type ColumnType } from '../types';
 import { EquipmentRecordModal } from './EquipmentRecordModal';
 import { EditEquipmentModal } from './EditEquipmentModal';
 import { EditableClickText } from './EditableClickText';
 import { EditableText } from './EditableText';
+import { MOCK_EQUIPMENT } from '../MockData';
 
 
 interface PipeData {
@@ -19,7 +20,7 @@ interface ValveData {
     diameter: number;
 }
 
-interface EquipmentRow {
+export interface EquipmentRow {
     id: number;
     name: string;
     type: EquipmentType;
@@ -27,37 +28,6 @@ interface EquipmentRow {
     fact: any[];
     inCut: any[];
 }
-
-const MOCK_EQUIPMENT: EquipmentRow[] = [
-    {
-        id: 1,
-        name: 'Inlet pipe (gas pipeline-inlet)',
-        type: 'pipe',
-        balance: [{ length: 50.5, diameter: 159, material: 'Steel', placement: 'Underground' }],
-        fact: [
-            { length: 47.0, diameter: 159, material: 'Steel', placement: 'Underground' },
-            { length: 2.0, diameter: 159, material: 'Steel', placement: 'Underground' },
-            { length: 0.7, diameter: 159, material: 'Steel', placement: 'Underground' }
-        ],
-        inCut: []
-    },
-    {
-        id: 2,
-        name: 'Distribution pipe',
-        type: 'pipe',
-        balance: [{ length: 120.0, diameter: 100, material: 'Polyethylene', placement: 'Underground' }],
-        fact: [{ length: 115.0, diameter: 100, material: 'Polyethylene', placement: 'Underground' }],
-        inCut: [{ length: 5.0, diameter: 100, material: 'Polyethylene', placement: 'Above ground' }]
-    },
-    {
-        id: 3,
-        name: 'Valve №1 at exit',
-        type: 'valve',
-        balance: [{ quantity: 1, diameter: 100 }],
-        fact: [{ quantity: 1, diameter: 100 }],
-        inCut: []
-    }
-];
 
 const PipeItem = ({ data }: { data: PipeData }) => (
     <Stack gap={5}>

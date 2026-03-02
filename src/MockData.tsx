@@ -1,4 +1,5 @@
 import type { Card, CardDisplay } from "./types";
+import type { EquipmentRow } from "./components/EquipmentList";
 
 export const MOCK_DICTIONARIES: Record<string, string[]> = {
     "Districts": ["Central", "Northern", "Southern", "Western"],
@@ -63,3 +64,34 @@ export const MOCK_CARDS: CardDisplay[] = MOCK_FULL_CARDS.map((card) => {
 export const getCard = (id: number): Card | undefined => {
   return MOCK_FULL_CARDS.find((card) => card.id === id);
 };
+
+export const MOCK_EQUIPMENT: EquipmentRow[] = [
+    {
+        id: 1,
+        name: 'Inlet pipe (gas pipeline-inlet)',
+        type: 'pipe',
+        balance: [{ length: 50.5, diameter: 159, material: 'Steel', placement: 'Underground' }],
+        fact: [
+            { length: 47.0, diameter: 159, material: 'Steel', placement: 'Underground' },
+            { length: 2.0, diameter: 159, material: 'Steel', placement: 'Underground' },
+            { length: 0.7, diameter: 159, material: 'Steel', placement: 'Underground' }
+        ],
+        inCut: []
+    },
+    {
+        id: 2,
+        name: 'Distribution pipe',
+        type: 'pipe',
+        balance: [{ length: 120.0, diameter: 100, material: 'Polyethylene', placement: 'Underground' }],
+        fact: [{ length: 115.0, diameter: 100, material: 'Polyethylene', placement: 'Underground' }],
+        inCut: [{ length: 5.0, diameter: 100, material: 'Polyethylene', placement: 'Above ground' }]
+    },
+    {
+        id: 3,
+        name: 'Valve №1 at exit',
+        type: 'valve',
+        balance: [{ quantity: 1, diameter: 100 }],
+        fact: [{ quantity: 1, diameter: 100 }],
+        inCut: []
+    }
+];
