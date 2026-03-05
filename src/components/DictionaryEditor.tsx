@@ -1,13 +1,19 @@
 import { useState, useEffect } from 'react';
+import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query';
 import { Table, TextInput, ActionIcon, Loader, Center } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
-import { MOCK_DICTIONARIES } from '../MockData';
+import type { DictionaryItem } from '../types';
+import { 
+    getDictionaryItems, 
+    addDictionaryItem, 
+    updateDictionaryItem, 
+    deleteDictionaryItem 
+} from '../api/Dictionaries';
 
-interface DictionaryConfig {
+export interface DictionaryConfig {
     id: string;
     label: string;
     endpoint: string;
-    mockKey: string;
 }
 
 interface DictionaryEditorProps {
@@ -15,87 +21,80 @@ interface DictionaryEditorProps {
 }
 
 export const DictionaryEditor = ({ dictionary }: DictionaryEditorProps) => {
-    const [dictItems, setDictItems] = useState<string[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const queryClient = useQueryClient();
+
+    const { data: dictItems = [], isLoading: isQueryLoading } = useQuery({
+        queryKey: ['dictionary', dictionary.id], 
+        queryFn: () => getDictionaryItems(dictionary.endpoint)
+    });
+
+    const addMutation = useMutation({
+        mutationFn: (newValue: string) => addDictionaryItem(dictionary.endpoint, newValue),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['dictionary', dictionary.id] });
+            setNewValue('');
+        },
+    });
+
+    const updateMutation = useMutation({
+        mutationFn: (item: DictionaryItem) => updateDictionaryItem(dictionary.endpoint, item),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['dictionary', dictionary.id] });
+            setEditedItem(null);
+            setEditingId(null);
+            setEditValue('');
+        },
+    });
+
+    const deleteMutation = useMutation({
+        mutationFn: (id: number) => deleteDictionaryItem(dictionary.endpoint, id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['dictionary', dictionary.id] });
+        }
+    });
+
+    const handleDelete = (id: number) => {
+        if (window.confirm('Are you sure you want to delete this item?')) {
+            deleteMutation.mutate(id);
+        }
+    };
 
     const [newValue, setNewValue] = useState('');
-    const [isSaving, setIsSaving] = useState(false);
-
-    const [editingIndex, setEditingIndex] = useState<number | null>(null);
+    const [editedItem, setEditedItem] = useState<DictionaryItem | null>(null);
+    const [editingId, setEditingId] = useState<number | null>(null);
     const [editValue, setEditValue] = useState('');
-    const [isUpdating, setIsUpdating] = useState(false);
 
     useEffect(() => {
-        setIsLoading(true);
         setNewValue('');
-        setEditingIndex(null);
-
-        const timer = setTimeout(() => {
-            setDictItems(MOCK_DICTIONARIES[dictionary.mockKey] || []);
-            setIsLoading(false);
-        }, 300);
-
-        return () => clearTimeout(timer);
+        setEditingId(null);
     }, [dictionary]);
 
-    const handleAddItem = () => {
-        const trimmedValue = newValue.trim();
-        if (!trimmedValue) return;
 
-        setIsSaving(true);
-        setTimeout(() => {
-            setDictItems([...dictItems, trimmedValue]);
-            setNewValue('');
-            setIsSaving(false);
-        }, 400);
+    const handleAddSubmit = () => {
+        const trimmed = newValue.trim();
+        if (trimmed) addMutation.mutate(trimmed);
     };
 
-    const cancelAdding = () => {
-        setNewValue('');
-        setIsSaving(false);
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') handleAddItem();
-        if (e.key === 'Escape') cancelAdding();
-    };
-
-    const startEditing = (index: number, currentValue: string) => {
-        setEditingIndex(index);
-        setEditValue(currentValue);
-    };
-
-    const cancelEditing = () => {
-        setEditingIndex(null);
-        setEditValue('');
-    };
-
-    const handleSaveEdit = () => {
-        if (editingIndex === null) return;
+    const handleEditSubmit = () => {
+        if (editingId === null) return;
+        const trimmed = editValue.trim();
         
-        const trimmedValue = editValue.trim();
-        if (!trimmedValue || trimmedValue === dictItems[editingIndex]) {
-            cancelEditing();
+        const currentItem = dictItems.find((i: DictionaryItem) => i.id === editingId);
+        if (!trimmed || (currentItem && currentItem.value === trimmed)) {
+            setEditingId(null);
             return;
         }
 
-        setIsUpdating(true);
-        setTimeout(() => {
-            const updatedItems = [...dictItems];
-            updatedItems[editingIndex] = trimmedValue;
-            
-            setDictItems(updatedItems);
-            setEditingIndex(null);
-            setIsUpdating(false);
-        }, 400);
+        updateMutation.mutate({ id: editingId, value: trimmed });
     };
 
-    const handleEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') handleSaveEdit();
-        if (e.key === 'Escape') cancelEditing();
+    const startEditing = (item: DictionaryItem) => {
+        setEditedItem(item);
+        setEditingId(item.id);
+        setEditValue(item.value);
     };
 
-    if (isLoading) {
+    if (isQueryLoading) {
         return (
             <Center h={200}>
                 <Loader color="blue" />
@@ -106,29 +105,32 @@ export const DictionaryEditor = ({ dictionary }: DictionaryEditorProps) => {
     return (
         <Table striped highlightOnHover>
             <Table.Tbody>
-                {dictItems.map((value, index) => (
-                    <Table.Tr key={index}>
+                {dictItems.map((item: DictionaryItem) => (
+                    <Table.Tr key={item.id}>
                         <Table.Td 
                             onClick={() => {
-                                if (editingIndex !== index && !isUpdating) {
-                                    startEditing(index, value);
+                                if (editedItem?.id !== item.id && !updateMutation.isPending) {
+                                    startEditing(item);
                                 }
                             }}
-                            style={{ cursor: editingIndex === index ? 'default' : 'pointer' }}
+                            style={{ cursor: editedItem?.id === item.id ? 'default' : 'pointer' }}
                         >
-                            {editingIndex === index ? (
+                            {editedItem?.id === item.id ? (
                                 <TextInput
                                     autoFocus
                                     value={editValue}
                                     onChange={(e) => setEditValue(e.currentTarget.value)}
-                                    onKeyDown={handleEditKeyDown}
-                                    onBlur={handleSaveEdit}
-                                    disabled={isUpdating}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') handleEditSubmit();
+                                        if (e.key === 'Escape') setEditingId(null);
+                                    }}
+                                    onBlur={handleEditSubmit}
+                                    disabled={updateMutation.isPending}
                                     variant="unstyled"
-                                    rightSection={isUpdating ? <Loader size="xs" color="blue" /> : null}
+                                    rightSection={updateMutation.isPending ? <Loader size="xs" color="blue" /> : null}
                                 />
                             ) : (
-                                value
+                                item.value
                             )}
                         </Table.Td>
                     </Table.Tr>
@@ -140,17 +142,20 @@ export const DictionaryEditor = ({ dictionary }: DictionaryEditorProps) => {
                             placeholder="Type to add new record... (Press Enter)"
                             value={newValue}
                             onChange={(e) => setNewValue(e.currentTarget.value)}
-                            onKeyDown={handleKeyDown}
-                            disabled={isSaving}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleAddSubmit();
+                                if (e.key === 'Escape') setNewValue('');
+                            }}
+                            disabled={addMutation.isPending}
                             variant="unstyled"
                             rightSection={
-                                isSaving ? (
+                                addMutation.isPending ? (
                                     <Loader size="xs" color="blue" />
                                 ) : (
                                     <ActionIcon 
                                         color="blue" 
                                         variant="subtle" 
-                                        onClick={handleAddItem}
+                                        onClick={handleAddSubmit}
                                         disabled={!newValue.trim()}
                                     >
                                         <IconPlus size={18} />

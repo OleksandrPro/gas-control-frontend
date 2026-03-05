@@ -1,16 +1,17 @@
 import { useState } from 'react';
 import { Grid, Stack, Title, Text, NavLink, Group } from '@mantine/core';
 
-import { DictionaryEditor } from '../components/DictionaryEditor';
+import { DictionaryEditor, type DictionaryConfig} from '../components/DictionaryEditor';
+import { DICTIONARY_ENDPOINTS } from '../api/Dictionaries';
 
-const DICTIONARY_REGISTRY = [
-    { id: 'districts', label: 'Districts', endpoint: 'districts', mockKey: 'Districts' },
-    { id: 'materials', label: 'Materials', endpoint: 'pipe-materials', mockKey: 'Materials' },
-    { id: 'cuts', label: 'Cut types', endpoint: 'cut-types', mockKey: 'Cut types' },
-    { id: 'ownership', label: 'Ownership', endpoint: 'property-types', mockKey: 'Ownership' },
-    { id: 'pressures', label: 'Pressures', endpoint: 'pressure-types', mockKey: 'Pressures' },
-    { id: 'ground', label: 'Ground Levels', endpoint: 'ground-levels', mockKey: 'GroundLevels' },
-    { id: 'objects', label: 'Object Names', endpoint: 'object-names', mockKey: 'Object Names' },
+const DICTIONARY_REGISTRY: DictionaryConfig[] = [
+    { id: 'districts', label: 'Districts', endpoint: DICTIONARY_ENDPOINTS.Districts },
+    { id: 'materials', label: 'Materials', endpoint: DICTIONARY_ENDPOINTS.Materials },
+    { id: 'cuts', label: 'Cut types', endpoint: DICTIONARY_ENDPOINTS.Cuts },
+    { id: 'ownership', label: 'Ownership', endpoint: DICTIONARY_ENDPOINTS.Ownerships },
+    { id: 'pressures', label: 'Pressures', endpoint: DICTIONARY_ENDPOINTS.Pressures },
+    { id: 'ground', label: 'Ground Levels', endpoint: DICTIONARY_ENDPOINTS.GroundLevels },
+    { id: 'objects', label: 'Object Names', endpoint: DICTIONARY_ENDPOINTS.ObjectNames },
 ];
 
 export const DictionariesPage = () => {

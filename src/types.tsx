@@ -35,3 +35,8 @@ export type Card = {
 
 export type EquipmentType = 'pipe' | 'valve' | 'other';
 export type ColumnType = 'balance' | 'fact' | 'inCut';
+
+export type DictionaryItem = {
+  id: number,
+  value: string
+}
