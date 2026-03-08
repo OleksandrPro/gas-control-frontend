@@ -59,8 +59,12 @@ export const CardList = ({cards}:CardListProps) => {
         header: 'Build Date',
       },
       {
-        accessorKey: 'totalLength',
-        header: 'Total length, km',
+        accessorKey: 'totalLengthBalance',
+        header: 'Total length (balance), km',
+      },
+      {
+        accessorKey: 'totalLengthFact',
+        header: 'Total length (fact), km',
       },
       {
         accessorKey: 'cut',
