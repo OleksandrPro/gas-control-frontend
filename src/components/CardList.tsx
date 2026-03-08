@@ -92,6 +92,14 @@ export const CardList = ({cards}:CardListProps) => {
         enableDensityToggle: false,
         enablePagination: false,
 
+        layoutMode: 'grid',
+        mantineTableContainerProps: {
+          style: {
+            maxWidth: '100%',
+            overflowX: 'auto', 
+          },
+        },
+
         mantineTableProps: {    
             striped: 'odd',
             withColumnBorders: false,
