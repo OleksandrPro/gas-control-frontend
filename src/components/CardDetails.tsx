@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button, SimpleGrid, Group, Stack, Grid, Text, Title, Loader } from "@mantine/core";
 import { type CardBackend, type CardUpdateData } from "../types";
@@ -15,6 +16,7 @@ interface CardDetailsProps {
 }
 
 export const CardDetails = ({cardData}: CardDetailsProps) => {
+    const { id } = useParams();
     const queryClient = useQueryClient();
 
     const [initialCardData, setInitialCardData] = useState(cardData)
@@ -194,6 +196,7 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
             </SimpleGrid>
 
             <EquipmentList 
+                cardId={Number(id)}
                 isEditing={isEditing}
                 balanceTotal={formData.total_length_balance?.toString()}
                 factTotal={formData.total_length_fact?.toString()}
