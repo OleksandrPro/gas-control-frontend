@@ -22,7 +22,8 @@ export const mapCardToDisplay = (card: CardBackend, dicts: DictionariesContext):
         
         balanceName: card.described_name, 
         
-        totalLength: card.total_length,
+        totalLengthBalance: card.total_length_balance,
+        totalLengthFact: card.total_length_fact,
         buildDate: card.build_date_dn,
         address: card.address,
         folder: card.folder,

@@ -10,7 +10,8 @@ export type CardBackend = {
     object_name_id: number;
     cut_type_id: number | null;
     build_date_dn: string;
-    total_length: number;
+    total_length_balance: number;
+    total_length_fact: number;
     address: string;
     folder: string;
 }
@@ -26,7 +27,8 @@ export type CardDisplay = {
     property: string;
     objectName: string;
     buildDate: string;
-    totalLength: number;
+    totalLengthBalance: number;
+    totalLengthFact: number
     cut: string;
     folder: string;
 }

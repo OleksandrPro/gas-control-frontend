@@ -195,10 +195,10 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
 
             <EquipmentList 
                 isEditing={isEditing}
-                balanceTotal={formData.total_length?.toString()}
-                factTotal={formData.total_length?.toString()}
-                onBalanceTotalChange={(val) => setFormData({...formData, total_length: Number(val)})}
-                onFactTotalChange={(val) => setFormData({...formData, total_length: Number(val)})}
+                balanceTotal={formData.total_length_balance?.toString()}
+                factTotal={formData.total_length_fact?.toString()}
+                onBalanceTotalChange={(val) => setFormData({...formData, total_length_balance: Number(val)})}
+                onFactTotalChange={(val) => setFormData({...formData, total_length_fact: Number(val)})}
             />
         </Stack>
     );
