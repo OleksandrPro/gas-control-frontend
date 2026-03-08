@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query';
-import { Table, TextInput, ActionIcon, Loader, Center } from '@mantine/core';
+import { Table, TextInput, ActionIcon, Loader, Center, Button } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import type { DictionaryItem } from '../types';
 import { 

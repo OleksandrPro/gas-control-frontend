@@ -1,14 +1,43 @@
-import { useState } from "react";
-import { Button, Group, Title, Text, Pagination } from "@mantine/core";
+import { useState, useMemo } from "react";
+import { useQuery } from '@tanstack/react-query';
+import { Button, Group, Title, Text, Pagination, Center, Loader } from "@mantine/core";
 import { CreateCardModal } from "../components/CreateCardModal";
 import { CardList } from "../components/CardList";
 import { FilterBar } from "../components/FilterBar";
 
-import { MOCK_CARDS } from "../MockData";
+import { getCards } from "../api/Cards";
+import { useDictionaries } from "../hooks/useDictionaries";
+import { mapCardToDisplay } from "../Mapper";
 
 
 export const HomePage = () => {
+    const [activePage, setActivePage] = useState(1);
     const [opened, setOpened] = useState(false);
+
+    const { data: serverResponse, isLoading: isCardsLoading } = useQuery({
+        queryKey: ['cards', activePage], 
+        queryFn: () => getCards() 
+    });
+
+    const { 
+        districts, pressures, properties, objectNames, cuts, isLoading: isDictsLoading 
+    } = useDictionaries();
+
+    const displayCards = useMemo(() => {
+        if (!serverResponse?.items) return [];
+
+        return serverResponse.items.map(backendCard => 
+            mapCardToDisplay(backendCard, {
+                districts,
+                pressures,
+                properties,
+                objectNames,
+                cuts
+            })
+        );
+    }, [serverResponse, districts, pressures, properties, objectNames, cuts]);
+
+    const isLoading = isCardsLoading || isDictsLoading;
 
     return (
         <div style={{ padding: '20px' }}>
@@ -24,11 +53,21 @@ export const HomePage = () => {
 
             <FilterBar/>
 
-            <CardList cards={MOCK_CARDS}/>
+            {isLoading ? (
+                <Center h={300}>
+                    <Loader color="blue" />
+                </Center>
+            ) : (
+                <CardList cards={displayCards} />
+            )}
             
             <Group justify="space-between">
-                <Text>TOTAL: 145 records</Text>
-                <Pagination total={3} />
+                <Text fw={500}>TOTAL: {serverResponse?.total || 0} records</Text>
+                <Pagination 
+                    total={serverResponse?.total_pages || 1} 
+                    value={activePage} 
+                    onChange={setActivePage} 
+                />
             </Group>
 
             <CreateCardModal 
