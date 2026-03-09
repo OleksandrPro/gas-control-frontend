@@ -97,8 +97,8 @@ export const CreateCardModal = ({ opened, onClose }: CreateCardModalProps) => {
         />
         <DateInput 
           label="BUILD DATE" 
-          placeholder="mm / dd / yyyy" 
-          valueFormat="MM/DD/YYYY"
+          placeholder="DD.MM.YYYY" 
+          valueFormat="DD.MM.YYYY"
           rightSection={<IconCalendar size={18} color="gray" />}
         />
       </SimpleGrid>
