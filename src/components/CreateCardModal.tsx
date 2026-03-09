@@ -83,7 +83,9 @@ export const CreateCardModal = ({ opened, onClose }: CreateCardModalProps) => {
         <NumberInput 
           label="Total length"
           placeholder="e.g. 1.7412"
-          allowDecimal={true} 
+          allowDecimal={true}
+          allowedDecimalSeparators={[',', '.']}
+          step={0.1}
         />
         <TextInput 
           label="FOLDER" 
