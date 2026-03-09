@@ -2,6 +2,7 @@ import { Modal, TextInput, Select, Button, SimpleGrid, NumberInput } from '@mant
 import { DateInput } from '@mantine/dates';
 import { IconCalendar } from '@tabler/icons-react';
 import { useDictionaries } from '../hooks/useDictionaries';
+import type { DictionaryItem } from '../types';
 
 interface CreateCardModalProps {
   opened: boolean;
@@ -10,6 +11,19 @@ interface CreateCardModalProps {
 
 export const CreateCardModal = ({ opened, onClose }: CreateCardModalProps) => {
   const { districts, properties, pressures, objectNames, cuts } = useDictionaries();
+
+  const mapToSelectData = (items: DictionaryItem[]) => {
+      return items.map(item => ({
+          value: item.id.toString(),
+          label: item.value
+      }));
+  };
+
+  const districtsData = mapToSelectData(districts);
+  const propertiesData = mapToSelectData(properties);
+  const pressuresData = mapToSelectData(pressures);
+  const objectNamesData = mapToSelectData(objectNames);
+  const cutsData = mapToSelectData(cuts);
 
   return (
     <Modal 
@@ -45,26 +59,26 @@ export const CreateCardModal = ({ opened, onClose }: CreateCardModalProps) => {
         <Select 
           label="DISTRICT" 
           placeholder="Select" 
-          data={districts} 
-          defaultValue={districts[0]}
+          data={districtsData} 
+          defaultValue={districtsData.length > 0 ? districtsData[0].value : null}
         />
         <Select 
           label="Pressures" 
           placeholder="Select" 
-          data={pressures} 
-          defaultValue={pressures[0]}
+          data={pressuresData} 
+          defaultValue={pressuresData.length > 0 ? pressuresData[0].value : null}
         />
         <Select 
           label="Object Name" 
           placeholder="Select" 
-          data={objectNames} 
-          defaultValue={objectNames[0]}
+          data={objectNamesData} 
+          defaultValue={objectNamesData.length > 0 ? objectNamesData[0].value : null}
         />
         <Select 
           label="OWNERSHIP" 
           placeholder="Select" 
-          data={properties} 
-          defaultValue={properties[0]}
+          data={propertiesData} 
+          defaultValue={propertiesData.length > 0 ? propertiesData[0].value : null}
         />
         <NumberInput 
           label="Total length"
@@ -78,8 +92,8 @@ export const CreateCardModal = ({ opened, onClose }: CreateCardModalProps) => {
         <Select 
           label="CUT TYPE" 
           placeholder="Select" 
-          data={cuts} 
-          defaultValue={cuts[0]}
+          data={cutsData} 
+          defaultValue={cutsData.length > 0 ? cutsData[0].value : null}
         />
         <DateInput 
           label="BUILD DATE" 
