@@ -23,7 +23,7 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState(cardData);
 
-    const { pressures, districts, properties, cuts } = useDictionaries();
+    const { pressures, districts, properties, objectNames, cuts } = useDictionaries();
     const { goToHome } = usePageNavigation()
 
     const updateMutation = useMutation({
@@ -142,12 +142,37 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
                     />
                 </div>
                 <div>
+                    <Text>Balance name</Text>
+                    <EditableText 
+                        isEditing={isEditing}
+                        value={formData.described_name}
+                        onChange={(val) => setFormData({...formData, described_name: val})}
+                    />
+                </div>
+                <div>
+                    <Text>Gas Pipeline Section</Text>
+                    <EditableText 
+                        isEditing={isEditing}
+                        value={formData.gas_pipeline_section}
+                        onChange={(val) => setFormData({...formData, gas_pipeline_section: val})}
+                    />
+                </div>
+                <div>
                     <Text>PRESSURE</Text>
                     <EditableSelect 
                         isEditing={isEditing}
                         data={pressures}
                         value={formData.pressure_type_id}
                         onChange={(val) => setFormData({...formData, pressure_type_id: val || 0})}
+                    />
+                </div>
+                <div>
+                    <Text>Gas Pipeline Type</Text>
+                    <EditableSelect 
+                        isEditing={isEditing}
+                        data={objectNames}
+                        value={formData.district_id}
+                        onChange={(val) => setFormData({...formData, object_name_id: val || 0})}
                     />
                 </div>
                 <div>

@@ -20,3 +20,8 @@ export const updateCard = async (id: number, newData: CardUpdateData): Promise<C
     const response = await cardsApi.patch(`/${id}`, newData);
     return response.data;
 }
+
+export const createCard = async (payload: any) => {
+    const response = await cardsApi.post('/', payload);
+    return response.data;
+};

@@ -21,6 +21,7 @@ export type CardDisplay = {
     inventory_number: string;
     inventory_number_eskd: string;
     balanceName: string;
+    gasPipelineSecion: string,
     pressure: string;
     address: string;
     district: string;

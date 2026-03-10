@@ -39,6 +39,10 @@ export const CardList = ({cards}:CardListProps) => {
         header: 'Balance name',
       },
       {
+        accessorKey: 'gasPipelineSecion',
+        header: 'Gas Pipeline Section',
+      },
+      {
         accessorKey: 'address',
         header: 'Address',
       },

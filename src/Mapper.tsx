@@ -20,7 +20,8 @@ export const mapCardToDisplay = (card: CardBackend, dicts: DictionariesContext):
         inventory_number: card.inventory_number,
         inventory_number_eskd: card.inventory_number_eskd,
         
-        balanceName: card.described_name, 
+        balanceName: card.described_name,
+        gasPipelineSecion: card.gas_pipeline_section,
         
         totalLengthBalance: card.total_length_balance,
         totalLengthFact: card.total_length_fact,
