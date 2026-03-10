@@ -216,6 +216,7 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
                         data={cuts}
                         value={formData.cut_type_id}
                         onChange={(val) => setFormData({...formData, cut_type_id: val})}
+                        clearable
                     />
                 </div>
             </SimpleGrid>
