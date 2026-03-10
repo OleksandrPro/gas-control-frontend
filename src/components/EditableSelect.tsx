@@ -1,5 +1,6 @@
 import { Text, Select, type SelectProps } from "@mantine/core";
 import { type DictionaryItem } from "../types";
+import { mapToSelectData } from "../utils";
 
 interface EditableSelectProps extends Omit<SelectProps, 'data' | 'value' | 'onChange'> {
     isEditing: boolean;
@@ -10,10 +11,7 @@ interface EditableSelectProps extends Omit<SelectProps, 'data' | 'value' | 'onCh
 
 export const EditableSelect = ({ isEditing, value, onChange, data, ...selectProps }: EditableSelectProps) => {
     if (isEditing) {
-        const selectData = data.map(item => ({
-            value: item.id.toString(),
-            label: item.value
-        }));
+        const selectData = mapToSelectData(data);
 
         return (
             <Select 

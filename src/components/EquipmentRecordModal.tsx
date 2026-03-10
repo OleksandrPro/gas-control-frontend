@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Modal, NumberInput, Select, Button, SimpleGrid, Text, Stack, TextInput, Group, Checkbox, Paper } from '@mantine/core';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { useDictionaries } from '../hooks/useDictionaries';
+import { mapToSelectData } from '../utils';
 
 interface FormParamsProps {
     formData: any;
@@ -11,15 +12,8 @@ interface FormParamsProps {
 const PipeParams = ({ formData, onChange }: FormParamsProps) => {
   const { materials, groundLevels } = useDictionaries();
 
-    const materialOptions = materials.map(item => ({
-        value: item.id.toString(),
-        label: item.value
-    }));
-
-    const placementOptions = groundLevels.map(item => ({
-        value: item.id.toString(),
-        label: item.value
-    }));
+    const materialOptions = mapToSelectData(materials);
+    const placementOptions = mapToSelectData(groundLevels);
 
     return (
         <SimpleGrid cols={2}>

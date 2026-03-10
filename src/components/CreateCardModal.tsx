@@ -5,7 +5,7 @@ import { DateInput } from '@mantine/dates';
 import { IconCalendar } from '@tabler/icons-react';
 import { useDictionaries } from '../hooks/useDictionaries';
 import { createCard } from '../api/Cards';
-import type { DictionaryItem } from '../types';
+import { mapToSelectData } from '../utils';
 
 interface CreateCardModalProps {
   opened: boolean;
@@ -17,13 +17,6 @@ export const CreateCardModal = ({ opened, onClose }: CreateCardModalProps) => {
   const { districts, properties, pressures, objectNames, cuts } = useDictionaries();
 
   const [formData, setFormData] = useState<Record<string, any>>({});
-
-  const mapToSelectData = (items: DictionaryItem[]) => {
-      return items.map(item => ({
-          value: item.id.toString(),
-          label: item.value
-      }));
-  };
 
   const districtsData = mapToSelectData(districts);
   const propertiesData = mapToSelectData(properties);
