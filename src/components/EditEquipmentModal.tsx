@@ -7,6 +7,7 @@ import { IconInfoCircle } from '@tabler/icons-react';
 
 import { type EquipmentType, type ColumnType } from '../types';
 import { useDictionaries } from '../hooks/useDictionaries';
+import { mapToSelectData } from '../utils';
 
 interface EditEquipmentModalProps {
     opened: boolean;
@@ -21,6 +22,9 @@ export const EditEquipmentModal = ({ opened, onClose, type, column, initialData,
     const [formData, setFormData] = useState<any>({});
 
     const { materials, groundLevels } = useDictionaries();
+
+    const materialsData = mapToSelectData(materials);
+    const groundLevelsData = mapToSelectData(groundLevels);
 
     useEffect(() => {
         if (initialData) {
@@ -61,13 +65,13 @@ export const EditEquipmentModal = ({ opened, onClose, type, column, initialData,
                     />
                     <Select 
                         label="Material" 
-                        data={materials} 
+                        data={materialsData} 
                         value={formData.material || ''}
                         onChange={(val) => setFormData({ ...formData, material: val })}
                     />
                     <Select 
                         label="Placement" 
-                        data={groundLevels} 
+                        data={groundLevelsData} 
                         value={formData.placement || ''}
                         onChange={(val) => setFormData({ ...formData, placement: val })}
                     />
