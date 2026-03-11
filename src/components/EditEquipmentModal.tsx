@@ -66,14 +66,16 @@ export const EditEquipmentModal = ({ opened, onClose, type, column, initialData,
                     <Select 
                         label="Material" 
                         data={materialsData} 
-                        value={formData.material || ''}
-                        onChange={(val) => setFormData({ ...formData, material: val })}
+                        value={formData.material_id ? String(formData.material_id) : null}
+                        onChange={(val) => setFormData({ ...formData, material_id: val ? Number(val) : null })}
+                        searchable
                     />
                     <Select 
                         label="Placement" 
                         data={groundLevelsData} 
-                        value={formData.placement || ''}
-                        onChange={(val) => setFormData({ ...formData, placement: val })}
+                        value={formData.groung_level_id ? String(formData.groung_level_id) : null}
+                        onChange={(val) => setFormData({ ...formData, groung_level_id: val ? Number(val) : null })}
+                        searchable
                     />
                 </SimpleGrid>
             );

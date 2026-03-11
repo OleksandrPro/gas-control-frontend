@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { Menu, Group, NumberInput, ActionIcon, rem } from "@mantine/core"
-import { IconArrowsLeftRight, IconEqual, IconFilter, IconMathGreater, IconMathLower, IconX } from "@tabler/icons-react";
+import { IconArrowsLeftRight, IconEqual, IconMathGreater, IconMathLower, IconX } from "@tabler/icons-react";
 
 export interface NumberFilterPayload {
     equal?: number;
@@ -60,7 +60,9 @@ export const NumberFilter = ({ label = "DIAMETER", onChange }: NumberFilterProps
     const filterMenu = (
         <Menu>
             <Menu.Target>
-                <IconFilter/>
+               <ActionIcon variant="transparent" color="dimmed" size="sm" aria-label="Select mode">
+                    <ModeIcon style={{ width: rem(16), height: rem(16) }} />
+                </ActionIcon>
             </Menu.Target>
 
             <Menu.Dropdown>

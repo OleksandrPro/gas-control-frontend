@@ -173,7 +173,9 @@ export const EquipmentList = ({
                     length: entry.length,
                     diameter: entry.diameter,
                     material: getDictValue(materials, entry.material_id),
-                    placement: getDictValue(groundLevels, entry.groung_level_id)
+                    placement: getDictValue(groundLevels, entry.groung_level_id),
+                    material_id: entry.material_id, 
+                    groung_level_id: entry.groung_level_id
                 };
             } else if (entry.type === "valve_data") {
                 mappedData = {
