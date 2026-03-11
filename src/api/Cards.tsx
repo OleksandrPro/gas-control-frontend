@@ -25,6 +25,6 @@ export const updateCard = async (id: number, newData: CardUpdateData): Promise<C
 }
 
 export const createCard = async (payload: any) => {
-    const response = await cardsApi.post('/', payload);
+    const response = await cardsApi.post('', payload);
     return response.data;
 };
