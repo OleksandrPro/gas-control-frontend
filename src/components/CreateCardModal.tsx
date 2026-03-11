@@ -141,7 +141,7 @@ export const CreateCardModal = ({ opened, onClose }: CreateCardModalProps) => {
           searchable
         />
         <Select 
-          label="Object Name" 
+          label="Gas pipeline type" 
           placeholder="Select" 
           data={objectNamesData} 
           value={formData.object_name_id || (objectNamesData.length > 0 ? objectNamesData[0].value : null)}

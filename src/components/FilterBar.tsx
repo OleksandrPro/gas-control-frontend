@@ -108,12 +108,12 @@ export const FilterBar = ({ onSearch }: FilterBarProps) => {
                     <Text>Card filters</Text>
                     <Paper bg="gray.0" p="md" radius="md" withBorder>
                         <SimpleGrid cols={3}>
-                            <MultiSelect label="DISTRICT" placeholder="All districts" data={districtsData} searchable value={districtsFilter} onChange={setDistrictsFilter} />
-                            <MultiSelect label="OWNERSHIP" placeholder="Any" data={propertiesData} searchable value={ownershipFilter} onChange={setOwnershipFilter} />
-                            <MultiSelect label="Object Names" placeholder="Any" data={objectNamesData} searchable value={objectsFilter} onChange={setObjectsFilter} />
-                            <MultiSelect label="PRESSURES" placeholder="Any" data={pressuresData} searchable value={pressuresFilter} onChange={setPressuresFilter} />
+                            <MultiSelect label="DISTRICT" placeholder="All districts" data={districtsData} searchable value={districtsFilter} onChange={setDistrictsFilter} clearable />
+                            <MultiSelect label="OWNERSHIP" placeholder="Any" data={propertiesData} searchable value={ownershipFilter} onChange={setOwnershipFilter} clearable />
+                            <MultiSelect label="Object Names" placeholder="Any" data={objectNamesData} searchable value={objectsFilter} onChange={setObjectsFilter} clearable />
+                            <MultiSelect label="PRESSURES" placeholder="Any" data={pressuresData} searchable value={pressuresFilter} onChange={setPressuresFilter} clearable />
                             <TextInput label="FOLDER" placeholder="Enter folder" value={folderFilter} onChange={(e) => setFolderFilter(e.currentTarget.value)} />
-                            <MultiSelect label="CUT TYPE" placeholder="Any" data={cutsData} searchable value={cutsFilter} onChange={setCutsFilter} />
+                            <MultiSelect label="CUT TYPE" placeholder="Any" data={cutsData} searchable value={cutsFilter} onChange={setCutsFilter} clearable />
                         </SimpleGrid>
                     </Paper>
                     <Text>Pipe filters</Text>
@@ -126,6 +126,7 @@ export const FilterBar = ({ onSearch }: FilterBarProps) => {
                                 searchable
                                 value={materialsFilter}
                                 onChange={setMaterialsFilter}
+                                clearable
                             />
                             <MultiSelect 
                                 label="GROUND LEVELS" 
@@ -134,6 +135,7 @@ export const FilterBar = ({ onSearch }: FilterBarProps) => {
                                 searchable
                                 value={groundLevelsFilter}
                                 onChange={setGroundLevelsFilter}
+                                clearable
                             />
                             <NumberFilter onChange={(data) => setDiameterFilter(data)}/>
                             <MultiSelect 
@@ -146,6 +148,7 @@ export const FilterBar = ({ onSearch }: FilterBarProps) => {
                                 ]} 
                                 value={columnTypesFilter}
                                 onChange={setColumnTypesFilter}
+                                clearable
                             />
                         </SimpleGrid>
                     </Paper>

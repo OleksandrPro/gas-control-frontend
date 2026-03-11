@@ -56,7 +56,7 @@ export const CardList = ({cards}:CardListProps) => {
       },
       {
         accessorKey: 'objectName',
-        header: 'Object name',
+        header: 'Gas Pipeline Type',
       },
       {
         accessorKey: 'buildDate',
