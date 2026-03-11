@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Button, Group, Title, Text, Pagination, Center, Loader } from "@mantine/core";
 import { CreateCardModal } from "../components/CreateCardModal";
 import { CardList } from "../components/CardList";
-import { FilterBar } from "../components/FilterBar";
+import { FilterBar, type CardFilterPayload } from "../components/FilterBar";
 
 import { getCards } from "../api/Cards";
 import { useDictionaries } from "../hooks/useDictionaries";
@@ -12,11 +12,21 @@ import { mapCardToDisplay } from "../Mapper";
 
 export const HomePage = () => {
     const [activePage, setActivePage] = useState(1);
+    const [filters, setFilters] = useState<CardFilterPayload>({});
     const [opened, setOpened] = useState(false);
 
+    const handleSearch = (newFilters: CardFilterPayload) => {
+        setFilters(newFilters);
+        setActivePage(1); 
+    };
+
     const { data: serverResponse, isLoading: isCardsLoading } = useQuery({
-        queryKey: ['cards', activePage], 
-        queryFn: () => getCards() 
+        queryKey: ['cards', activePage, filters], 
+        queryFn: () => getCards({
+            ...filters,
+            page: activePage,
+            size: 50
+        }) 
     });
 
     const { 
@@ -26,7 +36,7 @@ export const HomePage = () => {
     const displayCards = useMemo(() => {
         if (!serverResponse?.items) return [];
 
-        return serverResponse.items.map(backendCard => 
+        return serverResponse.items.map((backendCard: any) => 
             mapCardToDisplay(backendCard, {
                 districts,
                 pressures,
@@ -51,7 +61,7 @@ export const HomePage = () => {
                 </Button>
             </Group>
 
-            <FilterBar/>
+            <FilterBar onSearch={handleSearch} />
 
             {isLoading ? (
                 <Center h={300}>

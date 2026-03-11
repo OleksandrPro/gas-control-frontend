@@ -6,10 +6,13 @@ export const cardsApi = axios.create({
     baseURL: '/api/cards',
 });
 
-export const getCards = async (): Promise<PaginatedResponse<CardBackend>> => {
-    const response = await cardsApi.get("");
+export const getCards = async (params: any = {}) => {
+    const response = await cardsApi.get("", { 
+        params,
+        paramsSerializer: { indexes: null } 
+    });
     return response.data;
-}
+};
 
 export const getCard = async (id: number): Promise<CardBackend> => {
     const response = await cardsApi.get(`/${id}`);
