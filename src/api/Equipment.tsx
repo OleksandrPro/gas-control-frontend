@@ -1,4 +1,10 @@
+import axios from "axios";
 import { cardsApi } from "./Cards";
+
+
+export const equipmentApi = axios.create({
+    baseURL: '/api'
+});
 
 export interface EquipmentPayload {
     item_type: string;
@@ -14,4 +20,8 @@ export const getCardEquipment = async (cardId: number) => {
 export const addEquipmentToCard = async (cardId: number, payload: EquipmentPayload) => {
     const response = await cardsApi.post(`/${cardId}/equipment`, payload);
     return response.data;
+};
+
+export const deleteEquipmentItem = async (itemId: number): Promise<void> => {
+    await equipmentApi.delete(`/equipment-items/${itemId}`);
 };

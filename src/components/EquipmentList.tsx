@@ -6,10 +6,9 @@ import { EquipmentRecordModal } from './EquipmentRecordModal';
 import { EditEquipmentModal } from './EditEquipmentModal';
 import { EditableClickText } from './EditableClickText';
 import { EditableText } from './EditableText';
-import { addEquipmentToCard } from '../api/Equipment';
-import { getCardEquipment } from '../api/Equipment';
+import { addEquipmentToCard, getCardEquipment, deleteEquipmentItem } from '../api/Equipment';
 import { useDictionaries } from '../hooks/useDictionaries';
-import { MOCK_EQUIPMENT } from '../MockData';
+import { IconTrash } from '@tabler/icons-react';
 
 
 interface PipeData {
@@ -133,6 +132,23 @@ export const EquipmentList = ({
             alert("Error while adding new equipment.");
         }
     });
+
+    const deleteMutation = useMutation({
+        mutationFn: (itemId: number) => deleteEquipmentItem(itemId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['equipment', cardId] });
+            console.info("Deleted")
+        },
+        onError: () => {
+            console.error("Couldn't delete the record!")
+        }
+    });
+
+    const handleDeleteItem = (itemId: number) => {
+        if (window.confirm('Are you sure you want to delete this entry with all columns?')) {
+            deleteMutation.mutate(itemId);
+        }
+    };
 
     const handleAddEquipment = (payload: any) => {
         addMutation.mutate(payload);
@@ -292,6 +308,15 @@ export const EquipmentList = ({
                                 <Table.Td>
                                     <EditableClickText initialValue={row.name}/>
                                     <Text>{row.type}</Text>
+
+                                    <Button 
+                                        variant="subtle" color="red" size="xs" mt="xs" px={5} h={24}
+                                        leftSection={<IconTrash size={14} />}
+                                        onClick={() => handleDeleteItem(row.id)}
+                                        loading={deleteMutation.isPending}
+                                    >
+                                        Delete
+                                    </Button>
                                 </Table.Td>
                                 <Table.Td>{renderCell(row, 'balance')}</Table.Td>
                                 <Table.Td>{renderCell(row, 'fact')}</Table.Td>
