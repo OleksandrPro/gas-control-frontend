@@ -28,3 +28,7 @@ export const createCard = async (payload: any) => {
     const response = await cardsApi.post('', payload);
     return response.data;
 };
+
+export const deleteCard = async (id: number): Promise<void> => {
+    await cardsApi.delete(`/${id}`);
+}

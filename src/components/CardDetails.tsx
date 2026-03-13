@@ -9,7 +9,7 @@ import { EditableDate } from './EditableDate';
 import { EquipmentList } from './EquipmentList';
 import { useDictionaries } from '../hooks/useDictionaries';
 import { usePageNavigation } from '../hooks/usePageNavigation';
-import { updateCard } from '../api/Cards';
+import { updateCard, deleteCard } from '../api/Cards';
 
 interface CardDetailsProps {
     cardData: CardBackend
@@ -40,6 +40,24 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
             // TODO: Add error notification later
         }
     });
+
+    const deleteCardMutation = useMutation({
+        mutationFn: (id: number) => deleteCard(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['cards'] });
+            console.info("Deleted")
+            goToHome(); // Возвращаемся в реестр
+        },
+        onError: () => {
+            console.error("Couldn't delete the card!")
+        }
+    });
+
+    const handleDeleteCard = () => {
+        if (window.confirm('ATTENTION! Are you sure you want to permanently delete this card and ALL its equipment?')) {
+            deleteCardMutation.mutate(cardData.id);
+        }
+    };
 
     const handleCancel = () => {
         setFormData(initialCardData);
@@ -107,7 +125,12 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
                         </Button>
                     </Group>
                 ) : (
-                    <Button variant="default" onClick={() => setIsEditing(true)}>Edit</Button>
+                    <Group>
+                        <Button variant="subtle" color="red" onClick={handleDeleteCard} loading={deleteCardMutation.isPending}>
+                            Delete card
+                        </Button>
+                        <Button variant="default" onClick={() => setIsEditing(true)}>Edit</Button>
+                    </Group>
                 )}
             </Group>
 
