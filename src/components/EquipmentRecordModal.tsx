@@ -228,11 +228,6 @@ export const EquipmentRecordModal = ({ opened, onClose, onSubmit, cardCutType = 
                                             <EquipmentFormFields type={activeType} data={data} dicts={dicts} onChange={(f: string, v: any) => handleFactChange(index, f, v)} />
                                         </div>
                                     ))}
-                                    {canAddMoreFact && (
-                                        <Button variant="light" size="xs" leftSection={<IconPlus size={14} />} onClick={() => setFactDataList([...factDataList, {}])}>
-                                            Add fact record
-                                        </Button>
-                                    )}
                                 </Stack>
                             </Paper>
                         </Grid.Col>
