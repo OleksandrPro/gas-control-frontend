@@ -1,96 +1,25 @@
-import { useState, useEffect } from 'react';
-import { Modal, NumberInput, Select, Button, Text, Stack, TextInput, Group, Paper, Grid, ActionIcon } from '@mantine/core';
-import { IconPlus, IconTrash } from '@tabler/icons-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Modal, Button, Text, Stack, TextInput, Group, Grid } from '@mantine/core';
 import { useDictionaries } from '../../hooks/useDictionaries';
 import { mapToSelectData } from '../../utils';
 import { type EquipmentType, type CutType, EquipmentTypesEnum, CutTypesEnum } from '../../types';
+import { EquipmentColumn, FactColumnList } from '../equipment/Columns';
+import { EquipmentFormFields } from '../equipment/InputForms';
+import { buildEquipmentPayload, type EquipmentPayload } from '../equipment/PayloadBuilder';
 
 interface CreateEquipmentModalProps {
   opened: boolean;
   onClose: () => void;
-  onSubmit: (payload: any) => void;
+  onSubmit: (payload: EquipmentPayload) => void;
   cardCutType?: CutType;
 }
 
-const PipeFields = ({ data, onChange, dicts, hideLabels }: any) => (
-    <Grid>
-        <Grid.Col span={6}>
-            <NumberInput label={!hideLabels ? "Diameter" : undefined} value={data.diameter || ''} onChange={(v) => onChange('diameter', v)} allowDecimal allowedDecimalSeparators={[',', '.']} />
-        </Grid.Col>
-        <Grid.Col span={6}>
-            <NumberInput label={!hideLabels ? "Length" : undefined} value={data.length || ''} onChange={(v) => onChange('length', v)} allowDecimal allowedDecimalSeparators={[',', '.']} step={0.1} />
-        </Grid.Col>
-        <Grid.Col span={6}>
-            <Select label={!hideLabels ? "Material" : undefined} data={dicts.materialsData} value={data.material_id ? String(data.material_id) : null} onChange={(v) => onChange('material_id', v ? Number(v) : null)} searchable />
-        </Grid.Col>
-        <Grid.Col span={6}>
-            <Select label={!hideLabels ? "Placement" : undefined} data={dicts.groundLevelsData} value={data.groung_level_id ? String(data.groung_level_id) : null} onChange={(v) => onChange('groung_level_id', v ? Number(v) : null)} searchable />
-        </Grid.Col>
-    </Grid>
-);
-
-const ValveFields = ({ data, onChange, hideLabels }: any) => (
-    <Grid>
-        <Grid.Col span={6}>
-            <NumberInput label={!hideLabels ? "Diameter" : undefined} value={data.diameter || ''} onChange={(v) => onChange('diameter', v)} allowDecimal allowedDecimalSeparators={[',', '.']} />
-        </Grid.Col>
-        <Grid.Col span={6}>
-            <NumberInput label={!hideLabels ? "Quantity (pcs)" : undefined} value={data.quantity || ''} onChange={(v) => onChange('quantity', v)} min={1} />
-        </Grid.Col>
-        <Grid.Col span={12}>
-            <TextInput label={!hideLabels ? "Model / Number" : undefined} value={data.model_number || ''} onChange={(e) => onChange('model_number', e.currentTarget.value)} />
-        </Grid.Col>
-    </Grid>
-);
-
-const OtherFields = ({ data, onChange, hideLabels }: any) => (
-    <NumberInput label={!hideLabels ? "Quantity (pcs)" : undefined} value={data.quantity || ''} onChange={(v) => onChange('quantity', v)} min={1} />
-);
-
-const EquipmentFormFields = (props: any) => {
-    switch (props.type) {
-        case EquipmentTypesEnum.Pipe: return <PipeFields {...props} />;
-        case EquipmentTypesEnum.Valve: return <ValveFields {...props} />;
-        case EquipmentTypesEnum.Other:
-        default: return <OtherFields {...props} />;
-    }
-};
-
-const EquipmentColumn = ({ title, span, children }: { title: string, span: number, children: React.ReactNode }) => (
-    <Grid.Col span={span}>
-        <Paper bg="gray.0" p="md" radius="md" withBorder h="100%">
-            <Text fw={700} ta="center" c="dimmed" mb="md">{title}</Text>
-            {children}
-        </Paper>
-    </Grid.Col>
-);
-
-const FactColumnList = ({ factDataList, activeType, dicts, onFactChange, onRemoveFact, onAddFact, canAddMoreFact }: any) => (
-    <Stack gap="md">
-        {factDataList.map((data: any, index: number) => (
-            <div key={index} style={{ position: 'relative', borderBottom: index < factDataList.length - 1 ? '1px dashed #ccc' : 'none', paddingBottom: index < factDataList.length - 1 ? '10px' : '0' }}>
-                {index > 0 && (
-                    <ActionIcon color="red" variant="subtle" onClick={() => onRemoveFact(index)} style={{ position: 'absolute', top: -5, right: -5, zIndex: 10 }}>
-                        <IconTrash size={16} />
-                    </ActionIcon>
-                )}
-                <EquipmentFormFields type={activeType} data={data} dicts={dicts} hideLabels={index > 0} onChange={(f: string, v: any) => onFactChange(index, f, v)} />
-            </div>
-        ))}
-        {canAddMoreFact && (
-            <Button variant="light" size="xs" leftSection={<IconPlus size={14} />} onClick={onAddFact}>
-                Add fact record
-            </Button>
-        )}
-    </Stack>
-);
-
 export const CreateEquipmentModal = ({ opened, onClose, onSubmit, cardCutType = CutTypesEnum.None }: CreateEquipmentModalProps) => {
     const { materials, groundLevels } = useDictionaries();
-    const dicts = {
+    const dicts = useMemo(() => ({
         materialsData: mapToSelectData(materials),
         groundLevelsData: mapToSelectData(groundLevels) 
-    };
+    }), [materials, groundLevels]);
     
     const defaultActiveType = EquipmentTypesEnum.Pipe
     const [activeType, setActiveType] = useState<EquipmentType>(defaultActiveType);    
@@ -129,45 +58,14 @@ export const CreateEquipmentModal = ({ opened, onClose, onSubmit, cardCutType = 
             return;
         }
 
-        const data_entries: any[] = [];
-
-        const formatEntry = (colType: string, data: any) => {
-            const base = {
-                column_type: colType,
-                type: activeType === 'pipe' ? 'pipe_data' : activeType === 'valve' ? 'valve_data' : 'generic_data'
-            };
-            
-            if (activeType === 'pipe') {
-                return { ...base, ...data, diameter: Number(data.diameter || 0), length: Number(data.length || 0) };
-            } else if (activeType === 'valve') {
-                return { ...base, ...data, diameter: Number(data.diameter || 0), quantity: Number(data.quantity || 1) };
-            }
-            return { ...base, ...data, quantity: Number(data.quantity || 1) };
-        };
-
-        if (cardCutType === CutTypesEnum.None) {
-            if (Object.keys(factDataList[0]).length > 0) {
-                data_entries.push(formatEntry('balance', factDataList[0]));
-                factDataList.forEach(item => {
-                    if (Object.keys(item).length > 0) data_entries.push(formatEntry('fact', item));
-                });
-            }
-        } else if (cardCutType === CutTypesEnum.Full) {
-            data_entries.push(formatEntry('balance', balanceData));
-            data_entries.push(formatEntry('cut', cutData));
-        } else if (cardCutType === CutTypesEnum.Partial) {
-            data_entries.push(formatEntry('balance', balanceData));
-            factDataList.forEach(item => {
-                if (Object.keys(item).length > 0) data_entries.push(formatEntry('fact', item));
-            });
-            data_entries.push(formatEntry('cut', cutData));
-        }
-
-        const payload = {
-            item_type: activeType,
-            description: description.trim(),
-            data_entries: data_entries
-        };
+        const payload = buildEquipmentPayload(
+            description,
+            activeType,
+            cardCutType,
+            balanceData,
+            factDataList,
+            cutData
+        );
 
         onSubmit(payload);
     };
@@ -186,20 +84,20 @@ export const CreateEquipmentModal = ({ opened, onClose, onSubmit, cardCutType = 
                     <Text size="sm" fw={500} mb={5}>EQUIPMENT TYPE</Text>
                     <Group gap="xs">
                         <Button 
-                            variant={activeType === 'pipe' ? 'filled' : 'default'}
-                            onClick={() => setActiveType('pipe')}
+                            variant={activeType === EquipmentTypesEnum.Pipe ? 'filled' : 'default'}
+                            onClick={() => setActiveType(EquipmentTypesEnum.Pipe)}
                         >
                             Pipe
                         </Button>
                         <Button 
-                            variant={activeType === 'valve' ? 'filled' : 'default'}
-                            onClick={() => setActiveType('valve')}
+                            variant={activeType === EquipmentTypesEnum.Valve ? 'filled' : 'default'}
+                            onClick={() => setActiveType(EquipmentTypesEnum.Valve)}
                         >
                             Valve
                         </Button>
                         <Button 
-                            variant={activeType === 'other' ? 'filled' : 'default'}
-                            onClick={() => setActiveType('other')}
+                            variant={activeType === EquipmentTypesEnum.Other ? 'filled' : 'default'}
+                            onClick={() => setActiveType(EquipmentTypesEnum.Other)}
                         >
                             Other (GC and etc.)
                         </Button>
