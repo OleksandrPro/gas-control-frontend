@@ -194,17 +194,20 @@ export const EquipmentRecordModal = ({ opened, onClose, onSubmit, cardCutType = 
                     <Text size="sm" fw={500} mb={5}>EQUIPMENT TYPE</Text>
                     <Group gap="xs">
                         <Button 
-                            variant={activeType === 'pipe' ? 'filled' : 'default'} 
+                            variant={activeType === 'pipe' ? 'filled' : 'default'}
+                            onClick={() => setActiveType('pipe')}
                         >
                             Pipe
                         </Button>
                         <Button 
-                            variant={activeType === 'valve' ? 'filled' : 'default'} 
+                            variant={activeType === 'valve' ? 'filled' : 'default'}
+                            onClick={() => setActiveType('valve')}
                         >
                             Valve
                         </Button>
                         <Button 
-                            variant={activeType === 'other' ? 'filled' : 'default'} 
+                            variant={activeType === 'other' ? 'filled' : 'default'}
+                            onClick={() => setActiveType('other')}
                         >
                             Other (GC and etc.)
                         </Button>
