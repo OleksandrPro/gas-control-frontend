@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { Table, Group, Title, Button, Text, Stack, UnstyledButton, Center, Loader } from '@mantine/core';
-import { type EquipmentType, type ColumnType } from '../types';
+import { type EquipmentType, type ColumnType, type CutType, CutTypesEnum } from '../types';
 import { EquipmentRecordModal } from './EquipmentRecordModal';
 import { EditEquipmentModal } from './EditEquipmentModal';
 import { EditableClickText } from './EditableClickText';
@@ -85,6 +85,7 @@ const EquipmentCell = ({ type, items }: { type: EquipmentType, items: any[] }) =
 
 interface EquipmentListProps {
     cardId: number;
+    cutType?: CutType;
     isEditing?: boolean;
     balanceTotal?: string | number;
     factTotal?: string | number;
@@ -94,6 +95,7 @@ interface EquipmentListProps {
 
 export const EquipmentList = ({ 
     cardId,
+    cutType = CutTypesEnum.None,
     isEditing = false, 
     balanceTotal = '', 
     factTotal = '', 
@@ -327,7 +329,7 @@ export const EquipmentList = ({
                 </Table.Tbody>
             </Table>
 
-            <EquipmentRecordModal opened={modalOpened} onClose={() => setModalOpened(false)} onSubmit={handleAddEquipment} />
+            <EquipmentRecordModal opened={modalOpened} onClose={() => setModalOpened(false)} onSubmit={handleAddEquipment} cardCutType={cutType} />
             {editingContext && (
                 <EditEquipmentModal
                     opened={editModalOpened}

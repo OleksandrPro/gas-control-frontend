@@ -10,6 +10,7 @@ import { EquipmentList } from './EquipmentList';
 import { useDictionaries } from '../hooks/useDictionaries';
 import { usePageNavigation } from '../hooks/usePageNavigation';
 import { updateCard, deleteCard } from '../api/Cards';
+import { determineCutMode } from '../utils';
 
 interface CardDetailsProps {
     cardData: CardBackend
@@ -46,7 +47,7 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['cards'] });
             console.info("Deleted")
-            goToHome(); // Возвращаемся в реестр
+            goToHome();
         },
         onError: () => {
             console.error("Couldn't delete the card!")
@@ -111,6 +112,9 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     };
+
+    const currentCutTypeObj = cuts?.find(c => c.id === formData.cut_type_id);
+    const cutType = determineCutMode(currentCutTypeObj?.value);
 
     return (
         <Stack>
@@ -246,6 +250,7 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
 
             <EquipmentList 
                 cardId={Number(id)}
+                cutType={cutType} 
                 isEditing={isEditing}
                 balanceTotal={formData.total_length_balance?.toString()}
                 factTotal={formData.total_length_fact?.toString()}

@@ -1,164 +1,175 @@
 import { useState, useEffect } from 'react';
-import { Modal, NumberInput, Select, Button, SimpleGrid, Text, Stack, TextInput, Group, Checkbox, Paper } from '@mantine/core';
-import { IconInfoCircle } from '@tabler/icons-react';
+import { Modal, NumberInput, Select, Button, Text, Stack, TextInput, Group, Paper, Grid, ActionIcon } from '@mantine/core';
+import { IconPlus, IconTrash } from '@tabler/icons-react';
 import { useDictionaries } from '../hooks/useDictionaries';
 import { mapToSelectData } from '../utils';
-
-interface FormParamsProps {
-    formData: any;
-    onChange: (key: string, value: any) => void;
-}
-
-const PipeParams = ({ formData, onChange }: FormParamsProps) => {
-  const { materials, groundLevels } = useDictionaries();
-
-    const materialOptions = mapToSelectData(materials);
-    const placementOptions = mapToSelectData(groundLevels);
-
-    return (
-        <SimpleGrid cols={2}>
-            <NumberInput 
-                label="Diameter" 
-                placeholder="e.g. 159" 
-                value={formData.diameter || ''}
-                onChange={(val) => onChange('diameter', val)}
-            />
-            <NumberInput 
-                label="Length" 
-                placeholder="e.g. 47.0" 
-                value={formData.length || ''}
-                allowDecimal={true}
-                allowedDecimalSeparators={[',', '.']}
-                step={0.1}
-                onChange={(val) => onChange('length', val)}
-            />
-            <Select 
-                label="Material" 
-                data={materialOptions} 
-                value={formData.material_id ? String(formData.material_id) : null}
-                onChange={(val) => onChange('material_id', val ? Number(val) : null)}
-            />
-            <Select 
-                label="Placement" 
-                data={placementOptions} 
-                value={formData.groung_level_id ? String(formData.groung_level_id) : null}
-                onChange={(val) => onChange('groung_level_id', val ? Number(val) : null)}
-            />
-        </SimpleGrid>
-    );
-};
-
-const ValveParams = ({ formData, onChange }: FormParamsProps) => {
-    return (
-        <Stack>
-            <SimpleGrid cols={2}>
-                <NumberInput 
-                    label="Diameter" 
-                    placeholder="e.g. 100" 
-                    value={formData.diameter || ''}
-                    onChange={(val) => onChange('diameter', val)}
-                />
-                <NumberInput 
-                    label="Quantity (pcs)" 
-                    placeholder="e.g. 1" 
-                    value={formData.quantity || ''}
-                    onChange={(val) => onChange('quantity', val)}
-                />
-            </SimpleGrid>
-            <TextInput 
-                label="Model / Number" 
-                placeholder="e.g. Z-100" 
-                value={formData.model_number || ''}
-                onChange={(e) => onChange('model_number', e.currentTarget.value)}
-            />
-        </Stack>
-    );
-};
-
-const OtherParams = ({ formData, onChange }: FormParamsProps) => {
-    return (
-        <NumberInput 
-            label="Quantity (pcs)" 
-            placeholder="e.g. 1" 
-            value={formData.quantity || ''}
-            onChange={(val) => onChange('quantity', val)}
-        />
-    );
-};
+import { type EquipmentType, type CutType, CutTypesEnum } from '../types';
 
 interface EquipmentRecordModalProps {
   opened: boolean;
   onClose: () => void;
   onSubmit: (payload: any) => void;
+  cardCutType?: CutType;
 }
 
-type EquipmentType = 'pipe' | 'valve' | 'other';
+const EquipmentFormFields = ({ type, data, onChange, dicts, hideLabels = false }: any) => {
+    const { materialsData, groundLevelsData } = dicts;
 
-export const EquipmentRecordModal = ({ opened, onClose, onSubmit }: EquipmentRecordModalProps) => {
-    const [activeType, setActiveType] = useState<EquipmentType>('pipe');
+    if (type === 'pipe') {
+        return (
+            <Grid>
+                <Grid.Col span={6}>
+                    <NumberInput 
+                        label={!hideLabels ? "Диаметр" : undefined}
+                        value={data.diameter || ''} 
+                        onChange={(v) => onChange('diameter', v)} 
+                        allowDecimal allowedDecimalSeparators={[',', '.']} 
+                    />
+                </Grid.Col>
+                <Grid.Col span={6}>
+                    <NumberInput 
+                        label={!hideLabels ? "Длина" : undefined}
+                        value={data.length || ''} 
+                        onChange={(v) => onChange('length', v)} 
+                        allowDecimal allowedDecimalSeparators={[',', '.']} step={0.1} 
+                    />
+                </Grid.Col>
+                <Grid.Col span={6}>
+                    <Select 
+                        label={!hideLabels ? "Материал" : undefined}
+                        data={materialsData} 
+                        value={data.material_id ? String(data.material_id) : null} 
+                        onChange={(v) => onChange('material_id', v ? Number(v) : null)} searchable 
+                    />
+                </Grid.Col>
+                <Grid.Col span={6}>
+                    <Select 
+                        label={!hideLabels ? "Размещение" : undefined}
+                        data={groundLevelsData} 
+                        value={data.groung_level_id ? String(data.groung_level_id) : null} 
+                        onChange={(v) => onChange('groung_level_id', v ? Number(v) : null)} searchable 
+                    />
+                </Grid.Col>
+            </Grid>
+        );
+    }
+
+    if (type === 'valve') {
+        return (
+            <Grid>
+                <Grid.Col span={6}>
+                    <NumberInput 
+                        label={!hideLabels ? "Диаметр" : undefined}
+                        value={data.diameter || ''} 
+                        onChange={(v) => onChange('diameter', v)} 
+                        allowDecimal allowedDecimalSeparators={[',', '.']} 
+                    />
+                </Grid.Col>
+                <Grid.Col span={6}>
+                    <NumberInput 
+                        label={!hideLabels ? "Количество (шт)" : undefined}
+                        value={data.quantity || ''} 
+                        onChange={(v) => onChange('quantity', v)} 
+                        min={1} 
+                    />
+                </Grid.Col>
+                <Grid.Col span={12}>
+                    <TextInput 
+                        label={!hideLabels ? "Модель / Номер" : undefined}
+                        value={data.model_number || ''} 
+                        onChange={(e) => onChange('model_number', e.currentTarget.value)} 
+                    />
+                </Grid.Col>
+            </Grid>
+        );
+    }
+
+    return (
+        <NumberInput 
+            label={!hideLabels ? "Количество (шт)" : undefined}
+            value={data.quantity || ''} 
+            onChange={(v) => onChange('quantity', v)} 
+            min={1} 
+        />
+    );
+};
+
+export const EquipmentRecordModal = ({ opened, onClose, onSubmit, cardCutType = CutTypesEnum.None }: EquipmentRecordModalProps) => {
+    const { materials, groundLevels } = useDictionaries();
+    const dicts = {
+        materialsData: mapToSelectData(materials),
+        groundLevelsData: mapToSelectData(groundLevels) 
+    };
     
+    const [activeType, setActiveType] = useState<EquipmentType>('pipe');    
     const [description, setDescription] = useState('');
-    const [formData, setFormData] = useState<Record<string, any>>({});
-    const [columns, setColumns] = useState({
-        balance: true,
-        fact: true,
-        cut: false
-    });
+    
+    const [balanceData, setBalanceData] = useState<any>({});
+    const [factDataList, setFactDataList] = useState<any[]>([{}]);
+    const [cutData, setCutData] = useState<any>({});
 
     useEffect(() => {
         if (opened) {
             setDescription('');
-            setFormData({});
-            setColumns({ balance: true, fact: true, cut: false });
             setActiveType('pipe');
+            setBalanceData({});
+            setFactDataList([{}]);
+            setCutData({});
         }
     }, [opened]);
 
-    const handleParamChange = (key: string, value: any) => {
-        setFormData(prev => ({ ...prev, [key]: value }));
+    const handleFactChange = (index: number, field: string, value: any) => {
+        const newList = [...factDataList];
+        newList[index] = { ...newList[index], [field]: value };
+        setFactDataList(newList);
     };
+
+    const removeFactItem = (index: number) => {
+        setFactDataList(factDataList.filter((_, i) => i !== index));
+    };
+
+    const lastFact = factDataList[factDataList.length - 1];
+    const canAddMoreFact = lastFact && Object.values(lastFact).some(v => v !== '' && v !== null && v !== undefined);
 
     const handleSubmit = () => {
         if (!description.trim()) {
-            alert("Fill the field NAME (DESCRIPTION)");
+            alert("Пожалуйста, заполните наименование.");
             return;
         }
 
-        const selectedColumns = [];
-        if (columns.balance) selectedColumns.push("balance");
-        if (columns.fact) selectedColumns.push("fact");
-        if (columns.cut) selectedColumns.push("cut");
+        const data_entries: any[] = [];
 
-        if (selectedColumns.length === 0) {
-            alert("Choose at lest 1 column (Balance, By fact, In cut)");
-            return;
-        }
-
-        const data_entries = selectedColumns.map(colType => {
-            if (activeType === 'pipe') {
-                return {
-                    column_type: colType,
-                    type: "pipe_data",
-                    diameter: Number(formData.diameter || 0),
-                    length: Number(formData.length || 0),
-                    material_id: formData.material_id || null,
-                    groung_level_id: formData.groung_level_id || null,
-                };
-            } else if (activeType === 'valve') {
-                return {
-                    column_type: colType,
-                    type: "valve_data",
-                    diameter: Number(formData.diameter || 0),
-                    quantity: Number(formData.quantity || 1),
-                };
-            }
-            
-            return {
+        const formatEntry = (colType: string, data: any) => {
+            const base = {
                 column_type: colType,
-                type: "generic_data",
-                quantity: Number(formData.quantity || 1),
+                type: activeType === 'pipe' ? 'pipe_data' : activeType === 'valve' ? 'valve_data' : 'generic_data'
             };
-        });
+            
+            if (activeType === 'pipe') {
+                return { ...base, ...data, diameter: Number(data.diameter || 0), length: Number(data.length || 0) };
+            } else if (activeType === 'valve') {
+                return { ...base, ...data, diameter: Number(data.diameter || 0), quantity: Number(data.quantity || 1) };
+            }
+            return { ...base, ...data, quantity: Number(data.quantity || 1) };
+        };
+
+        if (cardCutType === CutTypesEnum.None) {
+            if (Object.keys(factDataList[0]).length > 0) {
+                data_entries.push(formatEntry('balance', factDataList[0]));
+                factDataList.forEach(item => {
+                    if (Object.keys(item).length > 0) data_entries.push(formatEntry('fact', item));
+                });
+            }
+        } else if (cardCutType === CutTypesEnum.Full) {
+            data_entries.push(formatEntry('balance', balanceData));
+            data_entries.push(formatEntry('cut', cutData));
+        } else if (cardCutType === CutTypesEnum.Partial) {
+            data_entries.push(formatEntry('balance', balanceData));
+            factDataList.forEach(item => {
+                if (Object.keys(item).length > 0) data_entries.push(formatEntry('fact', item));
+            });
+            data_entries.push(formatEntry('cut', cutData));
+        }
 
         const payload = {
             item_type: activeType,
@@ -167,51 +178,11 @@ export const EquipmentRecordModal = ({ opened, onClose, onSubmit }: EquipmentRec
         };
 
         onSubmit(payload);
-        onClose();
-    };
-
-    const renderParams = () => {
-        switch (activeType) {
-            case 'pipe': return <PipeParams formData={formData} onChange={handleParamChange} />;
-            case 'valve': return <ValveParams formData={formData} onChange={handleParamChange} />;
-            case 'other': return <OtherParams formData={formData} onChange={handleParamChange} />;
-            default: return null;
-        }
-    };
-
-    const typeLabels: Record<EquipmentType, string> = {
-        pipe: 'Pipe',
-        valve: 'Valve',
-        other: 'Other (GC etc.)'
     };
 
     return (
         <Modal opened={opened} onClose={onClose} title="Add equipment" size="lg">
             <Stack>
-                <div>
-                    <Text size="sm" fw={500} mb={5}>EQUIPMENT TYPE</Text>
-                    <Group gap="xs">
-                        <Button 
-                            variant={activeType === 'pipe' ? 'filled' : 'default'} 
-                            onClick={() => { setActiveType('pipe'); setFormData({}); }}
-                        >
-                            Pipe
-                        </Button>
-                        <Button 
-                            variant={activeType === 'valve' ? 'filled' : 'default'} 
-                            onClick={() => { setActiveType('valve'); setFormData({}); }}
-                        >
-                            Valve
-                        </Button>
-                        <Button 
-                            variant={activeType === 'other' ? 'filled' : 'default'} 
-                            onClick={() => { setActiveType('other'); setFormData({}); }}
-                        >
-                            Other (GC and etc.)
-                        </Button>
-                    </Group>
-                </div>
-
                 <TextInput 
                     label="NAME (DESCRIPTION)" 
                     placeholder="e.g. Steel pipe d159" 
@@ -219,38 +190,112 @@ export const EquipmentRecordModal = ({ opened, onClose, onSubmit }: EquipmentRec
                     onChange={(e) => setDescription(e.currentTarget.value)}
                     required
                 />
+                <div>
+                    <Text size="sm" fw={500} mb={5}>EQUIPMENT TYPE</Text>
+                    <Group gap="xs">
+                        <Button 
+                            variant={activeType === 'pipe' ? 'filled' : 'default'} 
+                        >
+                            Pipe
+                        </Button>
+                        <Button 
+                            variant={activeType === 'valve' ? 'filled' : 'default'} 
+                        >
+                            Valve
+                        </Button>
+                        <Button 
+                            variant={activeType === 'other' ? 'filled' : 'default'} 
+                        >
+                            Other (GC and etc.)
+                        </Button>
+                    </Group>
+                </div>
 
-                <Paper bg="gray.0" p="md" radius="md" withBorder>
-                    <Stack>
-                        <Group gap="xs">
-                            <IconInfoCircle size={20} color="var(--mantine-color-blue-filled)" />
-                            <Text fw={600}>Parameters for: {typeLabels[activeType]}</Text>
-                        </Group>
-                        
-                        {renderParams()}
+                <Grid mt="sm">
+                    {/* No cut (1 column) */}
+                    {cardCutType === CutTypesEnum.None && (
+                        <Grid.Col span={12}>
+                            <Paper bg="gray.0" p="md" radius="md" withBorder>
+                                <Text fw={700} ta="center" c="dimmed" mb="md">БАЛАНС + ПО-ФАКТУ</Text>
+                                <Stack gap="md">
+                                    {factDataList.map((data, index) => (
+                                        <div key={index} style={{ position: 'relative', borderBottom: index < factDataList.length - 1 ? '1px dashed #ccc' : 'none', paddingBottom: index < factDataList.length - 1 ? '15px' : '0' }}>
+                                            {index > 0 && (
+                                                <ActionIcon color="red" variant="subtle" onClick={() => removeFactItem(index)} style={{ position: 'absolute', top: 0, right: 0, zIndex: 10 }}>
+                                                    <IconTrash size={16} />
+                                                </ActionIcon>
+                                            )}
+                                            <EquipmentFormFields type={activeType} data={data} dicts={dicts} onChange={(f: string, v: any) => handleFactChange(index, f, v)} />
+                                        </div>
+                                    ))}
+                                    {canAddMoreFact && (
+                                        <Button variant="light" size="xs" leftSection={<IconPlus size={14} />} onClick={() => setFactDataList([...factDataList, {}])}>
+                                            Добавить еще запись (По-факту)
+                                        </Button>
+                                    )}
+                                </Stack>
+                            </Paper>
+                        </Grid.Col>
+                    )}
 
-                        <div>
-                            <Text size="sm" fw={500} mt="sm" c="dimmed">ADD TO COLUMN</Text>
-                            <Group mt={5}>
-                                <Checkbox 
-                                    label="Balance" 
-                                    checked={columns.balance} 
-                                    onChange={(e) => setColumns({...columns, balance: e.currentTarget.checked})} 
-                                />
-                                <Checkbox 
-                                    label="By fact" 
-                                    checked={columns.fact} 
-                                    onChange={(e) => setColumns({...columns, fact: e.currentTarget.checked})} 
-                                />
-                                <Checkbox 
-                                    label="In cut" 
-                                    checked={columns.cut} 
-                                    onChange={(e) => setColumns({...columns, cut: e.currentTarget.checked})} 
-                                />
-                            </Group>
-                        </div>
-                    </Stack>
-                </Paper>
+                    {/* Full (2 columns) */}
+                    {cardCutType === CutTypesEnum.Full && (
+                        <>
+                            <Grid.Col span={6}>
+                                <Paper bg="gray.0" p="md" radius="md" withBorder h="100%">
+                                    <Text fw={700} ta="center" c="dimmed" mb="md">БАЛАНС</Text>
+                                    <EquipmentFormFields type={activeType} data={balanceData} dicts={dicts} onChange={(f: string, v: any) => setBalanceData({...balanceData, [f]: v})} />
+                                </Paper>
+                            </Grid.Col>
+                            <Grid.Col span={6}>
+                                <Paper bg="gray.0" p="md" radius="md" withBorder h="100%">
+                                    <Text fw={700} ta="center" c="dimmed" mb="md">В ОТРЕЗКЕ</Text>
+                                    <EquipmentFormFields type={activeType} data={cutData} dicts={dicts} onChange={(f: string, v: any) => setCutData({...cutData, [f]: v})} />
+                                </Paper>
+                            </Grid.Col>
+                        </>
+                    )}
+
+                    {/* Partial (3 columns) */}
+                    {cardCutType === CutTypesEnum.Partial && (
+                        <>
+                            <Grid.Col span={4}>
+                                <Paper bg="gray.0" p="md" radius="md" withBorder h="100%">
+                                    <Text fw={700} ta="center" c="dimmed" mb="md">БАЛАНС</Text>
+                                    <EquipmentFormFields type={activeType} data={balanceData} dicts={dicts} onChange={(f: string, v: any) => setBalanceData({...balanceData, [f]: v})} />
+                                </Paper>
+                            </Grid.Col>
+                            <Grid.Col span={4}>
+                                <Paper bg="gray.0" p="md" radius="md" withBorder h="100%">
+                                    <Text fw={700} ta="center" c="dimmed" mb="md">ПО-ФАКТУ</Text>
+                                    <Stack gap="md">
+                                        {factDataList.map((data, index) => (
+                                            <div key={index} style={{ position: 'relative', borderBottom: index < factDataList.length - 1 ? '1px dashed #ccc' : 'none', paddingBottom: index < factDataList.length - 1 ? '10px' : '0' }}>
+                                                {index > 0 && (
+                                                    <ActionIcon color="red" variant="subtle" onClick={() => removeFactItem(index)} style={{ position: 'absolute', top: -5, right: -5, zIndex: 10 }}>
+                                                        <IconTrash size={14} />
+                                                    </ActionIcon>
+                                                )}
+                                                <EquipmentFormFields type={activeType} data={data} dicts={dicts} hideLabels={index > 0} onChange={(f: string, v: any) => handleFactChange(index, f, v)} />
+                                            </div>
+                                        ))}
+                                        {canAddMoreFact && (
+                                            <Button variant="light" size="xs" leftSection={<IconPlus size={14} />} onClick={() => setFactDataList([...factDataList, {}])}>
+                                                Добавить
+                                            </Button>
+                                        )}
+                                    </Stack>
+                                </Paper>
+                            </Grid.Col>
+                            <Grid.Col span={4}>
+                                <Paper bg="gray.0" p="md" radius="md" withBorder h="100%">
+                                    <Text fw={700} ta="center" c="dimmed" mb="md">В ОТРЕЗКЕ</Text>
+                                    <EquipmentFormFields type={activeType} data={cutData} dicts={dicts} onChange={(f: string, v: any) => setCutData({...cutData, [f]: v})} />
+                                </Paper>
+                            </Grid.Col>
+                        </>
+                    )}
+                </Grid>
 
                 <Button fullWidth mt="md" size="md" onClick={handleSubmit}>
                     Add equipment

@@ -71,3 +71,11 @@ export type PaginatedResponse<Type> = {
     total_pages: number,
     size: number,
 }
+
+export const CutTypesEnum = {
+  None: "none",
+  Full: "full",
+  Partial: "partial",
+} as const satisfies Record<string, string>;
+
+export type CutType = (typeof CutTypesEnum)[keyof typeof CutTypesEnum];
