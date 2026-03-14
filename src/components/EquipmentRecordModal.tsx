@@ -20,7 +20,7 @@ const EquipmentFormFields = ({ type, data, onChange, dicts, hideLabels = false }
             <Grid>
                 <Grid.Col span={6}>
                     <NumberInput 
-                        label={!hideLabels ? "Диаметр" : undefined}
+                        label={!hideLabels ? "Diameter" : undefined}
                         value={data.diameter || ''} 
                         onChange={(v) => onChange('diameter', v)} 
                         allowDecimal allowedDecimalSeparators={[',', '.']} 
@@ -28,7 +28,7 @@ const EquipmentFormFields = ({ type, data, onChange, dicts, hideLabels = false }
                 </Grid.Col>
                 <Grid.Col span={6}>
                     <NumberInput 
-                        label={!hideLabels ? "Длина" : undefined}
+                        label={!hideLabels ? "Length" : undefined}
                         value={data.length || ''} 
                         onChange={(v) => onChange('length', v)} 
                         allowDecimal allowedDecimalSeparators={[',', '.']} step={0.1} 
@@ -36,7 +36,7 @@ const EquipmentFormFields = ({ type, data, onChange, dicts, hideLabels = false }
                 </Grid.Col>
                 <Grid.Col span={6}>
                     <Select 
-                        label={!hideLabels ? "Материал" : undefined}
+                        label={!hideLabels ? "Material" : undefined}
                         data={materialsData} 
                         value={data.material_id ? String(data.material_id) : null} 
                         onChange={(v) => onChange('material_id', v ? Number(v) : null)} searchable 
@@ -44,7 +44,7 @@ const EquipmentFormFields = ({ type, data, onChange, dicts, hideLabels = false }
                 </Grid.Col>
                 <Grid.Col span={6}>
                     <Select 
-                        label={!hideLabels ? "Размещение" : undefined}
+                        label={!hideLabels ? "Placement" : undefined}
                         data={groundLevelsData} 
                         value={data.groung_level_id ? String(data.groung_level_id) : null} 
                         onChange={(v) => onChange('groung_level_id', v ? Number(v) : null)} searchable 
@@ -59,7 +59,7 @@ const EquipmentFormFields = ({ type, data, onChange, dicts, hideLabels = false }
             <Grid>
                 <Grid.Col span={6}>
                     <NumberInput 
-                        label={!hideLabels ? "Диаметр" : undefined}
+                        label={!hideLabels ? "Diameter" : undefined}
                         value={data.diameter || ''} 
                         onChange={(v) => onChange('diameter', v)} 
                         allowDecimal allowedDecimalSeparators={[',', '.']} 
@@ -67,7 +67,7 @@ const EquipmentFormFields = ({ type, data, onChange, dicts, hideLabels = false }
                 </Grid.Col>
                 <Grid.Col span={6}>
                     <NumberInput 
-                        label={!hideLabels ? "Количество (шт)" : undefined}
+                        label={!hideLabels ? "Quantity (pcs)" : undefined}
                         value={data.quantity || ''} 
                         onChange={(v) => onChange('quantity', v)} 
                         min={1} 
@@ -75,7 +75,7 @@ const EquipmentFormFields = ({ type, data, onChange, dicts, hideLabels = false }
                 </Grid.Col>
                 <Grid.Col span={12}>
                     <TextInput 
-                        label={!hideLabels ? "Модель / Номер" : undefined}
+                        label={!hideLabels ? "Model / Number" : undefined}
                         value={data.model_number || ''} 
                         onChange={(e) => onChange('model_number', e.currentTarget.value)} 
                     />
@@ -86,7 +86,7 @@ const EquipmentFormFields = ({ type, data, onChange, dicts, hideLabels = false }
 
     return (
         <NumberInput 
-            label={!hideLabels ? "Количество (шт)" : undefined}
+            label={!hideLabels ? "Quantity (pcs)" : undefined}
             value={data.quantity || ''} 
             onChange={(v) => onChange('quantity', v)} 
             min={1} 
@@ -133,7 +133,7 @@ export const EquipmentRecordModal = ({ opened, onClose, onSubmit, cardCutType = 
 
     const handleSubmit = () => {
         if (!description.trim()) {
-            alert("Пожалуйста, заполните наименование.");
+            alert("Enter the description.");
             return;
         }
 
@@ -216,7 +216,7 @@ export const EquipmentRecordModal = ({ opened, onClose, onSubmit, cardCutType = 
                     {cardCutType === CutTypesEnum.None && (
                         <Grid.Col span={12}>
                             <Paper bg="gray.0" p="md" radius="md" withBorder>
-                                <Text fw={700} ta="center" c="dimmed" mb="md">БАЛАНС + ПО-ФАКТУ</Text>
+                                <Text fw={700} ta="center" c="dimmed" mb="md">BALANCE + FACT</Text>
                                 <Stack gap="md">
                                     {factDataList.map((data, index) => (
                                         <div key={index} style={{ position: 'relative', borderBottom: index < factDataList.length - 1 ? '1px dashed #ccc' : 'none', paddingBottom: index < factDataList.length - 1 ? '15px' : '0' }}>
@@ -230,7 +230,7 @@ export const EquipmentRecordModal = ({ opened, onClose, onSubmit, cardCutType = 
                                     ))}
                                     {canAddMoreFact && (
                                         <Button variant="light" size="xs" leftSection={<IconPlus size={14} />} onClick={() => setFactDataList([...factDataList, {}])}>
-                                            Добавить еще запись (По-факту)
+                                            Add fact record
                                         </Button>
                                     )}
                                 </Stack>
@@ -243,13 +243,13 @@ export const EquipmentRecordModal = ({ opened, onClose, onSubmit, cardCutType = 
                         <>
                             <Grid.Col span={6}>
                                 <Paper bg="gray.0" p="md" radius="md" withBorder h="100%">
-                                    <Text fw={700} ta="center" c="dimmed" mb="md">БАЛАНС</Text>
+                                    <Text fw={700} ta="center" c="dimmed" mb="md">BALANCE</Text>
                                     <EquipmentFormFields type={activeType} data={balanceData} dicts={dicts} onChange={(f: string, v: any) => setBalanceData({...balanceData, [f]: v})} />
                                 </Paper>
                             </Grid.Col>
                             <Grid.Col span={6}>
                                 <Paper bg="gray.0" p="md" radius="md" withBorder h="100%">
-                                    <Text fw={700} ta="center" c="dimmed" mb="md">В ОТРЕЗКЕ</Text>
+                                    <Text fw={700} ta="center" c="dimmed" mb="md">CUT</Text>
                                     <EquipmentFormFields type={activeType} data={cutData} dicts={dicts} onChange={(f: string, v: any) => setCutData({...cutData, [f]: v})} />
                                 </Paper>
                             </Grid.Col>
@@ -261,13 +261,13 @@ export const EquipmentRecordModal = ({ opened, onClose, onSubmit, cardCutType = 
                         <>
                             <Grid.Col span={4}>
                                 <Paper bg="gray.0" p="md" radius="md" withBorder h="100%">
-                                    <Text fw={700} ta="center" c="dimmed" mb="md">БАЛАНС</Text>
+                                    <Text fw={700} ta="center" c="dimmed" mb="md">BALANCE</Text>
                                     <EquipmentFormFields type={activeType} data={balanceData} dicts={dicts} onChange={(f: string, v: any) => setBalanceData({...balanceData, [f]: v})} />
                                 </Paper>
                             </Grid.Col>
                             <Grid.Col span={4}>
                                 <Paper bg="gray.0" p="md" radius="md" withBorder h="100%">
-                                    <Text fw={700} ta="center" c="dimmed" mb="md">ПО-ФАКТУ</Text>
+                                    <Text fw={700} ta="center" c="dimmed" mb="md">FACT</Text>
                                     <Stack gap="md">
                                         {factDataList.map((data, index) => (
                                             <div key={index} style={{ position: 'relative', borderBottom: index < factDataList.length - 1 ? '1px dashed #ccc' : 'none', paddingBottom: index < factDataList.length - 1 ? '10px' : '0' }}>
@@ -281,7 +281,7 @@ export const EquipmentRecordModal = ({ opened, onClose, onSubmit, cardCutType = 
                                         ))}
                                         {canAddMoreFact && (
                                             <Button variant="light" size="xs" leftSection={<IconPlus size={14} />} onClick={() => setFactDataList([...factDataList, {}])}>
-                                                Добавить
+                                                Add fact record
                                             </Button>
                                         )}
                                     </Stack>
@@ -289,7 +289,7 @@ export const EquipmentRecordModal = ({ opened, onClose, onSubmit, cardCutType = 
                             </Grid.Col>
                             <Grid.Col span={4}>
                                 <Paper bg="gray.0" p="md" radius="md" withBorder h="100%">
-                                    <Text fw={700} ta="center" c="dimmed" mb="md">В ОТРЕЗКЕ</Text>
+                                    <Text fw={700} ta="center" c="dimmed" mb="md">CUT</Text>
                                     <EquipmentFormFields type={activeType} data={cutData} dicts={dicts} onChange={(f: string, v: any) => setCutData({...cutData, [f]: v})} />
                                 </Paper>
                             </Grid.Col>
