@@ -5,7 +5,7 @@ import { useDictionaries } from '../../hooks/useDictionaries';
 import { mapToSelectData } from '../../utils';
 import { type EquipmentType, type CutType, CutTypesEnum } from '../../types';
 
-interface EquipmentRecordModalProps {
+interface CreateEquipmentModalProps {
   opened: boolean;
   onClose: () => void;
   onSubmit: (payload: any) => void;
@@ -94,7 +94,7 @@ const EquipmentFormFields = ({ type, data, onChange, dicts, hideLabels = false }
     );
 };
 
-export const EquipmentRecordModal = ({ opened, onClose, onSubmit, cardCutType = CutTypesEnum.None }: EquipmentRecordModalProps) => {
+export const CreateEquipmentModal = ({ opened, onClose, onSubmit, cardCutType = CutTypesEnum.None }: CreateEquipmentModalProps) => {
     const { materials, groundLevels } = useDictionaries();
     const dicts = {
         materialsData: mapToSelectData(materials),

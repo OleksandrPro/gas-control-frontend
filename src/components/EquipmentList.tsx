@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { Table, Group, Title, Button, Text, Stack, UnstyledButton, Center, Loader } from '@mantine/core';
 import { type EquipmentType, type ColumnType, type CutType, CutTypesEnum, ColumnTypesEnum, EquipmentTypesEnum } from '../types';
-import { EquipmentRecordModal } from './modals/EquipmentRecordModal';
+import { CreateEquipmentModal } from './modals/CreateEquipmentModal';
 import { EditEquipmentModal } from './modals/EditEquipmentModal';
 import { EditableClickText } from './EditableClickText';
 import { EditableText } from './EditableText';
@@ -329,7 +329,7 @@ export const EquipmentList = ({
                 </Table.Tbody>
             </Table>
 
-            <EquipmentRecordModal opened={modalOpened} onClose={() => setModalOpened(false)} onSubmit={handleAddEquipment} cardCutType={cutType} />
+            <CreateEquipmentModal opened={modalOpened} onClose={() => setModalOpened(false)} onSubmit={handleAddEquipment} cardCutType={cutType} />
             {editingContext && (
                 <EditEquipmentModal
                     opened={editModalOpened}
