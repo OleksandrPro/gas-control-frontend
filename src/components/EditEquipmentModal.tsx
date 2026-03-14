@@ -7,6 +7,7 @@ import { IconInfoCircle } from '@tabler/icons-react';
 
 import { type EquipmentType, type ColumnType } from '../types';
 import { useDictionaries } from '../hooks/useDictionaries';
+import { mapToSelectData } from '../utils';
 
 interface EditEquipmentModalProps {
     opened: boolean;
@@ -21,6 +22,9 @@ export const EditEquipmentModal = ({ opened, onClose, type, column, initialData,
     const [formData, setFormData] = useState<any>({});
 
     const { materials, groundLevels } = useDictionaries();
+
+    const materialsData = mapToSelectData(materials);
+    const groundLevelsData = mapToSelectData(groundLevels);
 
     useEffect(() => {
         if (initialData) {
@@ -61,15 +65,17 @@ export const EditEquipmentModal = ({ opened, onClose, type, column, initialData,
                     />
                     <Select 
                         label="Material" 
-                        data={materials} 
-                        value={formData.material || ''}
-                        onChange={(val) => setFormData({ ...formData, material: val })}
+                        data={materialsData} 
+                        value={formData.material_id ? String(formData.material_id) : null}
+                        onChange={(val) => setFormData({ ...formData, material_id: val ? Number(val) : null })}
+                        searchable
                     />
                     <Select 
                         label="Placement" 
-                        data={groundLevels} 
-                        value={formData.placement || ''}
-                        onChange={(val) => setFormData({ ...formData, placement: val })}
+                        data={groundLevelsData} 
+                        value={formData.groung_level_id ? String(formData.groung_level_id) : null}
+                        onChange={(val) => setFormData({ ...formData, groung_level_id: val ? Number(val) : null })}
+                        searchable
                     />
                 </SimpleGrid>
             );

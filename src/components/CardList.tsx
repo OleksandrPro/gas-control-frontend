@@ -39,6 +39,10 @@ export const CardList = ({cards}:CardListProps) => {
         header: 'Balance name',
       },
       {
+        accessorKey: 'gasPipelineSecion',
+        header: 'Gas Pipeline Section',
+      },
+      {
         accessorKey: 'address',
         header: 'Address',
       },
@@ -52,15 +56,19 @@ export const CardList = ({cards}:CardListProps) => {
       },
       {
         accessorKey: 'objectName',
-        header: 'Object name',
+        header: 'Gas Pipeline Type',
       },
       {
         accessorKey: 'buildDate',
         header: 'Build Date',
       },
       {
-        accessorKey: 'totalLength',
-        header: 'Total length, km',
+        accessorKey: 'totalLengthBalance',
+        header: 'Total length (balance), km',
+      },
+      {
+        accessorKey: 'totalLengthFact',
+        header: 'Total length (fact), km',
       },
       {
         accessorKey: 'cut',
@@ -87,6 +95,14 @@ export const CardList = ({cards}:CardListProps) => {
         enableGlobalFilter: false,
         enableDensityToggle: false,
         enablePagination: false,
+
+        layoutMode: 'grid',
+        mantineTableContainerProps: {
+          style: {
+            maxWidth: '100%',
+            overflowX: 'auto', 
+          },
+        },
 
         mantineTableProps: {    
             striped: 'odd',

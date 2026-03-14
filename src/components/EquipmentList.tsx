@@ -1,11 +1,14 @@
 import { useState } from 'react';
-import { Table, Group, Title, Button, Text, Stack, UnstyledButton } from '@mantine/core';
-import { type EquipmentType, type ColumnType } from '../types';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
+import { Table, Group, Title, Button, Text, Stack, UnstyledButton, Center, Loader } from '@mantine/core';
+import { type EquipmentType, type ColumnType, type CutType, CutTypesEnum } from '../types';
 import { EquipmentRecordModal } from './EquipmentRecordModal';
 import { EditEquipmentModal } from './EditEquipmentModal';
 import { EditableClickText } from './EditableClickText';
 import { EditableText } from './EditableText';
-import { MOCK_EQUIPMENT } from '../MockData';
+import { addEquipmentToCard, getCardEquipment, deleteEquipmentItem } from '../api/Equipment';
+import { useDictionaries } from '../hooks/useDictionaries';
+import { IconTrash } from '@tabler/icons-react';
 
 
 interface PipeData {
@@ -81,20 +84,34 @@ const EquipmentCell = ({ type, items }: { type: EquipmentType, items: any[] }) =
 };
 
 interface EquipmentListProps {
+    cardId: number;
+    cutType?: CutType;
     isEditing?: boolean;
-    balanceTotal?: string;
-    factTotal?: string;
+    balanceTotal?: string | number;
+    factTotal?: string | number;
     onBalanceTotalChange?: (val: string) => void;
     onFactTotalChange?: (val: string) => void;
 }
 
 export const EquipmentList = ({ 
+    cardId,
+    cutType = CutTypesEnum.None,
     isEditing = false, 
     balanceTotal = '', 
     factTotal = '', 
     onBalanceTotalChange, 
     onFactTotalChange 
 }: EquipmentListProps) => {
+    const queryClient = useQueryClient();
+
+    const { materials, groundLevels } = useDictionaries();
+
+    const { data: rawEquipment = [], isLoading } = useQuery({
+        queryKey: ['equipment', cardId],
+        queryFn: () => getCardEquipment(cardId),
+        enabled: !!cardId
+    });
+
     const [modalOpened, setModalOpened] = useState(false);
 
     const [editModalOpened, setEditModalOpened] = useState(false);
@@ -106,6 +123,39 @@ export const EquipmentList = ({
         data: any;
     } | null>(null);
 
+    const addMutation = useMutation({
+        mutationFn: (payload: any) => addEquipmentToCard(cardId, payload),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['equipment', cardId] });
+            setModalOpened(false); 
+        },
+        onError: (error) => {
+            console.error("Failed to add equipment:", error);
+            alert("Error while adding new equipment.");
+        }
+    });
+
+    const deleteMutation = useMutation({
+        mutationFn: (itemId: number) => deleteEquipmentItem(itemId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['equipment', cardId] });
+            console.info("Deleted")
+        },
+        onError: () => {
+            console.error("Couldn't delete the record!")
+        }
+    });
+
+    const handleDeleteItem = (itemId: number) => {
+        if (window.confirm('Are you sure you want to delete this entry with all columns?')) {
+            deleteMutation.mutate(itemId);
+        }
+    };
+
+    const handleAddEquipment = (payload: any) => {
+        addMutation.mutate(payload);
+    };
+
     const handleEditClick = (rowId: number, type: EquipmentType, column: ColumnType, itemIndex: number, data: any) => {
         setEditingContext({ rowId, type, column, itemIndex, data });
         setEditModalOpened(true);
@@ -115,6 +165,58 @@ export const EquipmentList = ({
         console.log("Saving new data for item:", editingContext, "New data:", newData);
         // equipment update logic
     };
+
+    const displayEquipment: EquipmentRow[] = rawEquipment.map((item: any) => {
+        const row: EquipmentRow = {
+            id: item.id,
+            name: item.description,
+            type: item.item_type as EquipmentType,
+            balance: [],
+            fact: [],
+            inCut: []
+        };
+
+        const getDictValue = (dict: any[], id: number | null) => {
+            if (!id) return '-';
+            const found = dict.find(d => d.id === id);
+            return found ? found.value : '-';
+        };
+
+        item.data_entries.forEach((entry: any) => {
+            let mappedData: any = {};
+
+            if (entry.type === "pipe_data") {
+                mappedData = {
+                    id: entry.id,
+                    length: entry.length,
+                    diameter: entry.diameter,
+                    material: getDictValue(materials, entry.material_id),
+                    placement: getDictValue(groundLevels, entry.groung_level_id),
+                    material_id: entry.material_id, 
+                    groung_level_id: entry.groung_level_id
+                };
+            } else if (entry.type === "valve_data") {
+                mappedData = {
+                    id: entry.id,
+                    quantity: entry.quantity,
+                    diameter: entry.diameter,
+                    model: entry.model_number || '-'
+                };
+            } else {
+                // generic_data
+                mappedData = {
+                    id: entry.id,
+                    quantity: entry.quantity || 1
+                };
+            }
+
+            if (entry.column_type === "balance") row.balance.push(mappedData);
+            if (entry.column_type === "fact") row.fact.push(mappedData);
+            if (entry.column_type === "cut") row.inCut.push(mappedData);
+        });
+
+        return row;
+    });
 
     const renderCell = (row: EquipmentRow, column: ColumnType) => {
         const items = row[column];
@@ -149,7 +251,7 @@ export const EquipmentList = ({
         <div>
             <Group justify="space-between" mb="md">
                 <Title order={3}>Equipment</Title>
-                <Button variant="subtle" onClick={() => setModalOpened(true)}>+ Add record</Button>
+                <Button variant="subtle" onClick={() => setModalOpened(true)} loading={addMutation.isPending}> + Add record</Button>
             </Group>
 
             <Table verticalSpacing="md">
@@ -161,7 +263,7 @@ export const EquipmentList = ({
                                 <Text size="xs" c="dimmed">TOTAL LENGTH</Text>
                                 <EditableText 
                                     isEditing={isEditing}
-                                    value={balanceTotal}
+                                    value={balanceTotal?.toString()}
                                     onChange={(val) => onBalanceTotalChange?.(val)}
                                     renderText={(val)=><Title order={4} c="blue">{val} m</Title>}
                                 />
@@ -172,7 +274,7 @@ export const EquipmentList = ({
                                 <Text size="xs" c="dimmed">TOTAL LENGTH</Text>
                                 <EditableText 
                                     isEditing={isEditing}
-                                    value={factTotal}
+                                    value={factTotal?.toString()}
                                     onChange={(val) => onFactTotalChange?.(val)}
                                     renderText={(val)=><Title order={4} c="green">{val} m</Title>}
                                 />
@@ -188,21 +290,46 @@ export const EquipmentList = ({
                     </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                    {MOCK_EQUIPMENT.map((row) => (
-                        <Table.Tr key={row.id}>
-                            <Table.Td>
-                                <EditableClickText initialValue={row.name}/>
-                                <Text size="xs" c="dimmed" tt="uppercase">{row.type}</Text>
+                    {isLoading ? (
+                        <Table.Tr>
+                            <Table.Td colSpan={4}>
+                                <Center py="xl">
+                                    <Loader color="blue" />
+                                </Center>
                             </Table.Td>
-                            <Table.Td>{renderCell(row, 'balance')}</Table.Td>
-                            <Table.Td>{renderCell(row, 'fact')}</Table.Td>
-                            <Table.Td>{renderCell(row, 'inCut')}</Table.Td>
                         </Table.Tr>
-                    ))}
+                    ) : displayEquipment.length === 0 ? (
+                        <Table.Tr>
+                            <Table.Td colSpan={4}>
+                                <Text>No equipment found</Text>
+                            </Table.Td>
+                        </Table.Tr>
+                    ) : (
+                        displayEquipment.map((row) => (
+                            <Table.Tr key={row.id}>
+                                <Table.Td>
+                                    <EditableClickText initialValue={row.name}/>
+                                    <Text>{row.type}</Text>
+
+                                    <Button 
+                                        variant="subtle" color="red" size="xs" mt="xs" px={5} h={24}
+                                        leftSection={<IconTrash size={14} />}
+                                        onClick={() => handleDeleteItem(row.id)}
+                                        loading={deleteMutation.isPending}
+                                    >
+                                        Delete
+                                    </Button>
+                                </Table.Td>
+                                <Table.Td>{renderCell(row, 'balance')}</Table.Td>
+                                <Table.Td>{renderCell(row, 'fact')}</Table.Td>
+                                <Table.Td>{renderCell(row, 'inCut')}</Table.Td>
+                            </Table.Tr>
+                        ))
+                    )}
                 </Table.Tbody>
             </Table>
 
-            <EquipmentRecordModal opened={modalOpened} onClose={() => setModalOpened(false)} />
+            <EquipmentRecordModal opened={modalOpened} onClose={() => setModalOpened(false)} onSubmit={handleAddEquipment} cardCutType={cutType} />
             {editingContext && (
                 <EditEquipmentModal
                     opened={editModalOpened}
