@@ -3,7 +3,7 @@ import { Modal, NumberInput, Select, Button, Text, Stack, TextInput, Group, Pape
 import { IconPlus, IconTrash } from '@tabler/icons-react';
 import { useDictionaries } from '../../hooks/useDictionaries';
 import { mapToSelectData } from '../../utils';
-import { type EquipmentType, type CutType, CutTypesEnum } from '../../types';
+import { type EquipmentType, type CutType, EquipmentTypesEnum, CutTypesEnum } from '../../types';
 
 interface CreateEquipmentModalProps {
   opened: boolean;
@@ -12,87 +12,78 @@ interface CreateEquipmentModalProps {
   cardCutType?: CutType;
 }
 
-const EquipmentFormFields = ({ type, data, onChange, dicts, hideLabels = false }: any) => {
-    const { materialsData, groundLevelsData } = dicts;
+const PipeFields = ({ data, onChange, dicts, hideLabels }: any) => (
+    <Grid>
+        <Grid.Col span={6}>
+            <NumberInput label={!hideLabels ? "Diameter" : undefined} value={data.diameter || ''} onChange={(v) => onChange('diameter', v)} allowDecimal allowedDecimalSeparators={[',', '.']} />
+        </Grid.Col>
+        <Grid.Col span={6}>
+            <NumberInput label={!hideLabels ? "Length" : undefined} value={data.length || ''} onChange={(v) => onChange('length', v)} allowDecimal allowedDecimalSeparators={[',', '.']} step={0.1} />
+        </Grid.Col>
+        <Grid.Col span={6}>
+            <Select label={!hideLabels ? "Material" : undefined} data={dicts.materialsData} value={data.material_id ? String(data.material_id) : null} onChange={(v) => onChange('material_id', v ? Number(v) : null)} searchable />
+        </Grid.Col>
+        <Grid.Col span={6}>
+            <Select label={!hideLabels ? "Placement" : undefined} data={dicts.groundLevelsData} value={data.groung_level_id ? String(data.groung_level_id) : null} onChange={(v) => onChange('groung_level_id', v ? Number(v) : null)} searchable />
+        </Grid.Col>
+    </Grid>
+);
 
-    if (type === 'pipe') {
-        return (
-            <Grid>
-                <Grid.Col span={6}>
-                    <NumberInput 
-                        label={!hideLabels ? "Diameter" : undefined}
-                        value={data.diameter || ''} 
-                        onChange={(v) => onChange('diameter', v)} 
-                        allowDecimal allowedDecimalSeparators={[',', '.']} 
-                    />
-                </Grid.Col>
-                <Grid.Col span={6}>
-                    <NumberInput 
-                        label={!hideLabels ? "Length" : undefined}
-                        value={data.length || ''} 
-                        onChange={(v) => onChange('length', v)} 
-                        allowDecimal allowedDecimalSeparators={[',', '.']} step={0.1} 
-                    />
-                </Grid.Col>
-                <Grid.Col span={6}>
-                    <Select 
-                        label={!hideLabels ? "Material" : undefined}
-                        data={materialsData} 
-                        value={data.material_id ? String(data.material_id) : null} 
-                        onChange={(v) => onChange('material_id', v ? Number(v) : null)} searchable 
-                    />
-                </Grid.Col>
-                <Grid.Col span={6}>
-                    <Select 
-                        label={!hideLabels ? "Placement" : undefined}
-                        data={groundLevelsData} 
-                        value={data.groung_level_id ? String(data.groung_level_id) : null} 
-                        onChange={(v) => onChange('groung_level_id', v ? Number(v) : null)} searchable 
-                    />
-                </Grid.Col>
-            </Grid>
-        );
+const ValveFields = ({ data, onChange, hideLabels }: any) => (
+    <Grid>
+        <Grid.Col span={6}>
+            <NumberInput label={!hideLabels ? "Diameter" : undefined} value={data.diameter || ''} onChange={(v) => onChange('diameter', v)} allowDecimal allowedDecimalSeparators={[',', '.']} />
+        </Grid.Col>
+        <Grid.Col span={6}>
+            <NumberInput label={!hideLabels ? "Quantity (pcs)" : undefined} value={data.quantity || ''} onChange={(v) => onChange('quantity', v)} min={1} />
+        </Grid.Col>
+        <Grid.Col span={12}>
+            <TextInput label={!hideLabels ? "Model / Number" : undefined} value={data.model_number || ''} onChange={(e) => onChange('model_number', e.currentTarget.value)} />
+        </Grid.Col>
+    </Grid>
+);
+
+const OtherFields = ({ data, onChange, hideLabels }: any) => (
+    <NumberInput label={!hideLabels ? "Quantity (pcs)" : undefined} value={data.quantity || ''} onChange={(v) => onChange('quantity', v)} min={1} />
+);
+
+const EquipmentFormFields = (props: any) => {
+    switch (props.type) {
+        case EquipmentTypesEnum.Pipe: return <PipeFields {...props} />;
+        case EquipmentTypesEnum.Valve: return <ValveFields {...props} />;
+        case EquipmentTypesEnum.Other:
+        default: return <OtherFields {...props} />;
     }
-
-    if (type === 'valve') {
-        return (
-            <Grid>
-                <Grid.Col span={6}>
-                    <NumberInput 
-                        label={!hideLabels ? "Diameter" : undefined}
-                        value={data.diameter || ''} 
-                        onChange={(v) => onChange('diameter', v)} 
-                        allowDecimal allowedDecimalSeparators={[',', '.']} 
-                    />
-                </Grid.Col>
-                <Grid.Col span={6}>
-                    <NumberInput 
-                        label={!hideLabels ? "Quantity (pcs)" : undefined}
-                        value={data.quantity || ''} 
-                        onChange={(v) => onChange('quantity', v)} 
-                        min={1} 
-                    />
-                </Grid.Col>
-                <Grid.Col span={12}>
-                    <TextInput 
-                        label={!hideLabels ? "Model / Number" : undefined}
-                        value={data.model_number || ''} 
-                        onChange={(e) => onChange('model_number', e.currentTarget.value)} 
-                    />
-                </Grid.Col>
-            </Grid>
-        );
-    }
-
-    return (
-        <NumberInput 
-            label={!hideLabels ? "Quantity (pcs)" : undefined}
-            value={data.quantity || ''} 
-            onChange={(v) => onChange('quantity', v)} 
-            min={1} 
-        />
-    );
 };
+
+const EquipmentColumn = ({ title, span, children }: { title: string, span: number, children: React.ReactNode }) => (
+    <Grid.Col span={span}>
+        <Paper bg="gray.0" p="md" radius="md" withBorder h="100%">
+            <Text fw={700} ta="center" c="dimmed" mb="md">{title}</Text>
+            {children}
+        </Paper>
+    </Grid.Col>
+);
+
+const FactColumnList = ({ factDataList, activeType, dicts, onFactChange, onRemoveFact, onAddFact, canAddMoreFact }: any) => (
+    <Stack gap="md">
+        {factDataList.map((data: any, index: number) => (
+            <div key={index} style={{ position: 'relative', borderBottom: index < factDataList.length - 1 ? '1px dashed #ccc' : 'none', paddingBottom: index < factDataList.length - 1 ? '10px' : '0' }}>
+                {index > 0 && (
+                    <ActionIcon color="red" variant="subtle" onClick={() => onRemoveFact(index)} style={{ position: 'absolute', top: -5, right: -5, zIndex: 10 }}>
+                        <IconTrash size={16} />
+                    </ActionIcon>
+                )}
+                <EquipmentFormFields type={activeType} data={data} dicts={dicts} hideLabels={index > 0} onChange={(f: string, v: any) => onFactChange(index, f, v)} />
+            </div>
+        ))}
+        {canAddMoreFact && (
+            <Button variant="light" size="xs" leftSection={<IconPlus size={14} />} onClick={onAddFact}>
+                Add fact record
+            </Button>
+        )}
+    </Stack>
+);
 
 export const CreateEquipmentModal = ({ opened, onClose, onSubmit, cardCutType = CutTypesEnum.None }: CreateEquipmentModalProps) => {
     const { materials, groundLevels } = useDictionaries();
@@ -101,7 +92,8 @@ export const CreateEquipmentModal = ({ opened, onClose, onSubmit, cardCutType = 
         groundLevelsData: mapToSelectData(groundLevels) 
     };
     
-    const [activeType, setActiveType] = useState<EquipmentType>('pipe');    
+    const defaultActiveType = EquipmentTypesEnum.Pipe
+    const [activeType, setActiveType] = useState<EquipmentType>(defaultActiveType);    
     const [description, setDescription] = useState('');
     
     const [balanceData, setBalanceData] = useState<any>({});
@@ -111,7 +103,7 @@ export const CreateEquipmentModal = ({ opened, onClose, onSubmit, cardCutType = 
     useEffect(() => {
         if (opened) {
             setDescription('');
-            setActiveType('pipe');
+            setActiveType(defaultActiveType);
             setBalanceData({});
             setFactDataList([{}]);
             setCutData({});
@@ -217,80 +209,35 @@ export const CreateEquipmentModal = ({ opened, onClose, onSubmit, cardCutType = 
                 <Grid mt="sm">
                     {/* No cut (1 column) */}
                     {cardCutType === CutTypesEnum.None && (
-                        <Grid.Col span={12}>
-                            <Paper bg="gray.0" p="md" radius="md" withBorder>
-                                <Text fw={700} ta="center" c="dimmed" mb="md">BALANCE + FACT</Text>
-                                <Stack gap="md">
-                                    {factDataList.map((data, index) => (
-                                        <div key={index} style={{ position: 'relative', borderBottom: index < factDataList.length - 1 ? '1px dashed #ccc' : 'none', paddingBottom: index < factDataList.length - 1 ? '15px' : '0' }}>
-                                            {index > 0 && (
-                                                <ActionIcon color="red" variant="subtle" onClick={() => removeFactItem(index)} style={{ position: 'absolute', top: 0, right: 0, zIndex: 10 }}>
-                                                    <IconTrash size={16} />
-                                                </ActionIcon>
-                                            )}
-                                            <EquipmentFormFields type={activeType} data={data} dicts={dicts} onChange={(f: string, v: any) => handleFactChange(index, f, v)} />
-                                        </div>
-                                    ))}
-                                </Stack>
-                            </Paper>
-                        </Grid.Col>
+                        <EquipmentColumn title="BALANCE + FACT" span={12}>
+                            <FactColumnList factDataList={factDataList} activeType={activeType} dicts={dicts} onFactChange={handleFactChange} onRemoveFact={removeFactItem} onAddFact={() => setFactDataList([...factDataList, {}])} canAddMoreFact={canAddMoreFact} />
+                        </EquipmentColumn>
                     )}
 
                     {/* Full (2 columns) */}
                     {cardCutType === CutTypesEnum.Full && (
                         <>
-                            <Grid.Col span={6}>
-                                <Paper bg="gray.0" p="md" radius="md" withBorder h="100%">
-                                    <Text fw={700} ta="center" c="dimmed" mb="md">BALANCE</Text>
-                                    <EquipmentFormFields type={activeType} data={balanceData} dicts={dicts} onChange={(f: string, v: any) => setBalanceData({...balanceData, [f]: v})} />
-                                </Paper>
-                            </Grid.Col>
-                            <Grid.Col span={6}>
-                                <Paper bg="gray.0" p="md" radius="md" withBorder h="100%">
-                                    <Text fw={700} ta="center" c="dimmed" mb="md">CUT</Text>
-                                    <EquipmentFormFields type={activeType} data={cutData} dicts={dicts} onChange={(f: string, v: any) => setCutData({...cutData, [f]: v})} />
-                                </Paper>
-                            </Grid.Col>
+                            <EquipmentColumn title="BALANCE" span={6}>
+                                <EquipmentFormFields type={activeType} data={balanceData} dicts={dicts} onChange={(f: string, v: any) => setBalanceData({...balanceData, [f]: v})} />
+                            </EquipmentColumn>
+                            <EquipmentColumn title="CUT" span={6}>
+                                <EquipmentFormFields type={activeType} data={cutData} dicts={dicts} onChange={(f: string, v: any) => setCutData({...cutData, [f]: v})} />
+                            </EquipmentColumn>
                         </>
                     )}
 
                     {/* Partial (3 columns) */}
                     {cardCutType === CutTypesEnum.Partial && (
                         <>
-                            <Grid.Col span={4}>
-                                <Paper bg="gray.0" p="md" radius="md" withBorder h="100%">
-                                    <Text fw={700} ta="center" c="dimmed" mb="md">BALANCE</Text>
-                                    <EquipmentFormFields type={activeType} data={balanceData} dicts={dicts} onChange={(f: string, v: any) => setBalanceData({...balanceData, [f]: v})} />
-                                </Paper>
-                            </Grid.Col>
-                            <Grid.Col span={4}>
-                                <Paper bg="gray.0" p="md" radius="md" withBorder h="100%">
-                                    <Text fw={700} ta="center" c="dimmed" mb="md">FACT</Text>
-                                    <Stack gap="md">
-                                        {factDataList.map((data, index) => (
-                                            <div key={index} style={{ position: 'relative', borderBottom: index < factDataList.length - 1 ? '1px dashed #ccc' : 'none', paddingBottom: index < factDataList.length - 1 ? '10px' : '0' }}>
-                                                {index > 0 && (
-                                                    <ActionIcon color="red" variant="subtle" onClick={() => removeFactItem(index)} style={{ position: 'absolute', top: -5, right: -5, zIndex: 10 }}>
-                                                        <IconTrash size={14} />
-                                                    </ActionIcon>
-                                                )}
-                                                <EquipmentFormFields type={activeType} data={data} dicts={dicts} hideLabels={index > 0} onChange={(f: string, v: any) => handleFactChange(index, f, v)} />
-                                            </div>
-                                        ))}
-                                        {canAddMoreFact && (
-                                            <Button variant="light" size="xs" leftSection={<IconPlus size={14} />} onClick={() => setFactDataList([...factDataList, {}])}>
-                                                Add fact record
-                                            </Button>
-                                        )}
-                                    </Stack>
-                                </Paper>
-                            </Grid.Col>
-                            <Grid.Col span={4}>
-                                <Paper bg="gray.0" p="md" radius="md" withBorder h="100%">
-                                    <Text fw={700} ta="center" c="dimmed" mb="md">CUT</Text>
-                                    <EquipmentFormFields type={activeType} data={cutData} dicts={dicts} onChange={(f: string, v: any) => setCutData({...cutData, [f]: v})} />
-                                </Paper>
-                            </Grid.Col>
+                            <EquipmentColumn title="BALANCE" span={4}>
+                                <EquipmentFormFields type={activeType} data={balanceData} dicts={dicts} onChange={(f: string, v: any) => setBalanceData({...balanceData, [f]: v})} />
+                            </EquipmentColumn>
+                            <EquipmentColumn title="FACT" span={4}>
+                                <FactColumnList factDataList={factDataList} activeType={activeType} dicts={dicts} onFactChange={handleFactChange} onRemoveFact={removeFactItem} onAddFact={() => setFactDataList([...factDataList, {}])} canAddMoreFact={canAddMoreFact} />
+                            </EquipmentColumn>
+                            <EquipmentColumn title="CUT" span={4}>
+                                <EquipmentFormFields type={activeType} data={cutData} dicts={dicts} onChange={(f: string, v: any) => setCutData({...cutData, [f]: v})} />
+                            </EquipmentColumn>
                         </>
                     )}
                 </Grid>
