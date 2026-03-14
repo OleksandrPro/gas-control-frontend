@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { Table, Group, Title, Button, Text, Stack, UnstyledButton, Center, Loader } from '@mantine/core';
-import { type EquipmentType, type ColumnType, type CutType, CutTypesEnum } from '../types';
+import { type EquipmentType, type ColumnType, type CutType, CutTypesEnum, ColumnTypesEnum, EquipmentTypesEnum } from '../types';
 import { EquipmentRecordModal } from './EquipmentRecordModal';
 import { EditEquipmentModal } from './EditEquipmentModal';
 import { EditableClickText } from './EditableClickText';
@@ -29,7 +29,7 @@ export interface EquipmentRow {
     type: EquipmentType;
     balance: any[];
     fact: any[];
-    inCut: any[];
+    cut: any[];
 }
 
 const PipeItem = ({ data }: { data: PipeData }) => (
@@ -74,9 +74,9 @@ const EquipmentCell = ({ type, items }: { type: EquipmentType, items: any[] }) =
                         paddingBottom: index !== items.length - 1 ? '8px' : '0' 
                     }}
                 >
-                    {type === 'pipe' && <PipeItem data={item} />}
-                    {type === 'valve' && <ValveItem data={item} />}
-                    {type === 'other' && <Text size="sm">Qty: {item.quantity}</Text>}
+                    {type === EquipmentTypesEnum.Pipe && <PipeItem data={item} />}
+                    {type === EquipmentTypesEnum.Valve && <ValveItem data={item} />}
+                    {type === EquipmentTypesEnum.Other && <Text size="sm">Qty: {item.quantity}</Text>}
                 </div>
             ))}
         </Stack>
@@ -173,7 +173,7 @@ export const EquipmentList = ({
             type: item.item_type as EquipmentType,
             balance: [],
             fact: [],
-            inCut: []
+            cut: []
         };
 
         const getDictValue = (dict: any[], id: number | null) => {
@@ -210,9 +210,9 @@ export const EquipmentList = ({
                 };
             }
 
-            if (entry.column_type === "balance") row.balance.push(mappedData);
-            if (entry.column_type === "fact") row.fact.push(mappedData);
-            if (entry.column_type === "cut") row.inCut.push(mappedData);
+            if (entry.column_type === ColumnTypesEnum.Balance) row.balance.push(mappedData);
+            if (entry.column_type === ColumnTypesEnum.Fact) row.fact.push(mappedData);
+            if (entry.column_type === ColumnTypesEnum.Cut) row.cut.push(mappedData);
         });
 
         return row;
@@ -238,9 +238,9 @@ export const EquipmentList = ({
                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f3f5'}
                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
-                        {row.type === 'pipe' && <PipeItem data={item} />}
-                        {row.type === 'valve' && <ValveItem data={item} />}
-                        {row.type === 'other' && <Text size="sm">Qty: {item.quantity}</Text>}
+                        {row.type === EquipmentTypesEnum.Pipe && <PipeItem data={item} />}
+                        {row.type === EquipmentTypesEnum.Valve && <ValveItem data={item} />}
+                        {row.type === EquipmentTypesEnum.Other && <Text size="sm">Qty: {item.quantity}</Text>}
                     </UnstyledButton>
                 ))}
             </Stack>
@@ -320,9 +320,9 @@ export const EquipmentList = ({
                                         Delete
                                     </Button>
                                 </Table.Td>
-                                <Table.Td>{renderCell(row, 'balance')}</Table.Td>
-                                <Table.Td>{renderCell(row, 'fact')}</Table.Td>
-                                <Table.Td>{renderCell(row, 'inCut')}</Table.Td>
+                                <Table.Td>{renderCell(row, ColumnTypesEnum.Balance)}</Table.Td>
+                                <Table.Td>{renderCell(row, ColumnTypesEnum.Fact)}</Table.Td>
+                                <Table.Td>{renderCell(row, ColumnTypesEnum.Cut)}</Table.Td>
                             </Table.Tr>
                         ))
                     )}

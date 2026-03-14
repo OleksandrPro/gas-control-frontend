@@ -5,7 +5,7 @@ import {
 } from '@mantine/core';
 import { IconInfoCircle } from '@tabler/icons-react';
 
-import { type EquipmentType, type ColumnType } from '../types';
+import { type EquipmentType, type ColumnType, EquipmentTypesEnum } from '../types';
 import { useDictionaries } from '../hooks/useDictionaries';
 import { mapToSelectData } from '../utils';
 
@@ -33,15 +33,15 @@ export const EditEquipmentModal = ({ opened, onClose, type, column, initialData,
     }, [initialData, opened]);
 
     const typeLabels: Record<EquipmentType, string> = {
-        pipe: 'Pipe',
-        valve: 'Valve',
-        other: 'Other (GC etc.)'
+        'pipe': 'Pipe',
+        'valve': 'Valve',
+        'other': 'Other (GC etc.)'
     };
 
     const columnLabels: Record<ColumnType, string> = {
-        balance: 'BALANCE',
-        fact: 'FACT',
-        inCut: 'IN CUT'
+        'balance': 'BALANCE',
+        'fact': 'FACT',
+        'cut': 'IN CUT'
     };
 
     const handleSave = () => {
@@ -50,7 +50,7 @@ export const EditEquipmentModal = ({ opened, onClose, type, column, initialData,
     };
 
     const renderFormFields = () => {
-        if (type === 'pipe') {
+        if (type === EquipmentTypesEnum.Pipe) {
             return (
                 <SimpleGrid cols={2}>
                     <NumberInput 
@@ -81,7 +81,7 @@ export const EditEquipmentModal = ({ opened, onClose, type, column, initialData,
             );
         }
 
-        if (type === 'valve') {
+        if (type === EquipmentTypesEnum.Valve) {
             return (
                 <Stack>
                     <SimpleGrid cols={2}>

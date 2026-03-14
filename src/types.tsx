@@ -34,29 +34,23 @@ export type CardDisplay = {
     folder: string;
 }
 
-export type Card = {
-  id: number,
-  inventory_number: string;
-  inventory_number_eskd: string;
-  gas_pipeline_section: string;
-  described_name: string;
-  address: string;
-  folder: string;
-  total_length_balance: string;
-  total_length_fact: string;
-  build_date_dn: Date
-
-  district: string;
-  property: string;
-  object_name: string;
-  pressure: string;
-  cut: string;
-};
-
 export type CardUpdateData = Partial<Omit<CardBackend, 'id'>>;
 
-export type EquipmentType = 'pipe' | 'valve' | 'other';
-export type ColumnType = 'balance' | 'fact' | 'inCut';
+export const EquipmentTypesEnum = {
+  Pipe: "pipe",
+  Valve: "valve",
+  Other: "other",
+} as const satisfies Record<string, string>;
+
+export type EquipmentType = (typeof EquipmentTypesEnum)[keyof typeof EquipmentTypesEnum];
+
+export const ColumnTypesEnum = {
+  Balance: "balance",
+  Fact: "fact",
+  Cut: "cut",
+} as const satisfies Record<string, string>;
+
+export type ColumnType = (typeof ColumnTypesEnum)[keyof typeof ColumnTypesEnum];
 
 export type DictionaryItem = {
   id: number,
