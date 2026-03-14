@@ -3,9 +3,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Modal, TextInput, Select, Button, SimpleGrid, NumberInput } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { IconCalendar } from '@tabler/icons-react';
-import { useDictionaries } from '../hooks/useDictionaries';
-import { createCard } from '../api/Cards';
-import { mapToSelectData } from '../utils';
+import { useDictionaries } from '../../hooks/useDictionaries';
+import { createCard } from '../../api/Cards';
+import { mapToSelectData } from '../../utils';
 
 interface CreateCardModalProps {
   opened: boolean;

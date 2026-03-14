@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useQuery } from '@tanstack/react-query';
 import { Button, Group, Title, Text, Pagination, Center, Loader } from "@mantine/core";
-import { CreateCardModal } from "../components/CreateCardModal";
+import { CreateCardModal } from "../components/modals/CreateCardModal";
 import { CardList } from "../components/CardList";
 import { FilterBar, type CardFilterPayload } from "../components/FilterBar";
 

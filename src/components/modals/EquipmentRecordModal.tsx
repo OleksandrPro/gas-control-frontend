@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Modal, NumberInput, Select, Button, Text, Stack, TextInput, Group, Paper, Grid, ActionIcon } from '@mantine/core';
 import { IconPlus, IconTrash } from '@tabler/icons-react';
-import { useDictionaries } from '../hooks/useDictionaries';
-import { mapToSelectData } from '../utils';
-import { type EquipmentType, type CutType, CutTypesEnum } from '../types';
+import { useDictionaries } from '../../hooks/useDictionaries';
+import { mapToSelectData } from '../../utils';
+import { type EquipmentType, type CutType, CutTypesEnum } from '../../types';
 
 interface EquipmentRecordModalProps {
   opened: boolean;

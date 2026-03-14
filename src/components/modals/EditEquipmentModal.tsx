@@ -5,9 +5,9 @@ import {
 } from '@mantine/core';
 import { IconInfoCircle } from '@tabler/icons-react';
 
-import { type EquipmentType, type ColumnType, EquipmentTypesEnum } from '../types';
-import { useDictionaries } from '../hooks/useDictionaries';
-import { mapToSelectData } from '../utils';
+import { type EquipmentType, type ColumnType, EquipmentTypesEnum } from '../../types';
+import { useDictionaries } from '../../hooks/useDictionaries';
+import { mapToSelectData } from '../../utils';
 
 interface EditEquipmentModalProps {
     opened: boolean;
