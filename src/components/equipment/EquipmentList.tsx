@@ -1,14 +1,12 @@
 import { useState, useMemo } from 'react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { Table, Group, Title, Button, Text, Stack, UnstyledButton, Center, Loader } from '@mantine/core';
+import { Table, Group, Title, Button, Text, Stack, Center, Loader } from '@mantine/core';
 import { type EquipmentType, type ColumnType, type CutType, CutTypesEnum, ColumnTypesEnum, EquipmentTypesEnum, BackendEquipmentTypesEnum , type DictionaryItem} from '../../types';
 import { CreateEquipmentModal } from '../modals/CreateEquipmentModal';
 import { EditEquipmentModal } from '../modals/EditEquipmentModal';
-import { EditableClickText } from '../ui/editable/EditableClickText';
 import { EditableText } from '../ui/editable/EditableText';
 import { addEquipmentToCard, getCardEquipment, deleteEquipmentItem } from '../../api/Equipment';
 import { useDictionaries } from '../../hooks/useDictionaries';
-import { IconTrash } from '@tabler/icons-react';
 import type { PipeData, ValveData, GenericData, EquipmentRow, MappedDataEntry } from '../../types';
 
 const transformEquipmentData = (rawEquipment: any[], materials: DictionaryItem[], groundLevels: DictionaryItem[]): EquipmentRow[] => {
@@ -79,25 +77,18 @@ const ValveItem = ({ data }: { data: ValveData }) => (
     </Stack>
 );
 
-const EquipmentColumnCell = ({ row, columnType, onEdit }: { row: EquipmentRow, columnType: ColumnType, onEdit: (rowId: number, type: EquipmentType, column: ColumnType, itemIndex: number, data: MappedDataEntry) => void }) => {
+const EquipmentColumnCell = ({ row, columnType }: { row: EquipmentRow, columnType: ColumnType }) => {
     const items = row[columnType as keyof Pick<EquipmentRow, 'balance' | 'fact' | 'cut'>];
-    
     if (!items || items.length === 0) return <Text c="dimmed" ta="center">-</Text>;
 
     return (
         <Stack gap={4}>
             {items.map((item, index) => (
-                <UnstyledButton
-                    key={index} w="100%" p="xs"
-                    onClick={() => onEdit(row.id, row.type, columnType, index, item)}
-                    style={{ borderBottom: index !== items.length - 1 ? '1px dashed #ced4da' : 'none', borderRadius: '4px', transition: 'background-color 0.15s ease' }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f3f5'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                >
+                <div key={index} style={{ borderBottom: index !== items.length - 1 ? '1px dashed #ced4da' : 'none', paddingBottom: index !== items.length - 1 ? '8px' : '0' }}>
                     {row.type === EquipmentTypesEnum.Pipe && <PipeItem data={item as PipeData} />}
                     {row.type === EquipmentTypesEnum.Valve && <ValveItem data={item as ValveData} />}
                     {row.type === EquipmentTypesEnum.Other && <Text size="sm">Qty: {(item as GenericData).quantity}</Text>}
-                </UnstyledButton>
+                </div>
             ))}
         </Stack>
     );
@@ -135,13 +126,7 @@ export const EquipmentList = ({
     const [modalOpened, setModalOpened] = useState(false);
 
     const [editModalOpened, setEditModalOpened] = useState(false);
-    const [editingContext, setEditingContext] = useState<{
-        rowId: number;
-        type: EquipmentType;
-        column: ColumnType;
-        itemIndex: number;
-        data: any;
-    } | null>(null);
+    const [editingEquipment, setEditingEquipment] = useState<EquipmentRow | null>(null);
 
     const displayEquipment = useMemo(() => {
         return transformEquipmentData(rawEquipment, materials, groundLevels);
@@ -170,24 +155,23 @@ export const EquipmentList = ({
         }
     });
 
-    const handleDeleteItem = (itemId: number) => {
-        if (window.confirm('Are you sure you want to delete this entry with all columns?')) {
-            deleteMutation.mutate(itemId);
-        }
-    };
-
     const handleAddEquipment = (payload: any) => {
         addMutation.mutate(payload);
     };
 
-    const handleEditClick = (rowId: number, type: EquipmentType, column: ColumnType, itemIndex: number, data: any) => {
-        setEditingContext({ rowId, type, column, itemIndex, data });
+    const handleRowClick = (row: EquipmentRow) => {
+        if (!isEditing) return; 
+        
+        setEditingEquipment(row);
         setEditModalOpened(true);
     };
 
-    const handleSaveEdit = (newData: any) => {
-        console.log("Saving new data for item:", editingContext, "New data:", newData);
+    const handleSaveEdit = (payload: any) => {
+        console.log("Payload to update on backend:", payload);
         // equipment update logic
+        // call updateEquipmentMutation
+        // updateMutation.mutate(payload)
+        setEditModalOpened(false);
     };
 
     return (
@@ -249,28 +233,22 @@ export const EquipmentList = ({
                         </Table.Tr>
                     ) : (
                         displayEquipment.map((row) => (
-                            <Table.Tr key={row.id}>
+                            <Table.Tr 
+                                key={row.id}
+                                onClick={() => handleRowClick(row)}
+                                style={{ cursor: isEditing ? 'pointer' : 'default' }}>
                                 <Table.Td>
-                                    <EditableClickText initialValue={row.name}/>
+                                    <Text>{row.name}</Text>
                                     <Text>{row.type}</Text>
-
-                                    <Button 
-                                        variant="subtle" color="red" size="xs" mt="xs" px={5} h={24}
-                                        leftSection={<IconTrash size={14} />}
-                                        onClick={() => handleDeleteItem(row.id)}
-                                        loading={deleteMutation.isPending}
-                                    >
-                                        Delete
-                                    </Button>
                                 </Table.Td>
                                 <Table.Td>
-                                    <EquipmentColumnCell row={row} columnType={ColumnTypesEnum.Balance} onEdit={handleEditClick} />
+                                    <EquipmentColumnCell row={row} columnType={ColumnTypesEnum.Balance} />
                                 </Table.Td>
                                 <Table.Td>
-                                    <EquipmentColumnCell row={row} columnType={ColumnTypesEnum.Fact} onEdit={handleEditClick} />
+                                    <EquipmentColumnCell row={row} columnType={ColumnTypesEnum.Fact} />
                                 </Table.Td>
                                 <Table.Td>
-                                    <EquipmentColumnCell row={row} columnType={ColumnTypesEnum.Cut} onEdit={handleEditClick} />
+                                    <EquipmentColumnCell row={row} columnType={ColumnTypesEnum.Cut} />
                                 </Table.Td>
                             </Table.Tr>
                         ))
@@ -279,16 +257,16 @@ export const EquipmentList = ({
             </Table>
 
             <CreateEquipmentModal opened={modalOpened} onClose={() => setModalOpened(false)} onSubmit={handleAddEquipment} cardCutType={cutType} />
-            {editingContext && (
-                <EditEquipmentModal
-                    opened={editModalOpened}
-                    onClose={() => setEditModalOpened(false)}
-                    type={editingContext.type}
-                    column={editingContext.column}
-                    initialData={editingContext.data}
-                    onSave={handleSaveEdit}
-                />
-            )}
+            <EditEquipmentModal
+                opened={editModalOpened}
+                onClose={() => setEditModalOpened(false)}
+                equipment={editingEquipment}
+                onSave={handleSaveEdit}
+                onDelete={(id) => {
+                    deleteMutation.mutate(id);
+                    setEditModalOpened(false);
+                }}
+            />
         </div>
     );
 };
