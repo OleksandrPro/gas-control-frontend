@@ -81,3 +81,36 @@ export const CutTypesEnum = {
 } as const satisfies Record<string, string>;
 
 export type CutType = (typeof CutTypesEnum)[keyof typeof CutTypesEnum];
+
+export interface PipeData {
+    id: number;
+    length: number;
+    diameter: number;
+    material: string;
+    placement: string;
+    material_id?: number | null;
+    groung_level_id?: number | null;
+}
+
+export interface ValveData {
+    id: number;
+    quantity: number;
+    diameter: number;
+    model: string;
+}
+
+export interface GenericData {
+    id: number;
+    quantity: number;
+}
+
+export type MappedDataEntry = PipeData | ValveData | GenericData;
+
+export interface EquipmentRow {
+    id: number;
+    name: string;
+    type: EquipmentType;
+    balance: MappedDataEntry[];
+    fact: MappedDataEntry[];
+    cut: MappedDataEntry[];
+}

@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { Table, Group, Title, Button, Text, Stack, UnstyledButton, Center, Loader } from '@mantine/core';
-import { type EquipmentType, type ColumnType, type CutType, CutTypesEnum, ColumnTypesEnum, EquipmentTypesEnum } from '../types';
+import { type EquipmentType, type ColumnType, type CutType, CutTypesEnum, ColumnTypesEnum, EquipmentTypesEnum, BackendEquipmentTypesEnum , type DictionaryItem} from '../types';
 import { CreateEquipmentModal } from './modals/CreateEquipmentModal';
 import { EditEquipmentModal } from './modals/EditEquipmentModal';
 import { EditableClickText } from './EditableClickText';
@@ -9,28 +9,49 @@ import { EditableText } from './EditableText';
 import { addEquipmentToCard, getCardEquipment, deleteEquipmentItem } from '../api/Equipment';
 import { useDictionaries } from '../hooks/useDictionaries';
 import { IconTrash } from '@tabler/icons-react';
+import type { PipeData, ValveData, GenericData, EquipmentRow, MappedDataEntry } from '../types';
 
+const transformEquipmentData = (rawEquipment: any[], materials: DictionaryItem[], groundLevels: DictionaryItem[]): EquipmentRow[] => {
+    const getDictValue = (dict: DictionaryItem[], id: number | null) => {
+        if (!id) return '-';
+        return dict.find(d => d.id === id)?.value || '-';
+    };
 
-interface PipeData {
-    length: number;
-    diameter: number;
-    material: string;
-    placement: string;
-}
+    return rawEquipment.map((item: any) => {
+        const row: EquipmentRow = {
+            id: item.id,
+            name: item.description,
+            type: item.item_type as EquipmentType,
+            balance: [], fact: [], cut: []
+        };
 
-interface ValveData {
-    quantity: number;
-    diameter: number;
-}
+        item.data_entries.forEach((entry: any) => {
+            let mappedData: MappedDataEntry;
 
-export interface EquipmentRow {
-    id: number;
-    name: string;
-    type: EquipmentType;
-    balance: any[];
-    fact: any[];
-    cut: any[];
-}
+            if (entry.type === BackendEquipmentTypesEnum.PipeData) {
+                mappedData = {
+                    id: entry.id, length: entry.length, diameter: entry.diameter,
+                    material: getDictValue(materials, entry.material_id),
+                    placement: getDictValue(groundLevels, entry.groung_level_id),
+                    material_id: entry.material_id, groung_level_id: entry.groung_level_id
+                } as PipeData;
+            } else if (entry.type === BackendEquipmentTypesEnum.ValveData) {
+                mappedData = {
+                    id: entry.id, quantity: entry.quantity, diameter: entry.diameter,
+                    model: entry.model_number || '-'
+                } as ValveData;
+            } else {
+                mappedData = { id: entry.id, quantity: entry.quantity || 1 } as GenericData;
+            }
+
+            if (entry.column_type === ColumnTypesEnum.Balance) row.balance.push(mappedData);
+            if (entry.column_type === ColumnTypesEnum.Fact) row.fact.push(mappedData);
+            if (entry.column_type === ColumnTypesEnum.Cut) row.cut.push(mappedData);
+        });
+
+        return row;
+    });
+};
 
 const PipeItem = ({ data }: { data: PipeData }) => (
     <Stack gap={5}>
@@ -58,26 +79,25 @@ const ValveItem = ({ data }: { data: ValveData }) => (
     </Stack>
 );
 
-// Versatile cell: iterate through the array entries and render the desired component
-const EquipmentCell = ({ type, items }: { type: EquipmentType, items: any[] }) => {
-    if (!items || items.length === 0) {
-        return <Text c="dimmed" ta="center">-</Text>;
-    }
+const EquipmentColumnCell = ({ row, columnType, onEdit }: { row: EquipmentRow, columnType: ColumnType, onEdit: (rowId: number, type: EquipmentType, column: ColumnType, itemIndex: number, data: MappedDataEntry) => void }) => {
+    const items = row[columnType as keyof Pick<EquipmentRow, 'balance' | 'fact' | 'cut'>];
+    
+    if (!items || items.length === 0) return <Text c="dimmed" ta="center">-</Text>;
 
     return (
-        <Stack gap="sm">
+        <Stack gap={4}>
             {items.map((item, index) => (
-                <div 
-                    key={index} 
-                    style={{ 
-                        borderBottom: index !== items.length - 1 ? '1px dashed #ced4da' : 'none', 
-                        paddingBottom: index !== items.length - 1 ? '8px' : '0' 
-                    }}
+                <UnstyledButton
+                    key={index} w="100%" p="xs"
+                    onClick={() => onEdit(row.id, row.type, columnType, index, item)}
+                    style={{ borderBottom: index !== items.length - 1 ? '1px dashed #ced4da' : 'none', borderRadius: '4px', transition: 'background-color 0.15s ease' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f3f5'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 >
-                    {type === EquipmentTypesEnum.Pipe && <PipeItem data={item} />}
-                    {type === EquipmentTypesEnum.Valve && <ValveItem data={item} />}
-                    {type === EquipmentTypesEnum.Other && <Text size="sm">Qty: {item.quantity}</Text>}
-                </div>
+                    {row.type === EquipmentTypesEnum.Pipe && <PipeItem data={item as PipeData} />}
+                    {row.type === EquipmentTypesEnum.Valve && <ValveItem data={item as ValveData} />}
+                    {row.type === EquipmentTypesEnum.Other && <Text size="sm">Qty: {(item as GenericData).quantity}</Text>}
+                </UnstyledButton>
             ))}
         </Stack>
     );
@@ -123,6 +143,10 @@ export const EquipmentList = ({
         data: any;
     } | null>(null);
 
+    const displayEquipment = useMemo(() => {
+        return transformEquipmentData(rawEquipment, materials, groundLevels);
+    }, [rawEquipment, materials, groundLevels]);
+
     const addMutation = useMutation({
         mutationFn: (payload: any) => addEquipmentToCard(cardId, payload),
         onSuccess: () => {
@@ -164,87 +188,6 @@ export const EquipmentList = ({
     const handleSaveEdit = (newData: any) => {
         console.log("Saving new data for item:", editingContext, "New data:", newData);
         // equipment update logic
-    };
-
-    const displayEquipment: EquipmentRow[] = rawEquipment.map((item: any) => {
-        const row: EquipmentRow = {
-            id: item.id,
-            name: item.description,
-            type: item.item_type as EquipmentType,
-            balance: [],
-            fact: [],
-            cut: []
-        };
-
-        const getDictValue = (dict: any[], id: number | null) => {
-            if (!id) return '-';
-            const found = dict.find(d => d.id === id);
-            return found ? found.value : '-';
-        };
-
-        item.data_entries.forEach((entry: any) => {
-            let mappedData: any = {};
-
-            if (entry.type === "pipe_data") {
-                mappedData = {
-                    id: entry.id,
-                    length: entry.length,
-                    diameter: entry.diameter,
-                    material: getDictValue(materials, entry.material_id),
-                    placement: getDictValue(groundLevels, entry.groung_level_id),
-                    material_id: entry.material_id, 
-                    groung_level_id: entry.groung_level_id
-                };
-            } else if (entry.type === "valve_data") {
-                mappedData = {
-                    id: entry.id,
-                    quantity: entry.quantity,
-                    diameter: entry.diameter,
-                    model: entry.model_number || '-'
-                };
-            } else {
-                // generic_data
-                mappedData = {
-                    id: entry.id,
-                    quantity: entry.quantity || 1
-                };
-            }
-
-            if (entry.column_type === ColumnTypesEnum.Balance) row.balance.push(mappedData);
-            if (entry.column_type === ColumnTypesEnum.Fact) row.fact.push(mappedData);
-            if (entry.column_type === ColumnTypesEnum.Cut) row.cut.push(mappedData);
-        });
-
-        return row;
-    });
-
-    const renderCell = (row: EquipmentRow, column: ColumnType) => {
-        const items = row[column];
-        if (!items || items.length === 0) return <Text c="dimmed" ta="center">-</Text>;
-
-        return (
-            <Stack gap={4}>
-                {items.map((item, index) => (
-                    <UnstyledButton
-                        key={index}
-                        w="100%"
-                        p="xs"
-                        onClick={() => handleEditClick(row.id, row.type, column, index, item)}
-                        style={{ 
-                            borderBottom: index !== items.length - 1 ? '1px dashed #ced4da' : 'none', 
-                            borderRadius: '4px',
-                            transition: 'background-color 0.15s ease'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f3f5'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                    >
-                        {row.type === EquipmentTypesEnum.Pipe && <PipeItem data={item} />}
-                        {row.type === EquipmentTypesEnum.Valve && <ValveItem data={item} />}
-                        {row.type === EquipmentTypesEnum.Other && <Text size="sm">Qty: {item.quantity}</Text>}
-                    </UnstyledButton>
-                ))}
-            </Stack>
-        );
     };
 
     return (
@@ -320,9 +263,15 @@ export const EquipmentList = ({
                                         Delete
                                     </Button>
                                 </Table.Td>
-                                <Table.Td>{renderCell(row, ColumnTypesEnum.Balance)}</Table.Td>
-                                <Table.Td>{renderCell(row, ColumnTypesEnum.Fact)}</Table.Td>
-                                <Table.Td>{renderCell(row, ColumnTypesEnum.Cut)}</Table.Td>
+                                <Table.Td>
+                                    <EquipmentColumnCell row={row} columnType={ColumnTypesEnum.Balance} onEdit={handleEditClick} />
+                                </Table.Td>
+                                <Table.Td>
+                                    <EquipmentColumnCell row={row} columnType={ColumnTypesEnum.Fact} onEdit={handleEditClick} />
+                                </Table.Td>
+                                <Table.Td>
+                                    <EquipmentColumnCell row={row} columnType={ColumnTypesEnum.Cut} onEdit={handleEditClick} />
+                                </Table.Td>
                             </Table.Tr>
                         ))
                     )}
