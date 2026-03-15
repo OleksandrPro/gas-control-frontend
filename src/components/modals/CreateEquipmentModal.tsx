@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Modal, Button, Text, Stack, TextInput, Group, Grid } from '@mantine/core';
 import { useDictionaries } from '../../hooks/useDictionaries';
-import { mapToSelectData } from '../../utils';
+import { mapToSelectData } from '../../utils/utils';
 import { type EquipmentType, type CutType, EquipmentTypesEnum, CutTypesEnum } from '../../types';
 import { EquipmentColumn, FactColumnList } from '../equipment/Columns';
 import { EquipmentFormFields } from '../equipment/InputForms';
-import { buildEquipmentPayload, type EquipmentPayload } from '../equipment/PayloadBuilder';
+import { buildEquipmentPayload, type EquipmentPayload } from '../../utils/payloads/EquipmentPayload';
 
 interface CreateEquipmentModalProps {
   opened: boolean;

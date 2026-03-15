@@ -10,7 +10,7 @@ import { EquipmentList } from './EquipmentList';
 import { useDictionaries } from '../hooks/useDictionaries';
 import { usePageNavigation } from '../hooks/usePageNavigation';
 import { updateCard, deleteCard } from '../api/Cards';
-import { determineCutMode } from '../utils';
+import { determineCutMode } from '../utils/utils';
 
 interface CardDetailsProps {
     cardData: CardBackend

@@ -7,7 +7,7 @@ import { IconInfoCircle } from '@tabler/icons-react';
 
 import { type EquipmentType, type ColumnType, EquipmentTypesEnum } from '../../types';
 import { useDictionaries } from '../../hooks/useDictionaries';
-import { mapToSelectData } from '../../utils';
+import { mapToSelectData } from '../../utils/utils';
 
 interface EditEquipmentModalProps {
     opened: boolean;
