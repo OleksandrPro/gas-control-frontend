@@ -1,145 +1,130 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { 
-    Modal, NumberInput, Select, Button, SimpleGrid, 
-    Text, Stack, TextInput, Paper, Badge, Group
+    Modal, Button, 
+    Text, Stack, TextInput, Badge, Group, Grid
 } from '@mantine/core';
-import { IconInfoCircle } from '@tabler/icons-react';
+import { IconTrash } from '@tabler/icons-react';
 
-import { type EquipmentType, type ColumnType, EquipmentTypesEnum } from '../../types';
+import type { EquipmentRow } from '../../types';
 import { useDictionaries } from '../../hooks/useDictionaries';
 import { mapToSelectData } from '../../utils/utils';
+import { EquipmentColumn, FactColumnList } from '../equipment/Columns';
+import { EquipmentFormFields } from '../equipment/InputForms';
+import { type CutType } from '../../types';
+import { buildEquipmentPayload, type EquipmentUpdatePayload } from '../../utils/payloads/EquipmentPayload';
 
 interface EditEquipmentModalProps {
-    opened: boolean;
-    onClose: () => void;
-    type: EquipmentType;
-    column: ColumnType;
-    initialData: any;
-    onSave: (newData: any) => void;
+  opened: boolean;
+  onClose: () => void;
+  equipment: EquipmentRow | null;
+  cardCutType: CutType;
+  onSave: (payload: EquipmentUpdatePayload) => void;
+  onDelete: (id: number) => void;
 }
 
-export const EditEquipmentModal = ({ opened, onClose, type, column, initialData, onSave }: EditEquipmentModalProps) => {
-    const [formData, setFormData] = useState<any>({});
-
+export const EditEquipmentModal = ({ opened, onClose, equipment, cardCutType, onSave, onDelete }: EditEquipmentModalProps) => {
     const { materials, groundLevels } = useDictionaries();
-
-    const materialsData = mapToSelectData(materials);
-    const groundLevelsData = mapToSelectData(groundLevels);
+    const dicts = useMemo(() => ({
+        materialsData: mapToSelectData(materials),
+        groundLevelsData: mapToSelectData(groundLevels) 
+    }), [materials, groundLevels]);
+    
+    const [description, setDescription] = useState('');
+    const [balanceData, setBalanceData] = useState<any>({});
+    const [factDataList, setFactDataList] = useState<any[]>([{}]);
+    const [cutData, setCutData] = useState<any>({});
 
     useEffect(() => {
-        if (initialData) {
-            setFormData({ ...initialData });
+        if (opened && equipment) {
+            setDescription(equipment.name);
+            setBalanceData(equipment.balance[0] || {});
+            setFactDataList(equipment.fact.length > 0 ? equipment.fact : [{}]);
+            setCutData(equipment.cut[0] || {});
         }
-    }, [initialData, opened]);
+    }, [opened, equipment]);
 
-    const typeLabels: Record<EquipmentType, string> = {
-        'pipe': 'Pipe',
-        'valve': 'Valve',
-        'other': 'Other (GC etc.)'
+    if (!equipment) return null;
+
+    const handleFactChange = (index: number, field: string, value: any) => {
+        const newList = [...factDataList];
+        newList[index] = { ...newList[index], [field]: value };
+        setFactDataList(newList);
     };
 
-    const columnLabels: Record<ColumnType, string> = {
-        'balance': 'BALANCE',
-        'fact': 'FACT',
-        'cut': 'IN CUT'
+    const removeFactItem = (index: number) => {
+        setFactDataList(factDataList.filter((_, i) => i !== index));
     };
 
-    const handleSave = () => {
-        onSave(formData);
-        onClose();
-    };
+    const lastFact = factDataList[factDataList.length - 1];
+    const canAddMoreFact = lastFact && Object.values(lastFact).some(v => v !== '' && v !== null && v !== undefined);
 
-    const renderFormFields = () => {
-        if (type === EquipmentTypesEnum.Pipe) {
-            return (
-                <SimpleGrid cols={2}>
-                    <NumberInput 
-                        label="Diameter" 
-                        value={formData.diameter || ''} 
-                        onChange={(val) => setFormData({ ...formData, diameter: Number(val) })}
-                    />
-                    <NumberInput 
-                        label="Length" 
-                        value={formData.length || ''} 
-                        onChange={(val) => setFormData({ ...formData, length: Number(val) })}
-                    />
-                    <Select 
-                        label="Material" 
-                        data={materialsData} 
-                        value={formData.material_id ? String(formData.material_id) : null}
-                        onChange={(val) => setFormData({ ...formData, material_id: val ? Number(val) : null })}
-                        searchable
-                    />
-                    <Select 
-                        label="Placement" 
-                        data={groundLevelsData} 
-                        value={formData.groung_level_id ? String(formData.groung_level_id) : null}
-                        onChange={(val) => setFormData({ ...formData, groung_level_id: val ? Number(val) : null })}
-                        searchable
-                    />
-                </SimpleGrid>
-            );
-        }
-
-        if (type === EquipmentTypesEnum.Valve) {
-            return (
-                <Stack>
-                    <SimpleGrid cols={2}>
-                        <NumberInput 
-                            label="Diameter" 
-                            value={formData.diameter || ''} 
-                            onChange={(val) => setFormData({ ...formData, diameter: Number(val) })}
-                        />
-                        <NumberInput 
-                            label="Quantity (pcs)" 
-                            value={formData.quantity || ''} 
-                            onChange={(val) => setFormData({ ...formData, quantity: Number(val) })}
-                        />
-                    </SimpleGrid>
-                    <TextInput 
-                        label="Model / Number" 
-                        value={formData.model || 'Z-100'} 
-                        onChange={(val) => setFormData({ ...formData, model: val.currentTarget.value })}
-                    />
-                </Stack>
-            );
-        }
-
-        return (
-            <NumberInput 
-                label="Quantity (pcs)" 
-                value={formData.quantity || ''} 
-                onChange={(val) => setFormData({ ...formData, quantity: Number(val) })}
-            />
+    const handleSubmit = () => {
+        const fullPayload = buildEquipmentPayload(
+            description,
+            equipment.type,
+            cardCutType,
+            balanceData,
+            factDataList,
+            cutData
         );
+
+        const updatePayload: EquipmentUpdatePayload = {
+            description: fullPayload.description,
+            data_entries: fullPayload.data_entries
+        };
+
+        onSave(updatePayload);
+    };
+
+    const handleDelete = () => {
+        if (window.confirm('Are you sure you want to delete this equipment completely?')) {
+            onDelete(equipment.id);
+            onClose();
+        }
     };
 
     return (
-        <Modal opened={opened} onClose={onClose} title="Edit record" size="md">
+        <Modal opened={opened} onClose={onClose} title="Edit equipment" size="xl">
             <Stack>
-                <Paper bg="blue.0" p="md" radius="md" style={{ border: '1px solid var(--mantine-color-blue-2)' }}>
-                    <Stack>
-                        <Group gap="xs">
-                            <IconInfoCircle size={20} color="var(--mantine-color-blue-filled)" />
-                            <Text fw={600} c="blue.9">Parameters for: {typeLabels[type]}</Text>
-                        </Group>
-                        
-                        {renderFormFields()}
-                        
-                        <div>
-                            <Text size="sm" fw={500} mt="md" mb="xs" c="dimmed" tt="uppercase">
-                                COLUMN (NOT CHANGED)
-                            </Text>
-                            <Badge color="blue" variant="light" size="lg" radius="sm">
-                                {columnLabels[column]}
-                            </Badge>
-                        </div>
+                <Group align="flex-end">
+                    <TextInput 
+                        label="NAME (DESCRIPTION)" 
+                        value={description}
+                        onChange={(e) => setDescription(e.currentTarget.value)}
+                        required
+                        style={{ flexGrow: 1 }}
+                    />
+                    <Stack gap={2} mb={5}>
+                        <Text size="sm" fw={500} c="dimmed">TYPE</Text>
+                        <Badge size="lg" radius="sm" variant="light">
+                            {equipment.type.toUpperCase()}
+                        </Badge>
                     </Stack>
-                </Paper>
+                </Group>
 
-                <Button fullWidth mt="md" size="md" onClick={handleSave}>
-                    Save changes
-                </Button>
+                <Grid mt="sm">
+                    <EquipmentColumn title="BALANCE" span={4}>
+                        <EquipmentFormFields type={equipment.type} data={balanceData} dicts={dicts} onChange={(f: string, v: any) => setBalanceData({...balanceData, [f]: v})} />
+                    </EquipmentColumn>
+                    
+                    <EquipmentColumn title="FACT" span={4}>
+                        <FactColumnList factDataList={factDataList} activeType={equipment.type} dicts={dicts} onFactChange={handleFactChange} onRemoveFact={removeFactItem} onAddFact={() => setFactDataList([...factDataList, {}])} canAddMoreFact={canAddMoreFact} />
+                    </EquipmentColumn>
+                    
+                    <EquipmentColumn title="CUT" span={4}>
+                        <EquipmentFormFields type={equipment.type} data={cutData} dicts={dicts} onChange={(f: string, v: any) => setCutData({...cutData, [f]: v})} />
+                    </EquipmentColumn>
+                </Grid>
+
+                <Group justify="space-between" mt="md">
+                    <Button color="red" variant="subtle" leftSection={<IconTrash size={16} />} onClick={handleDelete}>
+                        Delete record
+                    </Button>
+                    <Group>
+                        <Button variant="default" onClick={onClose}>Cancel</Button>
+                        <Button color="blue" onClick={handleSubmit}>Save changes</Button>
+                    </Group>
+                </Group>
             </Stack>
         </Modal>
     );

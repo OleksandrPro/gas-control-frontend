@@ -1,6 +1,15 @@
-import { CutTypesEnum, EquipmentTypesEnum, ColumnTypesEnum, BackendEquipmentTypesEnum, type CutType, type EquipmentType, type ColumnType } from '../../types';
+import { 
+    CutTypesEnum, 
+    EquipmentTypesEnum, 
+    ColumnTypesEnum, 
+    BackendEquipmentTypesEnum, 
+    type CutType, 
+    type EquipmentType,
+    type ColumnType
+} from '../../types';
 
 export interface PipeDataEntry {
+    id?: number; 
     type: typeof BackendEquipmentTypesEnum.PipeData;
     column_type: ColumnType;
     diameter: number;
@@ -10,6 +19,7 @@ export interface PipeDataEntry {
 }
 
 export interface ValveDataEntry {
+    id?: number;
     type: typeof BackendEquipmentTypesEnum.ValveData;
     column_type: ColumnType;
     diameter: number;
@@ -18,6 +28,7 @@ export interface ValveDataEntry {
 }
 
 export interface GenericDataEntry {
+    id?: number;
     type: typeof BackendEquipmentTypesEnum.GenericData;
     column_type: ColumnType;
     quantity: number;
@@ -25,10 +36,25 @@ export interface GenericDataEntry {
 
 export type EquipmentDataEntry = PipeDataEntry | ValveDataEntry | GenericDataEntry;
 
+// Итоговый Payload для СОЗДАНИЯ (POST)
 export interface EquipmentPayload {
     item_type: EquipmentType;
     description: string;
     data_entries: EquipmentDataEntry[];
+}
+
+export interface EquipmentUpdatePayload {
+    description: string;
+    data_entries: EquipmentDataEntry[];
+}
+
+export interface EquipmentFormState {
+    diameter?: number | string;
+    length?: number | string;
+    material_id?: number | null;
+    groung_level_id?: number | null;
+    quantity?: number | string;
+    model_number?: string;
 }
 
 export const buildEquipmentPayload = (
@@ -42,7 +68,7 @@ export const buildEquipmentPayload = (
     
     const data_entries: EquipmentDataEntry[] = [];
 
-    const formatEntry = (colType: ColumnType, data: any): EquipmentDataEntry => {
+    const formatEntry = (colType: ColumnType, data: EquipmentFormState): EquipmentDataEntry => {
         if (activeType === EquipmentTypesEnum.Pipe) {
             return {
                 type: BackendEquipmentTypesEnum.PipeData,
