@@ -25,3 +25,10 @@ export const addEquipmentToCard = async (cardId: number, payload: EquipmentPaylo
 export const deleteEquipmentItem = async (itemId: number): Promise<void> => {
     await equipmentApi.delete(`/equipment-items/${itemId}`);
 };
+
+export const updateEquipmentItem = async (itemId: number, payload: any) => {
+    // payload будет иметь тип { description: string, data_entries: array }
+    // Замените axios.patch на ваш инстанс клиента (например, api.patch)
+    const response = await equipmentApi.patch(`/equipment-items/${itemId}`, payload);
+    return response.data;
+};

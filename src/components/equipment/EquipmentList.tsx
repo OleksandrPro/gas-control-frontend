@@ -5,7 +5,7 @@ import { type EquipmentType, type ColumnType, type CutType, CutTypesEnum, Column
 import { CreateEquipmentModal } from '../modals/CreateEquipmentModal';
 import { EditEquipmentModal } from '../modals/EditEquipmentModal';
 import { EditableText } from '../ui/editable/EditableText';
-import { addEquipmentToCard, getCardEquipment, deleteEquipmentItem } from '../../api/Equipment';
+import { addEquipmentToCard, getCardEquipment, deleteEquipmentItem, updateEquipmentItem } from '../../api/Equipment';
 import { useDictionaries } from '../../hooks/useDictionaries';
 import type { PipeData, ValveData, GenericData, EquipmentRow, MappedDataEntry } from '../../types';
 
@@ -144,6 +144,18 @@ export const EquipmentList = ({
         }
     });
 
+    const updateMutation = useMutation({
+        mutationFn: ({ id, payload }: { id: number, payload: any }) => updateEquipmentItem(id, payload),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['equipment', cardId] });
+            setEditModalOpened(false); 
+        },
+        onError: (error) => {
+            console.error("Failed to update equipment:", error);
+            alert("Error while updating equipment.");
+        }
+    });
+
     const deleteMutation = useMutation({
         mutationFn: (itemId: number) => deleteEquipmentItem(itemId),
         onSuccess: () => {
@@ -167,11 +179,9 @@ export const EquipmentList = ({
     };
 
     const handleSaveEdit = (payload: any) => {
-        console.log("Payload to update on backend:", payload);
-        // equipment update logic
-        // call updateEquipmentMutation
-        // updateMutation.mutate(payload)
-        setEditModalOpened(false);
+        if (editingEquipment) {
+            updateMutation.mutate({ id: editingEquipment.id, payload });
+        }
     };
 
     return (
@@ -261,6 +271,7 @@ export const EquipmentList = ({
                 opened={editModalOpened}
                 onClose={() => setEditModalOpened(false)}
                 equipment={editingEquipment}
+                cardCutType={cutType}
                 onSave={handleSaveEdit}
                 onDelete={(id) => {
                     deleteMutation.mutate(id);

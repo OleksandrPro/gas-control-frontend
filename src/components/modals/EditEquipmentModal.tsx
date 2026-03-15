@@ -10,25 +10,25 @@ import { useDictionaries } from '../../hooks/useDictionaries';
 import { mapToSelectData } from '../../utils/utils';
 import { EquipmentColumn, FactColumnList } from '../equipment/Columns';
 import { EquipmentFormFields } from '../equipment/InputForms';
+import { type CutType } from '../../types';
+import { buildEquipmentPayload, type EquipmentUpdatePayload } from '../../utils/payloads/EquipmentPayload';
 
 interface EditEquipmentModalProps {
   opened: boolean;
   onClose: () => void;
   equipment: EquipmentRow | null;
-  onSave: (payload: any) => void;
+  cardCutType: CutType;
+  onSave: (payload: EquipmentUpdatePayload) => void;
   onDelete: (id: number) => void;
 }
 
-export const EditEquipmentModal = ({ opened, onClose, equipment, onSave, onDelete }: EditEquipmentModalProps) => {
-    const [formData, setFormData] = useState<any>({});
-
+export const EditEquipmentModal = ({ opened, onClose, equipment, cardCutType, onSave, onDelete }: EditEquipmentModalProps) => {
     const { materials, groundLevels } = useDictionaries();
-
     const dicts = useMemo(() => ({
         materialsData: mapToSelectData(materials),
         groundLevelsData: mapToSelectData(groundLevels) 
     }), [materials, groundLevels]);
-
+    
     const [description, setDescription] = useState('');
     const [balanceData, setBalanceData] = useState<any>({});
     const [factDataList, setFactDataList] = useState<any[]>([{}]);
@@ -59,14 +59,21 @@ export const EditEquipmentModal = ({ opened, onClose, equipment, onSave, onDelet
     const canAddMoreFact = lastFact && Object.values(lastFact).some(v => v !== '' && v !== null && v !== undefined);
 
     const handleSubmit = () => {
-        const payload = {
-            id: equipment.id,
+        const fullPayload = buildEquipmentPayload(
             description,
+            equipment.type,
+            cardCutType,
             balanceData,
             factDataList,
             cutData
+        );
+
+        const updatePayload: EquipmentUpdatePayload = {
+            description: fullPayload.description,
+            data_entries: fullPayload.data_entries
         };
-        onSave(payload);
+
+        onSave(updatePayload);
     };
 
     const handleDelete = () => {
