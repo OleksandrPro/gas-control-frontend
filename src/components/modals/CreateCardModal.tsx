@@ -173,9 +173,9 @@ export const CreateCardModal = ({ opened, onClose }: CreateCardModalProps) => {
           label="CUT TYPE" 
           placeholder="Select" 
           data={dictsData.cutsData} 
-          value={formData.cut_type_id || (dictsData.cutsData.length > 0 ? dictsData.cutsData[0].value : null)}
+          value={formData.cut_type_id || (dictsData.cutsData[0]?.value || null)}
           onChange={(val) => handleChange('cut_type_id', val)}
-          clearable
+          searchable
         />
         <DateInput 
           label="BUILD DATE" 

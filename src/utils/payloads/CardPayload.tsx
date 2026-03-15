@@ -29,7 +29,7 @@ export const buildCardPayload = (
     formData: CreateCardFormState, 
     dictsData: Record<string, any[]>
 ) => {
-    const { districtsData, pressuresData, objectNamesData, propertiesData } = dictsData;
+    const { districtsData, pressuresData, objectNamesData, propertiesData, cutData } = dictsData;
 
     return {
         inventory_number: formData.inventory_number?.trim(),
@@ -48,6 +48,6 @@ export const buildCardPayload = (
         object_name_id: Number(formData.object_name_id || objectNamesData[0]?.value),
         property_type_id: Number(formData.property_type_id || propertiesData[0]?.value),
         
-        cut_type_id: formData.cut_type_id ? Number(formData.cut_type_id) : null,
+        cut_type_id: Number(formData.cut_type_id || cutData[0]?.value),
     };
 };
