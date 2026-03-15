@@ -4,6 +4,7 @@ import { NumberFilter } from './NumberFilter';
 import { useDictionaries } from '../../hooks/useDictionaries';
 import { mapToSelectData } from '../../utils/utils';
 import { type NumberFilterPayload } from './NumberFilter';
+import { buildFilterPayload, type FilterState } from '../../utils/payloads/FilterPayload';
 
 export interface CardFilterPayload {
     inventory_number_like?: string;
@@ -50,6 +51,12 @@ export const FilterBar = ({ onSearch }: FilterBarProps) => {
         setIsFilterBarOpen(newState)
     }
 
+    const currentFilterState: FilterState = {
+        searchQuery, districtsFilter, ownershipFilter, objectsFilter, 
+        pressuresFilter, folderFilter, cutsFilter, materialsFilter, 
+        groundLevelsFilter, columnTypesFilter, diameterFilter
+    };
+
     const districtsData = mapToSelectData(districts);
     const propertiesData = mapToSelectData(properties);
     const pressuresData = mapToSelectData(pressures);
@@ -59,26 +66,7 @@ export const FilterBar = ({ onSearch }: FilterBarProps) => {
     const groundLevelsData = mapToSelectData(groundLevels);
 
     const handleSearchClick = () => {
-        const payload: CardFilterPayload = {};
-
-        if (searchQuery.trim()) payload.inventory_number_like = searchQuery.trim();
-
-        if (districtsFilter.length > 0) payload.district_id = districtsFilter.map(Number);
-        if (ownershipFilter.length > 0) payload.property_type_id = ownershipFilter.map(Number);
-        if (objectsFilter.length > 0) payload.object_name_id = objectsFilter.map(Number);
-        if (pressuresFilter.length > 0) payload.pressure_type_id = pressuresFilter.map(Number);
-        if (cutsFilter.length > 0) payload.cut_type_id = cutsFilter.map(Number);
-        
-        if (folderFilter.trim()) payload.folder = [folderFilter.trim()];
-
-        if (materialsFilter.length > 0) payload.pipe_material_id = materialsFilter.map(Number);
-        if (groundLevelsFilter.length > 0) payload.groung_level_id = groundLevelsFilter.map(Number);
-        if (columnTypesFilter.length > 0) payload.column_type = columnTypesFilter;
-
-        if (diameterFilter?.equal !== undefined) payload.pipe_diameter_equal = diameterFilter.equal;
-        if (diameterFilter?.min !== undefined) payload.pipe_diameter_min = diameterFilter.min;
-        if (diameterFilter?.max !== undefined) payload.pipe_diameter_max = diameterFilter.max;
-
+        const payload = buildFilterPayload(currentFilterState);
         onSearch(payload);
     };
 
