@@ -4,23 +4,7 @@ import { NumberFilter } from './NumberFilter';
 import { useDictionaries } from '../../hooks/useDictionaries';
 import { mapToSelectData } from '../../utils/utils';
 import { type NumberFilterPayload } from './NumberFilter';
-import { buildFilterPayload, type FilterState } from '../../utils/payloads/FilterPayload';
-
-export interface CardFilterPayload {
-    inventory_number_like?: string;
-    district_id?: number[];
-    property_type_id?: number[];
-    object_name_id?: number[];
-    pressure_type_id?: number[];
-    folder?: string[];
-    cut_type_id?: number[];
-    pipe_material_id?: number[];
-    groung_level_id?: number[];
-    column_type?: string[];
-    pipe_diameter_equal?: number;
-    pipe_diameter_min?: number;
-    pipe_diameter_max?: number;
-}
+import { buildFilterPayload, type FilterState, type CardFilterPayload } from '../../utils/payloads/FilterPayload';
 
 interface FilterBarProps {
     onSearch: (filters: CardFilterPayload) => void;
