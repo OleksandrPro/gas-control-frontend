@@ -1,15 +1,15 @@
 import { useState, useMemo } from 'react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { Table, Group, Title, Button, Text, Stack, UnstyledButton, Center, Loader } from '@mantine/core';
-import { type EquipmentType, type ColumnType, type CutType, CutTypesEnum, ColumnTypesEnum, EquipmentTypesEnum, BackendEquipmentTypesEnum , type DictionaryItem} from '../types';
-import { CreateEquipmentModal } from './modals/CreateEquipmentModal';
-import { EditEquipmentModal } from './modals/EditEquipmentModal';
-import { EditableClickText } from './EditableClickText';
-import { EditableText } from './EditableText';
-import { addEquipmentToCard, getCardEquipment, deleteEquipmentItem } from '../api/Equipment';
-import { useDictionaries } from '../hooks/useDictionaries';
+import { type EquipmentType, type ColumnType, type CutType, CutTypesEnum, ColumnTypesEnum, EquipmentTypesEnum, BackendEquipmentTypesEnum , type DictionaryItem} from '../../types';
+import { CreateEquipmentModal } from '../modals/CreateEquipmentModal';
+import { EditEquipmentModal } from '../modals/EditEquipmentModal';
+import { EditableClickText } from '../ui/editable/EditableClickText';
+import { EditableText } from '../ui/editable/EditableText';
+import { addEquipmentToCard, getCardEquipment, deleteEquipmentItem } from '../../api/Equipment';
+import { useDictionaries } from '../../hooks/useDictionaries';
 import { IconTrash } from '@tabler/icons-react';
-import type { PipeData, ValveData, GenericData, EquipmentRow, MappedDataEntry } from '../types';
+import type { PipeData, ValveData, GenericData, EquipmentRow, MappedDataEntry } from '../../types';
 
 const transformEquipmentData = (rawEquipment: any[], materials: DictionaryItem[], groundLevels: DictionaryItem[]): EquipmentRow[] => {
     const getDictValue = (dict: DictionaryItem[], id: number | null) => {

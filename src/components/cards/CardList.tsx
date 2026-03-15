@@ -5,7 +5,7 @@ import {
 } from 'mantine-react-table';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { CardDisplay } from '../types';
+import type { CardDisplay } from '../../types';
 
 export interface CardListProps{
     cards: CardDisplay[]

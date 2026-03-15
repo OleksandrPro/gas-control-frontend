@@ -1,5 +1,5 @@
 import type { Card, CardDisplay } from "./types";
-import type { EquipmentRow } from "./components/EquipmentList";
+import type { EquipmentRow } from "./components/equipment/EquipmentList";
 
 export const MOCK_DICTIONARIES: Record<string, string[]> = {
     "Districts": ["Central", "Northern", "Southern", "Western"],

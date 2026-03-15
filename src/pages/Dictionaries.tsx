@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Grid, Stack, Title, Text, NavLink, Group } from '@mantine/core';
 
-import { DictionaryEditor, type DictionaryConfig} from '../components/DictionaryEditor';
+import { DictionaryEditor, type DictionaryConfig } from '../components/dictionaries/DictionaryEditor';
 import { DICTIONARY_ENDPOINTS } from '../api/Dictionaries';
 
 const DICTIONARY_REGISTRY: DictionaryConfig[] = [
