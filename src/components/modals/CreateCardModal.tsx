@@ -4,6 +4,7 @@ import { Modal, TextInput, Select, Button, SimpleGrid, NumberInput } from '@mant
 import { DateInput } from '@mantine/dates';
 import { IconCalendar } from '@tabler/icons-react';
 import { useDictionaries } from '../../hooks/useDictionaries';
+import { usePageNavigation } from '../../hooks/usePageNavigation';
 import { createCard } from '../../api/Cards';
 import { mapToSelectData } from '../../utils/utils';
 import { buildCardPayload, type CreateCardFormState } from '../../utils/payloads/CardPayload';
@@ -16,6 +17,7 @@ interface CreateCardModalProps {
 export const CreateCardModal = ({ opened, onClose }: CreateCardModalProps) => {
   const queryClient = useQueryClient();
   const { districts, properties, pressures, objectNames, cuts } = useDictionaries();
+  const { openCardDetails } = usePageNavigation()
 
   const [formData, setFormData] = useState<CreateCardFormState>({});
 
@@ -33,10 +35,15 @@ export const CreateCardModal = ({ opened, onClose }: CreateCardModalProps) => {
 
   const createMutation = useMutation({
       mutationFn: (payload: any) => createCard(payload),
-      onSuccess: () => {
+      onSuccess: (data) => {
           queryClient.invalidateQueries({ queryKey: ['cards'] });
           setFormData({});
           onClose();
+          if (data && data.id) {
+              openCardDetails(data.id);
+          } else {
+              console.warn("Server-side error! New card is created but response doesn't contain id.");
+          }
       },
       onError: (error) => {
           console.error("Error while creating a card:", error);

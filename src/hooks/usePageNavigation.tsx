@@ -11,5 +11,9 @@ export const usePageNavigation = () => {
         navigate("/dictionaries")
     }
 
-    return { goToHome, goToDictionaries };
+    const openCardDetails = (id: number) => {
+        navigate(`/card-details/${id}`)
+    }
+
+    return { goToHome, goToDictionaries, openCardDetails };
 }
