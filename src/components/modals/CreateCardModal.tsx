@@ -6,7 +6,7 @@ import { IconCalendar } from '@tabler/icons-react';
 import { useDictionaries } from '../../hooks/useDictionaries';
 import { createCard } from '../../api/Cards';
 import { mapToSelectData } from '../../utils/utils';
-import { buildCardPayload, type CreateCardFormState } from '../../utils/payloads/cardPayload';
+import { buildCardPayload, type CreateCardFormState } from '../../utils/payloads/CardPayload';
 
 interface CreateCardModalProps {
   opened: boolean;
