@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { TextInput, MultiSelect, Button, Group, Stack, SimpleGrid, Paper, Text, Tooltip } from '@mantine/core';
 import { NumberFilter } from './NumberFilter';
-import { useDictionaries } from '../hooks/useDictionaries';
-import { mapToSelectData } from '../utils';
+import { useDictionaries } from '../../hooks/useDictionaries';
+import { mapToSelectData } from '../../utils/utils';
 import { type NumberFilterPayload } from './NumberFilter';
 
 export interface CardFilterPayload {

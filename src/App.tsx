@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 
-import { Header } from './components/Header'
+import { Header } from './components/layout/Header'
 import { HomePage } from './pages/Home'
 import { CardDetailsPage } from './pages/CardDetails'
 import { DictionariesPage } from './pages/Dictionaries'

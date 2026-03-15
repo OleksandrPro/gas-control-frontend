@@ -2,15 +2,15 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button, SimpleGrid, Group, Stack, Grid, Text, Title, Loader } from "@mantine/core";
-import { type CardBackend, type CardUpdateData } from "../types";
-import { EditableText } from './EditableText';
-import { EditableSelect } from './EditableSelect';
-import { EditableDate } from './EditableDate';
-import { EquipmentList } from './EquipmentList';
-import { useDictionaries } from '../hooks/useDictionaries';
-import { usePageNavigation } from '../hooks/usePageNavigation';
-import { updateCard, deleteCard } from '../api/Cards';
-import { determineCutMode } from '../utils';
+import { type CardBackend, type CardUpdateData } from "../../types";
+import { EditableText } from '../ui/editable/EditableText';
+import { EditableSelect } from '../ui/editable/EditableSelect';
+import { EditableDate } from '../ui/editable/EditableDate';
+import { EquipmentList } from '../equipment/EquipmentList';
+import { useDictionaries } from '../../hooks/useDictionaries';
+import { usePageNavigation } from '../../hooks/usePageNavigation';
+import { updateCard, deleteCard } from '../../api/Cards';
+import { determineCutMode } from '../../utils/utils';
 
 interface CardDetailsProps {
     cardData: CardBackend

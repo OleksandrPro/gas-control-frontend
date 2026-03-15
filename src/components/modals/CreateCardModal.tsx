@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Modal, TextInput, Select, Button, SimpleGrid, NumberInput } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { IconCalendar } from '@tabler/icons-react';
-import { useDictionaries } from '../hooks/useDictionaries';
-import { createCard } from '../api/Cards';
-import { mapToSelectData } from '../utils';
+import { useDictionaries } from '../../hooks/useDictionaries';
+import { createCard } from '../../api/Cards';
+import { mapToSelectData } from '../../utils/utils';
+import { buildCardPayload, type CreateCardFormState } from '../../utils/payloads/CardPayload';
 
 interface CreateCardModalProps {
   opened: boolean;
@@ -16,16 +17,18 @@ export const CreateCardModal = ({ opened, onClose }: CreateCardModalProps) => {
   const queryClient = useQueryClient();
   const { districts, properties, pressures, objectNames, cuts } = useDictionaries();
 
-  const [formData, setFormData] = useState<Record<string, any>>({});
+  const [formData, setFormData] = useState<CreateCardFormState>({});
 
-  const districtsData = mapToSelectData(districts);
-  const propertiesData = mapToSelectData(properties);
-  const pressuresData = mapToSelectData(pressures);
-  const objectNamesData = mapToSelectData(objectNames);
-  const cutsData = mapToSelectData(cuts);
+  const dictsData = useMemo(() => ({
+      districtsData: mapToSelectData(districts),
+      propertiesData: mapToSelectData(properties),
+      pressuresData: mapToSelectData(pressures),
+      objectNamesData: mapToSelectData(objectNames),
+      cutsData: mapToSelectData(cuts)
+  }), [districts, properties, pressures, objectNames, cuts]);
 
-  const handleChange = (field: string, value: any) => {
-      setFormData(prev => ({ ...prev, [field]: value }));
+  const handleChange = (field: keyof CreateCardFormState, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const createMutation = useMutation({
@@ -47,28 +50,7 @@ export const CreateCardModal = ({ opened, onClose }: CreateCardModalProps) => {
           return;
       }
 
-      const buildDate = new Date(formData.build_date_dn);
-      const formattedDate = `${buildDate.getFullYear()}-${String(buildDate.getMonth() + 1).padStart(2, '0')}-${String(buildDate.getDate()).padStart(2, '0')}`;
-
-      const payload = {
-          inventory_number: formData.inventory_number,
-          inventory_number_eskd: formData.inventory_number_eskd || "",
-          gas_pipeline_section: formData.gas_pipeline_section || "",
-          address: formData.address || "",
-          described_name: formData.described_name || "",
-          folder: formData.folder || "",
-          
-          total_length_balance: Number(String(formData.total_length_balance || 0).replace(',', '.')),
-          total_length_fact: formData.total_length_fact ? Number(String(formData.total_length_fact).replace(',', '.')) : null,
-          build_date_dn: formattedDate,
-
-          district_id: Number(formData.district_id || (districtsData[0]?.value)),
-          pressure_type_id: Number(formData.pressure_type_id || (pressuresData[0]?.value)),
-          object_name_id: Number(formData.object_name_id || (objectNamesData[0]?.value)),
-          property_type_id: Number(formData.property_type_id || (propertiesData[0]?.value)),
-          
-          cut_type_id: formData.cut_type_id ? Number(formData.cut_type_id) : null,
-      };
+      const payload = buildCardPayload(formData, dictsData);
 
       createMutation.mutate(payload);
   };
@@ -81,7 +63,7 @@ export const CreateCardModal = ({ opened, onClose }: CreateCardModalProps) => {
           onClose();
       }} 
       title="Create Card" 
-      size="x1"
+      size="xl"
       centered
       overlayProps={{
         backgroundOpacity: 0.55,
@@ -127,32 +109,32 @@ export const CreateCardModal = ({ opened, onClose }: CreateCardModalProps) => {
         <Select 
           label="DISTRICT" 
           placeholder="Select" 
-          data={districtsData} 
-          value={formData.district_id || (districtsData.length > 0 ? districtsData[0].value : null)}
+          data={dictsData.districtsData} 
+          value={formData.district_id || (dictsData.districtsData[0]?.value || null)}
           onChange={(val) => handleChange('district_id', val)}
           searchable
         />
         <Select 
           label="Pressures" 
           placeholder="Select" 
-          data={pressuresData} 
-          value={formData.pressure_type_id || (pressuresData.length > 0 ? pressuresData[0].value : null)}
+          data={dictsData.pressuresData} 
+          value={formData.pressure_type_id || (dictsData.pressuresData[0]?.value || null)}
           onChange={(val) => handleChange('pressure_type_id', val)}
           searchable
         />
         <Select 
           label="Gas pipeline type" 
           placeholder="Select" 
-          data={objectNamesData} 
-          value={formData.object_name_id || (objectNamesData.length > 0 ? objectNamesData[0].value : null)}
+          data={dictsData.objectNamesData} 
+          value={formData.object_name_id || (dictsData.objectNamesData[0]?.value || null)}
           onChange={(val) => handleChange('object_name_id', val)}
           searchable
         />
         <Select 
           label="OWNERSHIP" 
           placeholder="Select" 
-          data={propertiesData} 
-          value={formData.property_type_id || (propertiesData.length > 0 ? propertiesData[0].value : null)}
+          data={dictsData.propertiesData} 
+          value={formData.property_type_id || (dictsData.propertiesData[0]?.value || null)} 
           onChange={(val) => handleChange('property_type_id', val)}
           searchable
         />
@@ -183,8 +165,8 @@ export const CreateCardModal = ({ opened, onClose }: CreateCardModalProps) => {
         <Select 
           label="CUT TYPE" 
           placeholder="Select" 
-          data={cutsData} 
-          value={formData.cut_type_id || (cutsData.length > 0 ? cutsData[0].value : null)}
+          data={dictsData.cutsData} 
+          value={formData.cut_type_id || (dictsData.cutsData.length > 0 ? dictsData.cutsData[0].value : null)}
           onChange={(val) => handleChange('cut_type_id', val)}
           clearable
         />

@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from '@tanstack/react-query';
 import { Center, Loader, Text } from "@mantine/core";
-import { CardDetails } from "../components/CardDetails";
+import { CardDetails } from "../components/cards/CardDetails";
 
 import { getCard } from "../api/Cards";
 

@@ -1,13 +1,13 @@
 import { useState, useMemo } from "react";
 import { useQuery } from '@tanstack/react-query';
 import { Button, Group, Title, Text, Pagination, Center, Loader } from "@mantine/core";
-import { CreateCardModal } from "../components/CreateCardModal";
-import { CardList } from "../components/CardList";
-import { FilterBar, type CardFilterPayload } from "../components/FilterBar";
+import { CreateCardModal } from "../components/modals/CreateCardModal";
+import { CardList } from "../components/cards/CardList";
+import { FilterBar, type CardFilterPayload } from "../components/ui/FilterBar";
 
 import { getCards } from "../api/Cards";
 import { useDictionaries } from "../hooks/useDictionaries";
-import { mapCardToDisplay } from "../Mapper";
+import { mapCardToDisplay } from "../utils/Mapper";
 
 
 export const HomePage = () => {

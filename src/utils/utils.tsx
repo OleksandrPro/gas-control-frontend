@@ -1,4 +1,4 @@
-import { type DictionaryItem, type CutType, CutTypesEnum } from './types';
+import { type DictionaryItem, type CutType, CutTypesEnum } from '../types';
 
 
 export const mapToSelectData = (items: DictionaryItem[] | undefined | null) => {

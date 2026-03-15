@@ -34,29 +34,31 @@ export type CardDisplay = {
     folder: string;
 }
 
-export type Card = {
-  id: number,
-  inventory_number: string;
-  inventory_number_eskd: string;
-  gas_pipeline_section: string;
-  described_name: string;
-  address: string;
-  folder: string;
-  total_length_balance: string;
-  total_length_fact: string;
-  build_date_dn: Date
-
-  district: string;
-  property: string;
-  object_name: string;
-  pressure: string;
-  cut: string;
-};
-
 export type CardUpdateData = Partial<Omit<CardBackend, 'id'>>;
 
-export type EquipmentType = 'pipe' | 'valve' | 'other';
-export type ColumnType = 'balance' | 'fact' | 'inCut';
+export const EquipmentTypesEnum = {
+  Pipe: "pipe",
+  Valve: "valve",
+  Other: "other",
+} as const satisfies Record<string, string>;
+
+export type EquipmentType = (typeof EquipmentTypesEnum)[keyof typeof EquipmentTypesEnum];
+
+export const BackendEquipmentTypesEnum = {
+  PipeData: "pipe_data",
+  ValveData: "valve_data",
+  GenericData: "generic_data",
+} as const satisfies Record<string, string>;
+
+export type BackendEquipmentType = (typeof BackendEquipmentTypesEnum)[keyof typeof BackendEquipmentTypesEnum];
+
+export const ColumnTypesEnum = {
+  Balance: "balance",
+  Fact: "fact",
+  Cut: "cut",
+} as const satisfies Record<string, string>;
+
+export type ColumnType = (typeof ColumnTypesEnum)[keyof typeof ColumnTypesEnum];
 
 export type DictionaryItem = {
   id: number,
@@ -79,3 +81,36 @@ export const CutTypesEnum = {
 } as const satisfies Record<string, string>;
 
 export type CutType = (typeof CutTypesEnum)[keyof typeof CutTypesEnum];
+
+export interface PipeData {
+    id: number;
+    length: number;
+    diameter: number;
+    material: string;
+    placement: string;
+    material_id?: number | null;
+    groung_level_id?: number | null;
+}
+
+export interface ValveData {
+    id: number;
+    quantity: number;
+    diameter: number;
+    model: string;
+}
+
+export interface GenericData {
+    id: number;
+    quantity: number;
+}
+
+export type MappedDataEntry = PipeData | ValveData | GenericData;
+
+export interface EquipmentRow {
+    id: number;
+    name: string;
+    type: EquipmentType;
+    balance: MappedDataEntry[];
+    fact: MappedDataEntry[];
+    cut: MappedDataEntry[];
+}

@@ -1,6 +1,6 @@
 import { Text, Select, type SelectProps } from "@mantine/core";
-import { type DictionaryItem } from "../types";
-import { mapToSelectData } from "../utils";
+import { type DictionaryItem } from "../../../types";
+import { mapToSelectData } from "../../../utils/utils";
 
 interface EditableSelectProps extends Omit<SelectProps, 'data' | 'value' | 'onChange'> {
     isEditing: boolean;

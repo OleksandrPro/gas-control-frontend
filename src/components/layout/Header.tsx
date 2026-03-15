@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Burger, Group, Flex, Text, Button } from '@mantine/core';
-import { usePageNavigation } from '../hooks/usePageNavigation';
+import { usePageNavigation } from '../../hooks/usePageNavigation';
 
 export function Header() {
   const [isOpened, setIsOpened] = useState(false);
