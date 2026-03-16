@@ -36,7 +36,6 @@ export interface GenericDataEntry {
 
 export type EquipmentDataEntry = PipeDataEntry | ValveDataEntry | GenericDataEntry;
 
-// Итоговый Payload для СОЗДАНИЯ (POST)
 export interface EquipmentPayload {
     item_type: EquipmentType;
     description: string;
@@ -49,6 +48,7 @@ export interface EquipmentUpdatePayload {
 }
 
 export interface EquipmentFormState {
+    id?: number; 
     diameter?: number | string;
     length?: number | string;
     material_id?: number | null;
@@ -69,8 +69,11 @@ export const buildEquipmentPayload = (
     const data_entries: EquipmentDataEntry[] = [];
 
     const formatEntry = (colType: ColumnType, data: EquipmentFormState): EquipmentDataEntry => {
+        const baseId = data.id ? { id: data.id } : {};
+
         if (activeType === EquipmentTypesEnum.Pipe) {
             return {
+                ...baseId,
                 type: BackendEquipmentTypesEnum.PipeData,
                 column_type: colType,
                 diameter: Number(data.diameter || 0),
@@ -80,6 +83,7 @@ export const buildEquipmentPayload = (
             };
         } else if (activeType === EquipmentTypesEnum.Valve) {
             return {
+                ...baseId,
                 type: BackendEquipmentTypesEnum.ValveData,
                 column_type: colType,
                 diameter: Number(data.diameter || 0),
@@ -89,6 +93,7 @@ export const buildEquipmentPayload = (
         }
         
         return {
+            ...baseId,
             type: BackendEquipmentTypesEnum.GenericData,
             column_type: colType,
             quantity: Number(data.quantity || 1)
@@ -96,12 +101,12 @@ export const buildEquipmentPayload = (
     };
 
     if (cardCutType === CutTypesEnum.None) {
-        if (Object.keys(factDataList[0]).length > 0) {
-            data_entries.push(formatEntry(ColumnTypesEnum.Balance, factDataList[0]));
-            factDataList.forEach(item => {
-                if (Object.keys(item).length > 0) data_entries.push(formatEntry(ColumnTypesEnum.Fact, item));
-            });
+        if (balanceData && Object.keys(balanceData).length > 0) {
+            data_entries.push(formatEntry(ColumnTypesEnum.Balance, balanceData));
         }
+        factDataList.forEach(item => {
+            if (Object.keys(item).length > 0) data_entries.push(formatEntry(ColumnTypesEnum.Fact, item));
+        });
     } else if (cardCutType === CutTypesEnum.Full) {
         data_entries.push(formatEntry(ColumnTypesEnum.Balance, balanceData));
         data_entries.push(formatEntry(ColumnTypesEnum.Cut, cutData));
