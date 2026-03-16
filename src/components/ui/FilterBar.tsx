@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { TextInput, MultiSelect, Button, Group, Stack, SimpleGrid, Paper, Text, Tooltip, Modal, Loader, Title } from '@mantine/core';
+import { TextInput, MultiSelect, Button, Group, Stack, SimpleGrid, Paper, Text, Tooltip} from '@mantine/core';
 import { NumberFilter } from './NumberFilter';
 import { useDictionaries } from '../../hooks/useDictionaries';
 import { mapToSelectData } from '../../utils/utils';
 import { type NumberFilterPayload } from './NumberFilter';
 import { buildFilterPayload, type FilterState, type CardFilterPayload } from '../../utils/payloads/FilterPayload';
 import { getPipesLengthStats } from '../../api/Analytics';
+import { CalculatorModal } from '../modals/CalculatorModal';
 
 interface FilterBarProps {
     onSearch: (filters: CardFilterPayload) => void;
@@ -149,28 +150,13 @@ export const FilterBar = ({ onSearch }: FilterBarProps) => {
                 }
             </Stack>
 
-            <Modal 
+            <CalculatorModal 
                 opened={isCalcModalOpened} 
                 onClose={() => setIsCalcModalOpened(false)} 
-                title="Calculation Results"
-                centered
-            >
-                <Stack align="center" py="xl">
-                    <Text c="dimmed">Total length based on active filters:</Text>
-                    
-                    {calculateMutation.isPending ? (
-                        <Loader color="green" size="lg" mt="md" />
-                    ) : calculateMutation.isSuccess ? (
-                        <Title order={1} c="green" style={{ fontSize: '3rem' }}>
-                            {calculateMutation.data?.total_length?.toFixed(10)} m
-                        </Title>
-                    ) : (
-                        <Text c="red">Failed to load data.</Text>
-                    )}
-                </Stack>
-            </Modal>
-
+                isLoading={calculateMutation.isPending}
+                isSuccess={calculateMutation.isSuccess}
+                totalLength={calculateMutation.data?.total_length}
+            />
         </Paper>
-        
     );
 };
