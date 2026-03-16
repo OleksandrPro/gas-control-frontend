@@ -59,6 +59,11 @@ export const EditEquipmentModal = ({ opened, onClose, equipment, cardCutType, on
     const canAddMoreFact = lastFact && Object.values(lastFact).some(v => v !== '' && v !== null && v !== undefined);
 
     const handleSubmit = () => {
+        console.info('---')
+        console.info(balanceData)
+        console.info(factDataList)
+        console.info(cutData)
+        console.info('---')
         const fullPayload = buildEquipmentPayload(
             description,
             equipment.type,
@@ -72,6 +77,7 @@ export const EditEquipmentModal = ({ opened, onClose, equipment, cardCutType, on
             description: fullPayload.description,
             data_entries: fullPayload.data_entries
         };
+        console.info(updatePayload)
 
         onSave(updatePayload);
     };

@@ -98,7 +98,6 @@ export interface ValveData {
     id: number;
     quantity: number;
     diameter: number;
-    model: string;
 }
 
 export interface GenericData {

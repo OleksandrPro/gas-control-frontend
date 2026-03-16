@@ -1,4 +1,4 @@
-import { Grid, NumberInput, Select, TextInput } from "@mantine/core";
+import { Grid, NumberInput, Select } from "@mantine/core";
 import { EquipmentTypesEnum } from '../../types';
 
 
@@ -25,9 +25,6 @@ export const ValveFields = ({ data, onChange, hideLabels }: any) => (
         </Grid.Col>
         <Grid.Col span={6}>
             <NumberInput label={!hideLabels ? "Quantity (pcs)" : undefined} value={data.quantity || ''} onChange={(v) => onChange('quantity', v)} min={1} />
-        </Grid.Col>
-        <Grid.Col span={12}>
-            <TextInput label={!hideLabels ? "Model / Number" : undefined} value={data.model_number || ''} onChange={(e) => onChange('model_number', e.currentTarget.value)} />
         </Grid.Col>
     </Grid>
 );

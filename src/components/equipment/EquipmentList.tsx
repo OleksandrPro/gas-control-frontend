@@ -35,8 +35,7 @@ const transformEquipmentData = (rawEquipment: any[], materials: DictionaryItem[]
                 } as PipeData;
             } else if (entry.type === BackendEquipmentTypesEnum.ValveData) {
                 mappedData = {
-                    id: entry.id, quantity: entry.quantity, diameter: entry.diameter,
-                    model: entry.model_number || '-'
+                    id: entry.id, quantity: entry.quantity, diameter: entry.diameter
                 } as ValveData;
             } else {
                 mappedData = { id: entry.id, quantity: entry.quantity || 1 } as GenericData;
