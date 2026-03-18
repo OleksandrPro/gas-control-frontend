@@ -3,7 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { Button, Group, Title, Text, Pagination, Center, Loader } from "@mantine/core";
 import { CreateCardModal } from "../components/modals/CreateCardModal";
 import { CardList } from "../components/cards/CardList";
-import { FilterBar, type CardFilterPayload } from "../components/ui/FilterBar";
+import { FilterBar } from "../components/ui/FilterBar";
+import { type CardFilterPayload } from "../utils/payloads/FilterPayload";
 
 import { getCards } from "../api/Cards";
 import { useDictionaries } from "../hooks/useDictionaries";
