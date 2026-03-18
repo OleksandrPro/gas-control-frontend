@@ -5,7 +5,7 @@ import { mapToSelectData } from '../../utils/utils';
 import { type EquipmentType, type CutType, EquipmentTypesEnum, CutTypesEnum } from '../../types';
 import { EquipmentColumn, FactColumnList } from '../equipment/Columns';
 import { EquipmentFormFields } from '../equipment/InputForms';
-import { buildEquipmentPayload, type EquipmentPayload } from '../../utils/payloads/EquipmentPayload';
+import { buildCreateEquipmentPayload, type EquipmentPayload } from '../../utils/payloads/EquipmentPayload';
 
 interface CreateEquipmentModalProps {
   opened: boolean;
@@ -58,7 +58,7 @@ export const CreateEquipmentModal = ({ opened, onClose, onSubmit, cardCutType = 
             return;
         }
 
-        const payload = buildEquipmentPayload(
+        const payload = buildCreateEquipmentPayload(
             description,
             activeType,
             cardCutType,
@@ -108,7 +108,14 @@ export const CreateEquipmentModal = ({ opened, onClose, onSubmit, cardCutType = 
                     {/* No cut (1 column) */}
                     {cardCutType === CutTypesEnum.None && (
                         <EquipmentColumn title="BALANCE + FACT" span={12}>
-                            <FactColumnList factDataList={factDataList} activeType={activeType} dicts={dicts} onFactChange={handleFactChange} onRemoveFact={removeFactItem} onAddFact={() => setFactDataList([...factDataList, {}])} canAddMoreFact={canAddMoreFact} />
+                            <EquipmentFormFields type={activeType} data={balanceData} dicts={dicts} 
+                                onChange={(f: string, v: any) => {
+                                    const updatedData = { ...balanceData, [f]: v };
+                                    
+                                    setBalanceData(updatedData); 
+                                    setFactDataList([updatedData]);
+                                }}
+                            />
                         </EquipmentColumn>
                     )}
 
