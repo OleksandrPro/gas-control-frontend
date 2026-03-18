@@ -11,7 +11,7 @@ import { mapToSelectData } from '../../utils/utils';
 import { EquipmentColumn, FactColumnList } from '../equipment/Columns';
 import { EquipmentFormFields } from '../equipment/InputForms';
 import { type CutType } from '../../types';
-import { buildEquipmentPayload, type EquipmentUpdatePayload } from '../../utils/payloads/EquipmentPayload';
+import { buildUpdateEquipmentPayload, type EquipmentUpdatePayload } from '../../utils/payloads/EquipmentPayload';
 
 interface EditEquipmentModalProps {
   opened: boolean;
@@ -59,7 +59,12 @@ export const EditEquipmentModal = ({ opened, onClose, equipment, cardCutType, on
     const canAddMoreFact = lastFact && Object.values(lastFact).some(v => v !== '' && v !== null && v !== undefined);
 
     const handleSubmit = () => {
-        const fullPayload = buildEquipmentPayload(
+        console.info('---')
+        console.info(balanceData)
+        console.info(factDataList)
+        console.info(cutData)
+        console.info('---')
+        const fullPayload = buildUpdateEquipmentPayload(
             description,
             equipment.type,
             cardCutType,
@@ -72,6 +77,7 @@ export const EditEquipmentModal = ({ opened, onClose, equipment, cardCutType, on
             description: fullPayload.description,
             data_entries: fullPayload.data_entries
         };
+        console.info(updatePayload)
 
         onSave(updatePayload);
     };

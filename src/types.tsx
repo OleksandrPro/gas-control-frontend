@@ -34,7 +34,9 @@ export type CardDisplay = {
     folder: string;
 }
 
-export type CardUpdateData = Partial<Omit<CardBackend, 'id'>>;
+export type CardUpdateData = Partial<Omit<CardBackend, 'id'>> & {
+    cut_column_data_source?: "balance" | "fact" | null;
+};
 
 export const EquipmentTypesEnum = {
   Pipe: "pipe",
@@ -96,7 +98,6 @@ export interface ValveData {
     id: number;
     quantity: number;
     diameter: number;
-    model: string;
 }
 
 export interface GenericData {

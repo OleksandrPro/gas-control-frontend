@@ -36,7 +36,6 @@ export interface GenericDataEntry {
 
 export type EquipmentDataEntry = PipeDataEntry | ValveDataEntry | GenericDataEntry;
 
-// Итоговый Payload для СОЗДАНИЯ (POST)
 export interface EquipmentPayload {
     item_type: EquipmentType;
     description: string;
@@ -49,6 +48,7 @@ export interface EquipmentUpdatePayload {
 }
 
 export interface EquipmentFormState {
+    id?: number; 
     diameter?: number | string;
     length?: number | string;
     material_id?: number | null;
@@ -57,65 +57,106 @@ export interface EquipmentFormState {
     model_number?: string;
 }
 
-export const buildEquipmentPayload = (
-    description: string,
+const _formatEntry = (
+    colType: ColumnType, 
+    data: EquipmentFormState, 
+    activeType: EquipmentType, 
+    stripId: boolean
+): EquipmentDataEntry => {
+    
+    const cleanData = { ...data };
+    
+    if (stripId) {
+        delete cleanData.id;
+    }
+    
+    const baseId = cleanData.id ? { id: cleanData.id } : {};
+
+    if (activeType === EquipmentTypesEnum.Pipe) {
+        return {
+            ...baseId,
+            type: BackendEquipmentTypesEnum.PipeData,
+            column_type: colType,
+            diameter: Number(cleanData.diameter || 0),
+            length: Number(cleanData.length || 0),
+            material_id: cleanData.material_id || null,
+            groung_level_id: cleanData.groung_level_id || null
+        };
+    } else if (activeType === EquipmentTypesEnum.Valve) {
+        return {
+            ...baseId,
+            type: BackendEquipmentTypesEnum.ValveData,
+            column_type: colType,
+            diameter: Number(cleanData.diameter || 0),
+            quantity: Number(cleanData.quantity || 1),
+            model_number: cleanData.model_number || undefined
+        };
+    }
+    
+    return {
+        ...baseId,
+        type: BackendEquipmentTypesEnum.GenericData,
+        column_type: colType,
+        quantity: Number(cleanData.quantity || 1)
+    };
+};
+
+const _extractDataEntries = (
     activeType: EquipmentType,
     cardCutType: CutType,
-    balanceData: any,
-    factDataList: any[],
-    cutData: any
-): EquipmentPayload => {
-    
+    balanceData: EquipmentFormState,
+    factDataList: EquipmentFormState[],
+    cutData: EquipmentFormState,
+    stripId: boolean
+): EquipmentDataEntry[] => {
     const data_entries: EquipmentDataEntry[] = [];
-
-    const formatEntry = (colType: ColumnType, data: EquipmentFormState): EquipmentDataEntry => {
-        if (activeType === EquipmentTypesEnum.Pipe) {
-            return {
-                type: BackendEquipmentTypesEnum.PipeData,
-                column_type: colType,
-                diameter: Number(data.diameter || 0),
-                length: Number(data.length || 0),
-                material_id: data.material_id || null,
-                groung_level_id: data.groung_level_id || null
-            };
-        } else if (activeType === EquipmentTypesEnum.Valve) {
-            return {
-                type: BackendEquipmentTypesEnum.ValveData,
-                column_type: colType,
-                diameter: Number(data.diameter || 0),
-                quantity: Number(data.quantity || 1),
-                model_number: data.model_number || undefined
-            };
+    
+    const add = (col: ColumnType, data: EquipmentFormState) => {
+        if (Object.keys(data).length > 0) {
+            data_entries.push(_formatEntry(col, data, activeType, stripId));
         }
-        
-        return {
-            type: BackendEquipmentTypesEnum.GenericData,
-            column_type: colType,
-            quantity: Number(data.quantity || 1)
-        };
     };
 
     if (cardCutType === CutTypesEnum.None) {
-        if (Object.keys(factDataList[0]).length > 0) {
-            data_entries.push(formatEntry(ColumnTypesEnum.Balance, factDataList[0]));
-            factDataList.forEach(item => {
-                if (Object.keys(item).length > 0) data_entries.push(formatEntry(ColumnTypesEnum.Fact, item));
-            });
-        }
+        add(ColumnTypesEnum.Balance, balanceData);
+        factDataList.forEach(item => add(ColumnTypesEnum.Fact, item));
     } else if (cardCutType === CutTypesEnum.Full) {
-        data_entries.push(formatEntry(ColumnTypesEnum.Balance, balanceData));
-        data_entries.push(formatEntry(ColumnTypesEnum.Cut, cutData));
+        add(ColumnTypesEnum.Balance, balanceData);
+        add(ColumnTypesEnum.Cut, cutData);
     } else if (cardCutType === CutTypesEnum.Partial) {
-        data_entries.push(formatEntry(ColumnTypesEnum.Balance, balanceData));
-        factDataList.forEach(item => {
-            if (Object.keys(item).length > 0) data_entries.push(formatEntry(ColumnTypesEnum.Fact, item));
-        });
-        data_entries.push(formatEntry(ColumnTypesEnum.Cut, cutData));
+        add(ColumnTypesEnum.Balance, balanceData);
+        factDataList.forEach(item => add(ColumnTypesEnum.Fact, item));
+        add(ColumnTypesEnum.Cut, cutData);
     }
 
+    return data_entries;
+};
+
+export const buildCreateEquipmentPayload = (
+    description: string,
+    activeType: EquipmentType,
+    cardCutType: CutType,
+    balanceData: EquipmentFormState,
+    factDataList: EquipmentFormState[],
+    cutData: EquipmentFormState
+): EquipmentPayload => {
     return {
         item_type: activeType,
         description: description.trim(),
-        data_entries: data_entries
+        data_entries: _extractDataEntries(activeType, cardCutType, balanceData, factDataList, cutData, true)
+    };
+};
+
+export const buildUpdateEquipmentPayload = (
+    description: string,
+    activeType: EquipmentType,
+    cardCutType: CutType,
+    balanceData: EquipmentFormState,
+    factDataList: EquipmentFormState[],
+    cutData: EquipmentFormState
+): EquipmentUpdatePayload => {
+    return {
+        description: description.trim(),
+        data_entries: _extractDataEntries(activeType, cardCutType, balanceData, factDataList, cutData, false)
     };
 };

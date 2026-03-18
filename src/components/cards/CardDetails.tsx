@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button, SimpleGrid, Group, Stack, Grid, Text, Title, Loader } from "@mantine/core";
-import { type CardBackend, type CardUpdateData } from "../../types";
+import { type CardBackend, type CardUpdateData, CutTypesEnum } from "../../types";
 import { EditableText } from '../ui/editable/EditableText';
 import { EditableSelect } from '../ui/editable/EditableSelect';
 import { EditableDate } from '../ui/editable/EditableDate';
@@ -11,6 +11,7 @@ import { useDictionaries } from '../../hooks/useDictionaries';
 import { usePageNavigation } from '../../hooks/usePageNavigation';
 import { updateCard, deleteCard } from '../../api/Cards';
 import { determineCutMode } from '../../utils/utils';
+import { MigrationModal } from '../modals/MigrationModal';
 
 interface CardDetailsProps {
     cardData: CardBackend
@@ -24,6 +25,9 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState(cardData);
 
+    const [migrationModalOpened, setMigrationModalOpened] = useState(false);
+    const [pendingChanges, setPendingChanges] = useState<CardUpdateData | null>(null);
+
     const { pressures, districts, properties, objectNames, cuts } = useDictionaries();
     const { goToHome } = usePageNavigation()
 
@@ -32,6 +36,7 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
         onSuccess: (updatedCard) => {
             queryClient.invalidateQueries({ queryKey: ['cards'] });
             queryClient.invalidateQueries({ queryKey: ['card', updatedCard.id.toString()] });
+            queryClient.invalidateQueries({ queryKey: ['equipment', updatedCard.id] });
             
             setInitialCardData(updatedCard);
             setIsEditing(false);
@@ -86,13 +91,40 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
             return;
         }
 
+        if (changedData.cut_type_id !== undefined && changedData.cut_type_id !== initialCardData.cut_type_id) {
+            const newCutTypeObj = cuts?.find(c => c.id === changedData.cut_type_id);
+            const newCutMode = determineCutMode(newCutTypeObj?.value);
+            
+            if (newCutMode === CutTypesEnum.Full) {
+                setPendingChanges(changedData);
+                setMigrationModalOpened(true);
+                return;
+            }
+        }
+
         console.log("Sending data to the server:", changedData);
         updateMutation.mutate({ id: cardData.id, data: changedData });
     };
 
+    const handleConfirmMigration = (source: "balance" | "fact" | null) => {
+        console.info(pendingChanges)
+        if (!pendingChanges) return;
+        
+        const finalData: CardUpdateData = { ...pendingChanges };
+        
+        if (source) {
+            finalData.cut_column_data_source = source;
+        }
+        
+        console.log("Sending data to the server with migration:", finalData);
+        updateMutation.mutate({ id: cardData.id, data: finalData });
+        setMigrationModalOpened(false);
+        setPendingChanges(null);
+    };
+
     useEffect(() => {
         const handleGlobalKeyDown = (e: KeyboardEvent) => {
-            if (!isEditing) return;
+            if (!isEditing || migrationModalOpened) return;
             if (e.key === 'Enter') handleSave();
             if (e.key === 'Escape') handleCancel();
         };
@@ -103,7 +135,7 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
             window.removeEventListener('keydown', handleGlobalKeyDown);
         };
 
-    }, [isEditing, formData])
+    }, [isEditing, formData, migrationModalOpened])
 
     const formatDateForBackend = (date: Date | null) => {
         if (!date) return '';
@@ -255,6 +287,12 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
                 factTotal={formData.total_length_fact?.toString()}
                 onBalanceTotalChange={(val) => setFormData({...formData, total_length_balance: Number(val)})}
                 onFactTotalChange={(val) => setFormData({...formData, total_length_fact: Number(val)})}
+            />
+
+            <MigrationModal 
+                opened={migrationModalOpened}
+                onClose={() => setMigrationModalOpened(false)}
+                onConfirm={handleConfirmMigration}
             />
         </Stack>
     );
