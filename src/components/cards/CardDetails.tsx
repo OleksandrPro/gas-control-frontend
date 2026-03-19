@@ -230,7 +230,7 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
                     <EditableSelect 
                         isEditing={isEditing}
                         data={objectNames}
-                        value={formData.district_id}
+                        value={formData.object_name_id}
                         onChange={(val) => setFormData({...formData, object_name_id: val || 0})}
                     />
                 </div>
