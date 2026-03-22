@@ -79,8 +79,8 @@ const ValveItem = ({ data }: { data: ValveData }) => (
     </Stack>
 );
 
-const EquipmentColumnCell = ({ row, columnType }: { row: EquipmentRow, columnType: ColumnType }) => {
-    const items = row[columnType as keyof Pick<EquipmentRow, 'balance' | 'fact' | 'cut'>];
+const EquipmentColumnCell = ({ row, columnKey }: { row: EquipmentRow, columnKey: 'balance' | 'fact' | 'cut' }) => {
+    const items = row[columnKey];
     if (!items || items.length === 0) return <Text c="dimmed" ta="center">-</Text>;
 
     return (
@@ -265,13 +265,13 @@ export const EquipmentList = ({
                                         </Box>
                                     </Table.Td>
                                     <Table.Td>
-                                        <EquipmentColumnCell row={row} columnType={ColumnTypesEnum.Balance} />
+                                        <EquipmentColumnCell row={row} columnKey="balance" />
                                     </Table.Td>
                                     <Table.Td>
-                                        <EquipmentColumnCell row={row} columnType={ColumnTypesEnum.Fact} />
+                                        <EquipmentColumnCell row={row} columnKey="fact" />
                                     </Table.Td>
                                     <Table.Td>
-                                        <EquipmentColumnCell row={row} columnType={ColumnTypesEnum.Cut} />
+                                        <EquipmentColumnCell row={row} columnKey="cut" />
                                     </Table.Td>
                                 </Table.Tr>
                             ))

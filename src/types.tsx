@@ -55,9 +55,9 @@ export const BackendEquipmentTypesEnum = {
 export type BackendEquipmentType = (typeof BackendEquipmentTypesEnum)[keyof typeof BackendEquipmentTypesEnum];
 
 export const ColumnTypesEnum = {
-  Balance: "balance",
-  Fact: "fact",
-  Cut: "cut",
+  Balance: "BALANCE",
+  Fact: "FACT",
+  Cut: "CUT",
 } as const satisfies Record<string, string>;
 
 export type ColumnType = (typeof ColumnTypesEnum)[keyof typeof ColumnTypesEnum];
