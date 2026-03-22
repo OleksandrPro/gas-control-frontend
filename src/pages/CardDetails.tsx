@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from '@tanstack/react-query';
 import { Center, Loader, Text } from "@mantine/core";
+import { PageContainer } from "../components/layout/PageContainer";
 import { CardDetails } from "../components/cards/CardDetails";
 
 import { getCard } from "../api/Cards";
@@ -28,8 +29,8 @@ export const CardDetailsPage = () => {
     }
 
     return (
-        <div style={{ padding: '20px' }}>
+        <PageContainer>
             <CardDetails cardData={card} />
-        </div>
+        </PageContainer>
     );
 };

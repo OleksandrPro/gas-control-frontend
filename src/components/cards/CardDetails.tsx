@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button, SimpleGrid, Group, Stack, Grid, Text, Title, Loader } from "@mantine/core";
+import { Button, SimpleGrid, Group, Stack, Grid, Text, Title, Loader, Box, Card } from "@mantine/core";
 import { type CardBackend, type CardUpdateData, CutTypesEnum } from "../../types";
 import { EditableText } from '../ui/editable/EditableText';
 import { EditableSelect } from '../ui/editable/EditableSelect';
@@ -12,10 +12,19 @@ import { usePageNavigation } from '../../hooks/usePageNavigation';
 import { updateCard, deleteCard } from '../../api/Cards';
 import { determineCutMode } from '../../utils/utils';
 import { MigrationModal } from '../modals/MigrationModal';
+import { IconArrowLeft, IconEdit, IconTrash, IconCheck, IconX } from '@tabler/icons-react';
+import { DetailCardStyle, CardSectionHeaderStyle, FieldLabelStyle, MainTitleStyle, FieldWrapperStyle } from '../../styles/CardDetails';
 
 interface CardDetailsProps {
     cardData: CardBackend
 }
+
+const Field = ({ label, children }: { label: string, children: React.ReactNode }) => (
+    <Box style={FieldWrapperStyle}>
+        <Text style={FieldLabelStyle}>{label}</Text>
+        {children}
+    </Box>
+);
 
 export const CardDetails = ({cardData}: CardDetailsProps) => {
     const { id } = useParams();
@@ -151,133 +160,132 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
     return (
         <Stack>
             <Group justify="space-between">
-                <Button variant="default" onClick={goToHome}>{'< Back to registry'}</Button>
+                <Button variant="subtle" color="gray" leftSection={<IconArrowLeft size={16}/>} onClick={goToHome}>
+                    Back to registry
+                </Button>
                 
                 {isEditing ? (
                     <Group>
-                        <Button variant="default" onClick={handleCancel}>Cancel</Button>
-                        <Button color="green" onClick={handleSave} disabled={updateMutation.isPending}>
+                        <Button variant="default" leftSection={<IconX size={16}/>} onClick={handleCancel}>Cancel</Button>
+                        <Button color="green" leftSection={<IconCheck size={16}/>} onClick={handleSave} disabled={updateMutation.isPending}>
                             {updateMutation.isPending ? <Loader size="xs" color="white" /> : 'Save'}
                         </Button>
                     </Group>
                 ) : (
                     <Group>
-                        <Button variant="subtle" color="red" onClick={handleDeleteCard} loading={deleteCardMutation.isPending}>
+                        <Button variant="subtle" color="red" leftSection={<IconTrash size={16}/>} onClick={handleDeleteCard} loading={deleteCardMutation.isPending}>
                             Delete card
                         </Button>
-                        <Button variant="default" onClick={() => setIsEditing(true)}>Edit</Button>
+                        <Button color="blue" leftSection={<IconEdit size={16}/>} onClick={() => setIsEditing(true)}>Edit</Button>
                     </Group>
                 )}
             </Group>
 
-
-            <Grid>
-                <Grid.Col span={8}>
-                    <Text>INVENTORY CARD</Text>
-                    <EditableText 
-                        isEditing={isEditing}
-                        value={formData.inventory_number}
-                        onChange={(val) => setFormData({...formData, inventory_number: val})}
-                        renderText={(val) => <Title order={2}>{val}</Title>}
-                    />
-                    
+            <Box>
+                <Text style={FieldLabelStyle}>INVENTORY Number</Text>
+                <EditableText 
+                    isEditing={isEditing}
+                    value={formData.inventory_number}
+                    onChange={(val) => setFormData({...formData, inventory_number: val})}
+                    renderText={(val) => <Title order={1} style={MainTitleStyle}>{val}</Title>}
+                />
+                <Group gap="xs" mt={4}>
+                    <Text style={FieldLabelStyle} m={0}>ESKD:</Text>
                     <EditableText 
                         isEditing={isEditing}
                         value={formData.inventory_number_eskd}
                         onChange={(val) => setFormData({...formData, inventory_number_eskd: val})}
                         renderText={(val) => <Text c="dimmed">{val}</Text>}
                     />
-                </Grid.Col>
-                
-            </Grid>
+                </Group>
+            </Box>
 
-            <SimpleGrid cols={4}>
-                <div>
-                    <Text>ADDRESS</Text>
-                    <EditableText 
-                        isEditing={isEditing}
-                        value={formData.address}
-                        onChange={(val) => setFormData({...formData, address: val})}
-                    />
-                </div>
-                <div>
-                    <Text>Balance name</Text>
-                    <EditableText 
-                        isEditing={isEditing}
-                        value={formData.described_name}
-                        onChange={(val) => setFormData({...formData, described_name: val})}
-                    />
-                </div>
-                <div>
-                    <Text>Gas Pipeline Section</Text>
-                    <EditableText 
-                        isEditing={isEditing}
-                        value={formData.gas_pipeline_section}
-                        onChange={(val) => setFormData({...formData, gas_pipeline_section: val})}
-                    />
-                </div>
-                <div>
-                    <Text>PRESSURE</Text>
-                    <EditableSelect 
-                        isEditing={isEditing}
-                        data={pressures}
-                        value={formData.pressure_type_id}
-                        onChange={(val) => setFormData({...formData, pressure_type_id: val || 0})}
-                    />
-                </div>
-                <div>
-                    <Text>Gas Pipeline Type</Text>
-                    <EditableSelect 
-                        isEditing={isEditing}
-                        data={objectNames}
-                        value={formData.object_name_id}
-                        onChange={(val) => setFormData({...formData, object_name_id: val || 0})}
-                    />
-                </div>
-                <div>
-                    <Text>DISTRICT</Text>
-                    <EditableSelect 
-                        isEditing={isEditing}
-                        data={districts}
-                        value={formData.district_id}
-                        onChange={(val) => setFormData({...formData, district_id: val || 0})}
-                    />
-                </div>
-                <div>
-                    <Text>OWNERSHIP</Text>
-                    <EditableSelect 
-                        isEditing={isEditing}
-                        data={properties}
-                        value={formData.property_type_id}
-                        onChange={(val) => setFormData({...formData, property_type_id: val || 0})}
-                    />
-                </div>
-                <div>
-                    <Text>FOLDER</Text>
-                    <EditableText 
-                        isEditing={isEditing}
-                        value={formData.folder}
-                        onChange={(val) => setFormData({...formData, folder: val})}
-                    />
-                </div>
-                <div>
-                    <Text>BUILD DATE</Text>
-                    <EditableDate 
-                        isEditing={isEditing}
-                        value={formData.build_date_dn ? new Date(formData.build_date_dn) : null}
-                        onChange={(val) => setFormData({...formData, build_date_dn: formatDateForBackend(val)})}
-                    />
-                </div>
-                <div>
-                    <Text>CUT TYPE</Text>
-                    <EditableSelect 
-                        isEditing={isEditing}
-                        data={cuts}
-                        value={formData.cut_type_id}
-                        onChange={(val) => setFormData({...formData, cut_type_id: val})}
-                    />
-                </div>
-            </SimpleGrid>
+            <Grid gutter="xl" align="stretch">
+                
+                {/* ЛЕВАЯ КОЛОНКА */}
+                <Grid.Col span={{ base: 12, md: 6 }}>
+                    <Card withBorder radius="md" p="md" styles={DetailCardStyle}>
+                        <Card.Section inheritPadding>
+                            <Text style={CardSectionHeaderStyle}>Location & Balance</Text>
+                        </Card.Section>
+                        
+                        {/* ИСПОЛЬЗУЕМ ГИБКУЮ СЕТКУ */}
+                        <Grid mt="md" gutter="md">
+                            <Grid.Col span={12}>
+                                <Field label="Address">
+                                    <EditableText isEditing={isEditing} value={formData.address} onChange={(val) => setFormData({...formData, address: val})} />
+                                </Field>
+                            </Grid.Col>
+                            
+                            <Grid.Col span={12}>
+                                <Field label="Balance name">
+                                    <EditableText isEditing={isEditing} value={formData.described_name} onChange={(val) => setFormData({...formData, described_name: val})} />
+                                </Field>
+                            </Grid.Col>
+
+                            <Grid.Col span={12}>
+                                <Field label="Gas Pipeline Section">
+                                    <EditableText isEditing={isEditing} value={formData.gas_pipeline_section} onChange={(val) => setFormData({...formData, gas_pipeline_section: val})} />
+                                </Field>
+                            </Grid.Col>
+
+                            <Grid.Col span={6}>
+                                <Field label="District">
+                                    <EditableSelect isEditing={isEditing} data={districts} value={formData.district_id} onChange={(val) => setFormData({...formData, district_id: val || 0})} />
+                                </Field>
+                            </Grid.Col>
+
+                            <Grid.Col span={6}>
+                                <Field label="Folder">
+                                    <EditableText isEditing={isEditing} value={formData.folder} onChange={(val) => setFormData({...formData, folder: val})} />
+                                </Field>
+                            </Grid.Col>
+                        </Grid>
+                    </Card>
+                </Grid.Col>
+
+                {/* ПРАВАЯ КОЛОНКА */}
+                <Grid.Col span={{ base: 12, md: 6 }}>
+                    <Card withBorder radius="md" p="md" styles={DetailCardStyle}>
+                        <Card.Section inheritPadding>
+                            <Text style={CardSectionHeaderStyle}>Technical Parameters</Text>
+                        </Card.Section>
+                        
+                        <Grid mt="md" gutter="md">
+                            <Grid.Col span={12}>
+                                <Field label="Gas Pipeline Type">
+                                    <EditableSelect isEditing={isEditing} data={objectNames} value={formData.object_name_id} onChange={(val) => setFormData({...formData, object_name_id: val || 0})} />
+                                </Field>
+                            </Grid.Col>
+
+                            <Grid.Col span={12}>
+                                <Field label="Ownership">
+                                    <EditableSelect isEditing={isEditing} data={properties} value={formData.property_type_id} onChange={(val) => setFormData({...formData, property_type_id: val || 0})} />
+                                </Field>
+                            </Grid.Col>
+
+                            <Grid.Col span={6}>
+                                <Field label="Pressure">
+                                    <EditableSelect isEditing={isEditing} data={pressures} value={formData.pressure_type_id} onChange={(val) => setFormData({...formData, pressure_type_id: val || 0})} />
+                                </Field>
+                            </Grid.Col>
+
+                            <Grid.Col span={6}>
+                                <Field label="Build Date">
+                                    <EditableDate isEditing={isEditing} value={formData.build_date_dn ? new Date(formData.build_date_dn) : null} onChange={(val) => setFormData({...formData, build_date_dn: formatDateForBackend(val)})} />
+                                </Field>
+                            </Grid.Col>
+
+                            <Grid.Col span={6}>
+                                <Field label="Cut Type">
+                                    <EditableSelect isEditing={isEditing} data={cuts} value={formData.cut_type_id} onChange={(val) => setFormData({...formData, cut_type_id: val})} />
+                                </Field>
+                            </Grid.Col>
+                        </Grid>
+                    </Card>
+                </Grid.Col>
+
+            </Grid>
 
             <EquipmentList 
                 cardId={Number(id)}

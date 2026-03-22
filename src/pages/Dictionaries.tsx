@@ -1,8 +1,17 @@
 import { useState } from 'react';
-import { Grid, Stack, Title, Text, NavLink, Group } from '@mantine/core';
+import { Grid, Stack, Title, Text, NavLink, Group, Card, Box } from '@mantine/core';
 
+import { PageContainer } from '../components/layout/PageContainer';
 import { DictionaryEditor, type DictionaryConfig } from '../components/dictionaries/DictionaryEditor';
 import { DICTIONARY_ENDPOINTS } from '../api/Dictionaries';
+
+import { 
+    DictionaryCardStyle, 
+    ListHeaderStyle,  
+    EditorHeaderStyle,
+    ListHeaderTextStyle
+} from '../styles/Dictionary';
+import { CardWithDarkHeaderStyle } from '../styles/CardWithDarkHeader';
 
 const DICTIONARY_REGISTRY: DictionaryConfig[] = [
     { id: 'districts', label: 'Districts', endpoint: DICTIONARY_ENDPOINTS.Districts },
@@ -18,33 +27,45 @@ export const DictionariesPage = () => {
     const [activeDictionary, setActiveDictionary] = useState(DICTIONARY_REGISTRY[0]);
 
     return (
-        <Stack>
-            <div>
-                <Title order={2}>Dictionaries Management</Title>
-                <Text>Editing system reference data</Text>
-            </div>
+        <PageContainer>
+            <Stack>
+                <div>
+                    <Title order={2}>Dictionaries Management</Title>
+                    <Text>Editing system reference data</Text>
+                </div>
 
-            <Grid>
-                <Grid.Col span={3}>
-                    <Text>LIST OF DICTIONARIES</Text>
-                    {DICTIONARY_REGISTRY.map((dict) => (
-                        <NavLink
-                            key={dict.id}
-                            label={dict.label}
-                            active={activeDictionary.id === dict.id}
-                            onClick={() => setActiveDictionary(dict)}
-                        />
-                    ))}
-                </Grid.Col>
+                <Grid>
+                    <Grid.Col span={3}>
+                        <Card styles={CardWithDarkHeaderStyle}>
+                            <Card.Section inheritPadding>                            
+                                <Text style={ListHeaderTextStyle}>List of dictionaries</Text>
+                            </Card.Section>
+                            <Stack gap={4} mt="md">
+                                {DICTIONARY_REGISTRY.map((dict) => (
+                                    <NavLink
+                                        key={dict.id}
+                                        label={dict.label}
+                                        active={activeDictionary.id === dict.id}
+                                        onClick={() => setActiveDictionary(dict)}
+                                    />
+                                ))}
+                            </Stack>
+                        </Card>
+                    </Grid.Col>
 
-                <Grid.Col span={9}>
-                    <Group justify="space-between">
-                        <Title order={3}>{activeDictionary.label}</Title>
-                    </Group>
-                    
-                    <DictionaryEditor dictionary={activeDictionary}/>
-                </Grid.Col>
-            </Grid>
-        </Stack>
+                    <Grid.Col span={9}>
+                        <Card styles={CardWithDarkHeaderStyle}>
+                            <Card.Section inheritPadding> 
+                                <Title order={4} c="blue.7">{activeDictionary.label}</Title>
+                            </Card.Section> 
+                        
+                            <Box p="md">
+                                <DictionaryEditor dictionary={activeDictionary}/>
+                            </Box>
+                        </Card>
+                    </Grid.Col>
+                </Grid>
+            </Stack>
+        </PageContainer>
     );
 };
