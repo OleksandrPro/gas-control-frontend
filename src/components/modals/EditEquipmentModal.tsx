@@ -1,8 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { 
-    Modal, Button, 
-    Text, Stack, TextInput, Badge, Group, Grid
-} from '@mantine/core';
+import { Modal, Button, Stack, TextInput, Badge, Group, Grid, Input, Box } from '@mantine/core';
 import { IconTrash } from '@tabler/icons-react';
 
 import type { EquipmentRow } from '../../types';
@@ -100,12 +97,13 @@ export const EditEquipmentModal = ({ opened, onClose, equipment, cardCutType, on
                         required
                         style={{ flexGrow: 1 }}
                     />
-                    <Stack gap={2} mb={5}>
-                        <Text size="sm" fw={500} c="dimmed">TYPE</Text>
-                        <Badge size="lg" radius="sm" variant="light">
-                            {equipment.type.toUpperCase()}
-                        </Badge>
-                    </Stack>
+                    <Input.Wrapper label="TYPE">
+                        <Box mt={2}>
+                            <Badge size="lg" radius="sm" variant="light">
+                                {equipment.type.toUpperCase()}
+                            </Badge>
+                        </Box>
+                    </Input.Wrapper>
                 </Group>
 
                 <Grid mt="sm">

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { Table, Group, Title, Button, Text, Stack, Center, Loader } from '@mantine/core';
+import { Table, Group, Title, Button, Text, Stack, Center, Loader, Card, Box, Badge } from '@mantine/core';
 import { type EquipmentType, type ColumnType, type CutType, CutTypesEnum, ColumnTypesEnum, EquipmentTypesEnum, BackendEquipmentTypesEnum , type DictionaryItem} from '../../types';
 import { CreateEquipmentModal } from '../modals/CreateEquipmentModal';
 import { EditEquipmentModal } from '../modals/EditEquipmentModal';
@@ -8,6 +8,9 @@ import { EditableText } from '../ui/editable/EditableText';
 import { addEquipmentToCard, getCardEquipment, deleteEquipmentItem, updateEquipmentItem } from '../../api/Equipment';
 import { useDictionaries } from '../../hooks/useDictionaries';
 import type { PipeData, ValveData, GenericData, EquipmentRow, MappedDataEntry } from '../../types';
+import { IconBox } from '@tabler/icons-react';
+import { CardWithDarkHeaderStyle, CardHeaderTextStyle } from '../../styles/CardWithDarkHeader';
+import { TotalLabelStyle } from '../../styles/TableLabel';
 
 const transformEquipmentData = (rawEquipment: any[], materials: DictionaryItem[], groundLevels: DictionaryItem[]): EquipmentRow[] => {
     const getDictValue = (dict: DictionaryItem[], id: number | null) => {
@@ -184,99 +187,111 @@ export const EquipmentList = ({
     };
 
     return (
-        <div>
-            <Group justify="space-between" mb="md">
-                <Title order={3}>Equipment</Title>
-                <Button variant="subtle" onClick={() => setModalOpened(true)} loading={addMutation.isPending}> + Add record</Button>
-            </Group>
+        <Card styles={CardWithDarkHeaderStyle}>
+            <Card.Section inheritPadding>
+                <Group justify="space-between" py="xs">
+                    <Group gap="xs">
+                        <IconBox size={18} color="var(--mantine-color-gray-6)" />
+                        <Text style={CardHeaderTextStyle}>Equipment List</Text>
+                    </Group>
+                    <Button variant="subtle" onClick={() => setModalOpened(true)} loading={addMutation.isPending}> + Add record</Button>
+                </Group>
+            </Card.Section>
 
-            <Table verticalSpacing="md">
-                <Table.Thead>
-                    <Table.Tr>
-                        <Table.Th style={{ borderBottom: 'none' }}></Table.Th>
-                        <Table.Th style={{ borderBottom: 'none', paddingBottom: 0 }}>
-                            <Stack gap={0}>
-                                <Text size="xs" c="dimmed">TOTAL LENGTH</Text>
-                                <EditableText 
-                                    isEditing={isEditing}
-                                    value={balanceTotal?.toString()}
-                                    onChange={(val) => onBalanceTotalChange?.(val)}
-                                    renderText={(val)=><Title order={4} c="blue">{val} m</Title>}
-                                />
-                            </Stack>
-                        </Table.Th>
-                        <Table.Th style={{ borderBottom: 'none', paddingBottom: 0 }}>
-                            <Stack gap={0}>
-                                <Text size="xs" c="dimmed">TOTAL LENGTH</Text>
-                                <EditableText 
-                                    isEditing={isEditing}
-                                    value={factTotal?.toString()}
-                                    onChange={(val) => onFactTotalChange?.(val)}
-                                    renderText={(val)=><Title order={4} c="green">{val} m</Title>}
-                                />
-                            </Stack>
-                        </Table.Th>
-                        <Table.Th style={{ borderBottom: 'none' }}></Table.Th>
-                    </Table.Tr>
-                    <Table.Tr>
-                        <Table.Th>NAME</Table.Th>
-                        <Table.Th>BALANCE</Table.Th>
-                        <Table.Th>FACT</Table.Th>
-                        <Table.Th>IN CUT</Table.Th>
-                    </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>
-                    {isLoading ? (
+        
+            <Box>
+                <Table verticalSpacing="md" highlightOnHover={isEditing}>
+                    <Table.Thead>
                         <Table.Tr>
-                            <Table.Td colSpan={4}>
-                                <Center py="xl">
-                                    <Loader color="blue" />
-                                </Center>
-                            </Table.Td>
+                            <Table.Th style={{ borderBottom: 'none' }}></Table.Th>
+                            <Table.Th style={{ borderBottom: 'none', paddingBottom: 'var(--mantine-spacing-sm)' }}>
+                                <Stack gap={6}>
+                                    <Text style={TotalLabelStyle}>TOTAL LENGTH</Text>
+                                    <EditableText 
+                                        isEditing={isEditing}
+                                        value={balanceTotal?.toString()}
+                                        onChange={(val) => onBalanceTotalChange?.(val)}
+                                        renderText={(val)=><Text c="blue">{val} m</Text>}
+                                    />
+                                </Stack>
+                            </Table.Th>
+                            <Table.Th style={{ borderBottom: 'none', paddingBottom: 'var(--mantine-spacing-sm)' }}>
+                                <Stack gap={6}>
+                                    <Text style={TotalLabelStyle}>TOTAL LENGTH</Text>
+                                    <EditableText 
+                                        isEditing={isEditing}
+                                        value={factTotal?.toString()}
+                                        onChange={(val) => onFactTotalChange?.(val)}
+                                        renderText={(val)=><Text c="green">{val} m</Text>}
+                                    />
+                                </Stack>
+                            </Table.Th>
+                            <Table.Th style={{ borderBottom: 'none' }}></Table.Th>
                         </Table.Tr>
-                    ) : displayEquipment.length === 0 ? (
                         <Table.Tr>
-                            <Table.Td colSpan={4}>
-                                <Text>No equipment found</Text>
-                            </Table.Td>
+                            <Table.Th>NAME</Table.Th>
+                            <Table.Th>BALANCE</Table.Th>
+                            <Table.Th>FACT</Table.Th>
+                            <Table.Th>IN CUT</Table.Th>
                         </Table.Tr>
-                    ) : (
-                        displayEquipment.map((row) => (
-                            <Table.Tr 
-                                key={row.id}
-                                onClick={() => handleRowClick(row)}
-                                style={{ cursor: isEditing ? 'pointer' : 'default' }}>
-                                <Table.Td>
-                                    <Text>{row.name}</Text>
-                                    <Text>{row.type}</Text>
-                                </Table.Td>
-                                <Table.Td>
-                                    <EquipmentColumnCell row={row} columnType={ColumnTypesEnum.Balance} />
-                                </Table.Td>
-                                <Table.Td>
-                                    <EquipmentColumnCell row={row} columnType={ColumnTypesEnum.Fact} />
-                                </Table.Td>
-                                <Table.Td>
-                                    <EquipmentColumnCell row={row} columnType={ColumnTypesEnum.Cut} />
+                    </Table.Thead>
+                    <Table.Tbody>
+                        {isLoading ? (
+                            <Table.Tr>
+                                <Table.Td colSpan={4}>
+                                    <Center py="xl">
+                                        <Loader color="blue" />
+                                    </Center>
                                 </Table.Td>
                             </Table.Tr>
-                        ))
-                    )}
-                </Table.Tbody>
-            </Table>
+                        ) : displayEquipment.length === 0 ? (
+                            <Table.Tr>
+                                <Table.Td colSpan={4}>
+                                    <Text>No equipment found</Text>
+                                </Table.Td>
+                            </Table.Tr>
+                        ) : (
+                            displayEquipment.map((row) => (
+                                <Table.Tr 
+                                    key={row.id}
+                                    onClick={() => handleRowClick(row)}
+                                    style={{ cursor: isEditing ? 'pointer' : 'default' }}>
+                                    <Table.Td>
+                                        <Box mt={2}>
+                                            <Text>{row.name}</Text>
+                                            <Badge size="lg" radius="sm" variant="light">
+                                                {row.type.toUpperCase()}
+                                            </Badge>
+                                        </Box>
+                                    </Table.Td>
+                                    <Table.Td>
+                                        <EquipmentColumnCell row={row} columnType={ColumnTypesEnum.Balance} />
+                                    </Table.Td>
+                                    <Table.Td>
+                                        <EquipmentColumnCell row={row} columnType={ColumnTypesEnum.Fact} />
+                                    </Table.Td>
+                                    <Table.Td>
+                                        <EquipmentColumnCell row={row} columnType={ColumnTypesEnum.Cut} />
+                                    </Table.Td>
+                                </Table.Tr>
+                            ))
+                        )}
+                    </Table.Tbody>
+                </Table>
 
-            <CreateEquipmentModal opened={modalOpened} onClose={() => setModalOpened(false)} onSubmit={handleAddEquipment} cardCutType={cutType} />
-            <EditEquipmentModal
-                opened={editModalOpened}
-                onClose={() => setEditModalOpened(false)}
-                equipment={editingEquipment}
-                cardCutType={cutType}
-                onSave={handleSaveEdit}
-                onDelete={(id) => {
-                    deleteMutation.mutate(id);
-                    setEditModalOpened(false);
-                }}
-            />
-        </div>
+                <CreateEquipmentModal opened={modalOpened} onClose={() => setModalOpened(false)} onSubmit={handleAddEquipment} cardCutType={cutType} />
+                <EditEquipmentModal
+                    opened={editModalOpened}
+                    onClose={() => setEditModalOpened(false)}
+                    equipment={editingEquipment}
+                    cardCutType={cutType}
+                    onSave={handleSaveEdit}
+                    onDelete={(id) => {
+                        deleteMutation.mutate(id);
+                        setEditModalOpened(false);
+                    }}
+                />
+            </Box>
+        </Card>
     );
 };

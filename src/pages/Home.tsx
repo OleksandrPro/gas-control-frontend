@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useQuery } from '@tanstack/react-query';
-import { Button, Group, Title, Text, Center, Loader, Stack } from "@mantine/core";
+import { Button, Group, Title, Text, Center, Loader, Stack, Box } from "@mantine/core";
+import { PageContainer } from "../components/layout/PageContainer";
 import { CreateCardModal } from "../components/modals/CreateCardModal";
 import { CardList } from "../components/cards/CardList";
 import { FilterBar } from "../components/ui/FilterBar";
@@ -63,36 +64,26 @@ export const HomePage = () => {
     const isLoading = isCardsLoading || isDictsLoading;
 
     return (
-        <div style={{ padding: '20px' }}>
-            <Group justify="space-between">
-                <div>
-                    <Title order={2}>Card Registry</Title>
-                    <Text>Database of gas pipeline sections</Text>
-                </div>
-                <Button onClick={() => setOpened(true)}>
-                    Create card
-                </Button>
-            </Group>
+        <PageContainer>
+            <Stack gap="lg">
+                <Group justify="space-between">
+                    <div>
+                        <Title order={2}>Card Registry</Title>
+                        <Text>Database of gas pipeline sections</Text>
+                    </div>
+                    <Button onClick={() => setOpened(true)}>
+                        Create card
+                    </Button>
+                </Group>
 
-            <FilterBar onSearch={handleSearch} />
+                <FilterBar onSearch={handleSearch} />
 
-            {isLoading ? (
-                <Center h={300}>
-                    <Loader color="blue" />
-                </Center>
-            ) : (
-                <Stack>
-                    <TablePagination 
-                        page={activePage}
-                        onPageChange={setActivePage}
-                        pageSize={pageSize}
-                        onPageSizeChange={handlePageSizeChange}
-                        totalRecords={totalRecords}
-                        totalPages={totalPages}
-                        pageSizeOptions={PAGE_SIZE_OPTIONS}
-                    />
-                    <CardList cards={displayCards} />
-                    {cards.length > 0 && (
+                {isLoading ? (
+                    <Center h={300}>
+                        <Loader color="blue" />
+                    </Center>
+                ) : (
+                    <Stack>
                         <TablePagination 
                             page={activePage}
                             onPageChange={setActivePage}
@@ -102,14 +93,26 @@ export const HomePage = () => {
                             totalPages={totalPages}
                             pageSizeOptions={PAGE_SIZE_OPTIONS}
                         />
-                    )}
-                </Stack>
-            )}
+                        <CardList cards={displayCards} />
+                        {cards.length > 0 && (
+                            <TablePagination 
+                                page={activePage}
+                                onPageChange={setActivePage}
+                                pageSize={pageSize}
+                                onPageSizeChange={handlePageSizeChange}
+                                totalRecords={totalRecords}
+                                totalPages={totalPages}
+                                pageSizeOptions={PAGE_SIZE_OPTIONS}
+                            />
+                        )}
+                    </Stack>
+                )}
 
-            <CreateCardModal 
-                opened={opened} 
-                onClose={() => setOpened(false)}
-            />
-        </div>
+                <CreateCardModal 
+                    opened={opened} 
+                    onClose={() => setOpened(false)}
+                />
+            </Stack>
+        </PageContainer>
     );
 };

@@ -1,4 +1,5 @@
-import { Modal, Text, Stack, Loader, Title } from '@mantine/core';
+import { Modal, Text, Stack, Loader, Title, Group, Paper } from '@mantine/core';
+import { IconCalculator } from '@tabler/icons-react';
 
 interface CalculatorModalProps {
   opened: boolean;
@@ -15,19 +16,57 @@ export const CalculatorModal = ({
   isSuccess, 
   totalLength 
 }: CalculatorModalProps) => {
+  const formatLength = (val?: number) => {
+      if (val === undefined || val === null) return '0';
+      return parseFloat(val.toFixed(10)).toString();
+  };
+
   return (
-    <Modal opened={opened} onClose={onClose} title="Pipe Calculator" size="md" centered>
-      <Stack align="center" py="xl">
-        <Text c="dimmed">Total length based on active filters:</Text>
-        {isLoading ? (
-          <Loader color="green" size="lg" mt="md" />
-        ) : isSuccess ? (
-          <Title order={1} c="green" style={{ fontSize: '3rem' }}>
-            {totalLength?.toFixed(10)} km
-          </Title>
-        ) : (
-          <Text c="red">Failed to load data.</Text>
-        )}
+    <Modal 
+      opened={opened} 
+      onClose={onClose} 
+      title={
+        <Group gap="sm">
+            <IconCalculator size={20} color="var(--mantine-color-blue-6)" />
+            <Text fw={700}>Pipe Calculator</Text>
+        </Group>
+      }  
+      size="md" 
+      centered
+    >
+      <Stack align="center" py="md">
+      {isLoading ? (
+        <Stack align="center" gap="sm" py="xl">
+          <Loader color="blue" size="lg" />
+          <Text c="dimmed" size="sm">Calculating total length...</Text>
+        </Stack>
+      ) : isSuccess ? (
+        <Paper withBorder radius="md" p="xl" w="100%" bg="gray.0" style={{ textAlign: 'center' }}>
+          <Text 
+              c="dimmed" 
+              tt="uppercase" 
+              fw={700} 
+              size="11px" 
+              style={{ letterSpacing: '0.5px' }} 
+              mb="xs"
+          >
+              Total length based on active filters
+          </Text>
+          
+          <Group justify="center" align="baseline" gap="xs">
+              <Title 
+                  order={1} 
+                  c="blue.7" 
+                  style={{ fontSize: '2.5rem', wordBreak: 'break-all' }}
+              >
+                  {formatLength(totalLength)}
+              </Title>
+              <Text c="dimmed" fw={600} size="xl" pb={6}>km</Text>
+          </Group>
+        </Paper>
+      ) : (
+        <Text c="red" py="xl">Failed to load data.</Text>
+      )}
       </Stack>
     </Modal>
   );

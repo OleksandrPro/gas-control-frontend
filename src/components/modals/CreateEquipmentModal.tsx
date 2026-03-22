@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Modal, Button, Text, Stack, TextInput, Group, Grid } from '@mantine/core';
+import { Modal, Button, Text, Stack, TextInput, Group, Grid, Input } from '@mantine/core';
 import { useDictionaries } from '../../hooks/useDictionaries';
 import { mapToSelectData } from '../../utils/utils';
 import { type EquipmentType, type CutType, EquipmentTypesEnum, CutTypesEnum } from '../../types';
@@ -80,8 +80,7 @@ export const CreateEquipmentModal = ({ opened, onClose, onSubmit, cardCutType = 
                     onChange={(e) => setDescription(e.currentTarget.value)}
                     required
                 />
-                <div>
-                    <Text size="sm" fw={500} mb={5}>EQUIPMENT TYPE</Text>
+                <Input.Wrapper label="EQUIPMENT TYPE">
                     <Group gap="xs">
                         <Button 
                             variant={activeType === EquipmentTypesEnum.Pipe ? 'filled' : 'default'}
@@ -102,7 +101,7 @@ export const CreateEquipmentModal = ({ opened, onClose, onSubmit, cardCutType = 
                             Other (GC and etc.)
                         </Button>
                     </Group>
-                </div>
+                </Input.Wrapper>
 
                 <Grid mt="sm">
                     {/* No cut (1 column) */}

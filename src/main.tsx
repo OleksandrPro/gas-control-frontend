@@ -7,10 +7,11 @@ import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 
 import { MantineProvider } from '@mantine/core';
+import { appTheme } from './styles/GlobalTheme.tsx';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <MantineProvider>
+    <MantineProvider theme={appTheme}>
       <BrowserRouter>
         <App />
       </BrowserRouter>
