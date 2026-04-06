@@ -49,8 +49,7 @@ The main dashboard is divided into two key views:
 #### 1.1. Main Data Table
 Displays the gas pipeline infrastructure registry with pagination and a quick search bar.
 
-<img width="1920" height="919" alt="Screenshot_2026-04-06_16-12-22" src="https://github.com/user-attachments/assets/f26c4b7f-a9d8-4656-9a03-4ac300e78b25" />
-
+<img width="1920" height="919" alt="Screenshot_2026-04-06_17-59-11" src="https://github.com/user-attachments/assets/49a74e77-54d9-486f-9433-4a89d28387e9" />
 
 #### 1.2. Advanced Filter Panel
 A multi-level filtering panel for querying records by card and equipment parameters.
@@ -60,7 +59,7 @@ A multi-level filtering panel for querying records by card and equipment paramet
 ### 2. Card Creation Form
 Form for creating a new inventory card. Demonstrates the process of entering general pipeline information and selecting parameters from connected reference dictionaries.
 
-https://github.com/user-attachments/assets/cb7517c8-befc-40a6-88ca-b733c99ed8e3
+https://github.com/user-attachments/assets/043dbcd7-1b1f-4c5e-8d85-e39ebc5c01f0
 
 ### 3. Card Details
 The card details page is divided into two main sections:
@@ -68,14 +67,12 @@ The card details page is divided into two main sections:
 3.1. Card Information
 Displays general card parameters, such as address, district, pressure, cut type, and total lengths.
 
-<img width="1920" height="668" alt="Screenshot_2026-04-06_16-14-16" src="https://github.com/user-attachments/assets/e4d508ce-df8f-4623-bf3f-933c6a4a5226" />
-
+<img width="1919" height="671" alt="Screenshot_2026-04-06_18-07-25" src="https://github.com/user-attachments/assets/e2af6fed-f96b-44dc-ae81-0b446c54ef5c" />
 
 3.2. Equipment Section
 Displays equipment associated with a specific pipeline section. The data is visually segregated into distinct operational contexts (Balance, Fact, and In Cut).
 
-<img width="1920" height="895" alt="Screenshot_2026-04-06_16-17-14" src="https://github.com/user-attachments/assets/41e0a674-4796-4d19-b752-0a9db87a85cb" />
-
+<img width="1920" height="464" alt="Screenshot_2026-04-06_18-11-57" src="https://github.com/user-attachments/assets/ae1fb7b8-94b0-4677-bbc0-5f1c55615bf9" />
 
 ### 4. Equipment Forms
 Forms for adding and editing equipment data. The interface renders specific fields and validation rules based on the selected equipment type or cut parameters.
