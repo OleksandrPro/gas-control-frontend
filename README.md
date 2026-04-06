@@ -82,12 +82,17 @@ Forms for adding and editing equipment data. The interface renders specific fiel
 
 https://github.com/user-attachments/assets/10149593-578a-4f0e-aba8-12fb81159a86
 
-### 5. Dictionaries Page
+### 5. Equipment Data Migration
+A workflow feature for updating card states. When changing the cut type to "Full cut", a modal allows users to automatically migrate all existing equipment records to the "Cut" column from either the "Balance" or "Fact" sources.
+
+https://github.com/user-attachments/assets/5f342309-054f-4065-842a-50c93fff3b2a
+
+### 6. Dictionaries Page
 System dictionaries (materials, districts, etc.) management page. It features inline editing capabilities, allowing users to update reference data directly within the list.
 
 https://github.com/user-attachments/assets/e3ae4e53-cfc0-4841-9b20-2d59dd5375ce
 
-### 6. Analytics and Pipe Length Calculator
+### 7. Analytics and Pipe Length Calculator
 Calculation of aggregated metrics. The Pipe Calculator evaluates the total length of the filtered infrastructure currently displayed in the data table.
 
 <img width="1920" height="830" alt="Screenshot_2026-04-06_16-18-23" src="https://github.com/user-attachments/assets/c0ea864f-016f-4b3a-9324-010fee946c6b" />
