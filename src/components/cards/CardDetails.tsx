@@ -100,10 +100,11 @@ export const CardDetails = ({cardData}: CardDetailsProps) => {
             return;
         }
 
-        if (changedData.cut_type_id !== undefined && changedData.cut_type_id !== initialCardData.cut_type_id) {
-            const newCutTypeObj = cuts?.find(c => c.id === changedData.cut_type_id);
+        if ('cut_type_id' in changedData) {
+            const newCutTypeObj = cuts?.find(c => c.id === Number(changedData.cut_type_id));
+            console.info(newCutTypeObj)
             const newCutMode = determineCutMode(newCutTypeObj?.value);
-            
+            console.info(newCutMode)
             if (newCutMode === CutTypesEnum.Full) {
                 setPendingChanges(changedData);
                 setMigrationModalOpened(true);

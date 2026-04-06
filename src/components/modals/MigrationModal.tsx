@@ -10,12 +10,12 @@ interface MigrationModalProps {
 
 export const MigrationModal = ({ opened, onClose, onConfirm }: MigrationModalProps) => {
     const [useAutoMigration, setUseAutoMigration] = useState(true);
-    const [source, setSource] = useState<"balance" | "fact">(ColumnTypesEnum.Balance);
+    const [source, setSource] = useState<"balance" | "fact">("balance");
 
     useEffect(() => {
         if (opened) {
             setUseAutoMigration(true);
-            setSource(ColumnTypesEnum.Balance);
+            setSource("balance");
         }
     }, [opened]);
 
