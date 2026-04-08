@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { Table, Group, Title, Button, Text, Stack, Center, Loader, Card, Box, Badge } from '@mantine/core';
-import { type EquipmentType, type ColumnType, type CutType, CutTypesEnum, ColumnTypesEnum, EquipmentTypesEnum, BackendEquipmentTypesEnum , type DictionaryItem} from '../../types';
+import { Table, Group, Button, Text, Stack, Center, Loader, Card, Box, Badge } from '@mantine/core';
+import { type EquipmentType, type CutType, CutTypesEnum, ColumnTypesEnum, EquipmentTypesEnum, BackendEquipmentTypesEnum , type DictionaryItem} from '../../types';
 import { CreateEquipmentModal } from '../modals/CreateEquipmentModal';
 import { EditEquipmentModal } from '../modals/EditEquipmentModal';
 import { EditableText } from '../ui/editable/EditableText';

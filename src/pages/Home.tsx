@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useQuery } from '@tanstack/react-query';
-import { Button, Group, Title, Text, Center, Loader, Stack, Box } from "@mantine/core";
+import { Button, Group, Title, Text, Center, Loader, Stack } from "@mantine/core";
 import { PageContainer } from "../components/layout/PageContainer";
 import { CreateCardModal } from "../components/modals/CreateCardModal";
 import { CardList } from "../components/cards/CardList";

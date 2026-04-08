@@ -1,5 +1,5 @@
 import axios from "axios"
-import type { PaginatedResponse, CardBackend, CardUpdateData } from "../types"
+import type { CardBackend, CardUpdateData } from "../types"
 
 
 export const cardsApi = axios.create({

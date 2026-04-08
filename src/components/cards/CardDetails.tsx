@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button, SimpleGrid, Group, Stack, Grid, Text, Title, Loader, Box, Card } from "@mantine/core";
+import { Button, Group, Stack, Grid, Text, Title, Loader, Box, Card } from "@mantine/core";
 import { type CardBackend, type CardUpdateData, CutTypesEnum } from "../../types";
 import { EditableText } from '../ui/editable/EditableText';
 import { EditableSelect } from '../ui/editable/EditableSelect';

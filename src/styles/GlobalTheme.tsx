@@ -14,7 +14,6 @@ import { TextStyle, TitleStyle } from '../styles/global/Text';
 import { TableStyle } from './Table';
 import { ModalStyle } from './global/Modal';
 import { NavLinkStyle } from './global/NavLink';
-import { DateInput } from '@mantine/dates';
 
 export const appTheme = createTheme({
     primaryColor: 'blue',

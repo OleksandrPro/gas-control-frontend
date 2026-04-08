@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Modal, Button, Text, Stack, TextInput, Group, Grid, Input } from '@mantine/core';
+import { Modal, Button, Stack, TextInput, Group, Grid, Input } from '@mantine/core';
 import { useDictionaries } from '../../hooks/useDictionaries';
 import { mapToSelectData } from '../../utils/utils';
 import { type EquipmentType, type CutType, EquipmentTypesEnum, CutTypesEnum } from '../../types';

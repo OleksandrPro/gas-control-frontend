@@ -112,7 +112,7 @@ export const CardList = ({cards}:CardListProps) => {
         },
 
         mantineTableBodyRowProps: ({ row }) => ({
-            onClick: (event) => {
+            onClick: () => {
                 openCardDetails(Number(row.original.id))
             }
         })

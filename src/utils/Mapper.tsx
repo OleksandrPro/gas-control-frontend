@@ -1,4 +1,4 @@
-import type { CardBackend, CardDisplay, DictionaryItem } from "./types";
+import type { CardBackend, CardDisplay, DictionaryItem } from "../types";
 
 interface DictionariesContext {
     districts: DictionaryItem[];

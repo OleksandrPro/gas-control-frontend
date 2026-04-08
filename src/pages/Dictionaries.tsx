@@ -1,14 +1,11 @@
 import { useState } from 'react';
-import { Grid, Stack, Title, Text, NavLink, Group, Card, Box } from '@mantine/core';
+import { Grid, Stack, Title, Text, NavLink, Card, Box } from '@mantine/core';
 
 import { PageContainer } from '../components/layout/PageContainer';
 import { DictionaryEditor, type DictionaryConfig } from '../components/dictionaries/DictionaryEditor';
 import { DICTIONARY_ENDPOINTS } from '../api/Dictionaries';
 
 import { 
-    DictionaryCardStyle, 
-    ListHeaderStyle,  
-    EditorHeaderStyle,
     ListHeaderTextStyle
 } from '../styles/Dictionary';
 import { CardWithDarkHeaderStyle } from '../styles/CardWithDarkHeader';

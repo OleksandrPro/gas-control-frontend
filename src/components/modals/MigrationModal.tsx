@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Modal, Button, Text, Checkbox, Radio, Stack, Group } from '@mantine/core';
-import { ColumnTypesEnum } from '../../types';
 
 interface MigrationModalProps {
     opened: boolean;

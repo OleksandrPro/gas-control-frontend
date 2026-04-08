@@ -6,8 +6,7 @@ import type { DictionaryItem } from '../../types';
 import { 
     getDictionaryItems, 
     addDictionaryItem, 
-    updateDictionaryItem,
-    deleteDictionaryItem 
+    updateDictionaryItem
 } from '../../api/Dictionaries';
 
 export interface DictionaryConfig {
@@ -46,19 +45,6 @@ export const DictionaryEditor = ({ dictionary }: DictionaryEditorProps) => {
             setEditValue('');
         },
     });
-
-    const deleteMutation = useMutation({
-        mutationFn: (id: number) => deleteDictionaryItem(dictionary.endpoint, id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['dictionary', dictionary.id] });
-        }
-    });
-
-    const handleDelete = (id: number) => {
-        if (window.confirm('Are you sure you want to delete this item?')) {
-            deleteMutation.mutate(id);
-        }
-    };
 
     const [newValue, setNewValue] = useState('');
     const [editingId, setEditingId] = useState<number | null>(null);
