@@ -13,7 +13,7 @@ import { CardWithDarkHeaderStyle } from '../styles/CardWithDarkHeader';
 const DICTIONARY_REGISTRY: DictionaryConfig[] = [
     { id: 'districts', label: 'Districts', endpoint: DICTIONARY_ENDPOINTS.Districts },
     { id: 'materials', label: 'Materials', endpoint: DICTIONARY_ENDPOINTS.Materials },
-    { id: 'cuts', label: 'Cut types', endpoint: DICTIONARY_ENDPOINTS.Cuts },
+    { id: 'cuts', label: 'Cut types', endpoint: DICTIONARY_ENDPOINTS.Cuts, disableAdd: true },
     { id: 'ownership', label: 'Ownership', endpoint: DICTIONARY_ENDPOINTS.Ownerships },
     { id: 'pressures', label: 'Pressures', endpoint: DICTIONARY_ENDPOINTS.Pressures },
     { id: 'ground', label: 'Ground Levels', endpoint: DICTIONARY_ENDPOINTS.GroundLevels },

@@ -13,6 +13,7 @@ export interface DictionaryConfig {
     id: string;
     label: string;
     endpoint: string;
+    disableAdd?: boolean;
 }
 
 interface DictionaryEditorProps {
@@ -129,37 +130,39 @@ export const DictionaryEditor = ({ dictionary }: DictionaryEditorProps) => {
                     </Table.Tr>
                 ))}
 
-                <Table.Tr>
-                    <Table.Td>
-                        <TextInput
-                            placeholder="Type to add new record... (Press Enter)"
-                            value={newValue}
-                            onChange={(e) => setNewValue(e.currentTarget.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') handleAddSubmit();
-                                if (e.key === 'Escape') {
-                                    setNewValue('');
-                                    e.currentTarget.blur();
-                                };
-                            }}
-                            disabled={addMutation.isPending}
-                            rightSection={
-                                addMutation.isPending ? (
-                                    <Loader size="xs" color="blue" />
-                                ) : (
-                                    <ActionIcon 
-                                        color="blue" 
-                                        variant="subtle" 
-                                        onClick={handleAddSubmit}
-                                        disabled={!newValue.trim()}
-                                    >
-                                        <IconPlus size={18} />
-                                    </ActionIcon>
-                                )
-                            }
-                        />
-                    </Table.Td>
-                </Table.Tr>
+                {!dictionary.disableAdd && (
+                    <Table.Tr>
+                        <Table.Td>
+                            <TextInput
+                                placeholder="Type to add new record... (Press Enter)"
+                                value={newValue}
+                                onChange={(e) => setNewValue(e.currentTarget.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleAddSubmit();
+                                    if (e.key === 'Escape') {
+                                        setNewValue('');
+                                        e.currentTarget.blur();
+                                    };
+                                }}
+                                disabled={addMutation.isPending}
+                                rightSection={
+                                    addMutation.isPending ? (
+                                        <Loader size="xs" color="blue" />
+                                    ) : (
+                                        <ActionIcon 
+                                            color="blue" 
+                                            variant="subtle" 
+                                            onClick={handleAddSubmit}
+                                            disabled={!newValue.trim()}
+                                        >
+                                            <IconPlus size={18} />
+                                        </ActionIcon>
+                                    )
+                                }
+                            />
+                        </Table.Td>
+                    </Table.Tr>
+                )}
             </Table.Tbody>
         </Table>
     );
