@@ -1,9 +1,10 @@
 import axios from "axios"
 import type { DictionaryItem } from "../types"
+import { API_BASE_URL } from "../constants";
 
 
 export const dictionariesApi = axios.create({
-    baseURL: '/api/dictionaries',
+    baseURL: `${API_BASE_URL}/dictionaries`,
 });
 
 export const DICTIONARY_ENDPOINTS = {

@@ -1,9 +1,10 @@
 import axios from "axios"
 import type { CardBackend, CardUpdateData } from "../types"
+import { API_BASE_URL } from "../constants";
 
 
 export const cardsApi = axios.create({
-    baseURL: '/api/cards',
+    baseURL: `${API_BASE_URL}/cards`,
 });
 
 export const getCards = async (params: any = {}) => {

@@ -7,3 +7,5 @@ export const PAGE_SIZE_OPTIONS = [
 ];
 
 export const PAGE_SIZE_BASE_OPTION = 10
+
+export const API_BASE_URL = import.meta.env.VITE_API_URL

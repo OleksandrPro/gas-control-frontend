@@ -1,9 +1,10 @@
 import axios from "axios";
 import { cardsApi } from "./Cards";
+import { API_BASE_URL } from "../constants";
 
 
 export const equipmentApi = axios.create({
-    baseURL: '/api'
+    baseURL: `${API_BASE_URL}`
 });
 
 export interface EquipmentPayload {

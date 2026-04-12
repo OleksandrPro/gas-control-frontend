@@ -1,8 +1,9 @@
 import axios from "axios";
 import { type CardFilterPayload } from "../utils/payloads/FilterPayload";
+import { API_BASE_URL } from "../constants";
 
 export const analyticsApi = axios.create({
-    baseURL: '/api/analytics',
+    baseURL: `${API_BASE_URL}/analytics`,
 });
 
 export interface PipeLengthStatsResponse {
