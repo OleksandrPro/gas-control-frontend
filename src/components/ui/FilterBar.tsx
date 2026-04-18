@@ -145,9 +145,9 @@ export const FilterBar = ({ onSearch }: FilterBarProps) => {
                                     label="COLUMN TYPE" 
                                     placeholder="Any" 
                                     data={[
-                                        { value: 'fact', label: 'By fact' }, 
-                                        { value: 'balance', label: 'Balance' },
-                                        { value: 'cut', label: 'In cut' }
+                                        { value: 'FACT', label: 'By fact' }, 
+                                        { value: 'BALANCE', label: 'Balance' },
+                                        { value: 'CUT', label: 'In cut' }
                                     ]} 
                                     value={columnTypesFilter}
                                     onChange={setColumnTypesFilter}
