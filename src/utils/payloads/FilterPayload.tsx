@@ -1,4 +1,5 @@
 import { type NumberFilterPayload } from "../../components/ui/NumberFilter";
+import { ColumnTypesEnum } from "../../types";
 
 export interface CardFilterPayload {
     inventory_number_like?: string;
@@ -43,13 +44,24 @@ export const buildFilterPayload = (state: FilterState): CardFilterPayload => {
     
     if (state.folderFilter.trim()) payload.folder = [state.folderFilter.trim()];
 
+    const hasPipeFilters = 
+        state.materialsFilter.length > 0 ||
+        state.groundLevelsFilter.length > 0 ||
+        state.diameterFilter?.equal !== undefined ||
+        state.diameterFilter?.min !== undefined ||
+        state.diameterFilter?.max !== undefined;
+
     if (state.materialsFilter.length > 0) payload.pipe_material_id = state.materialsFilter.map(Number);
     if (state.groundLevelsFilter.length > 0) payload.groung_level_id = state.groundLevelsFilter.map(Number);
-    if (state.columnTypesFilter.length > 0) payload.column_type = state.columnTypesFilter;
+    // if (state.columnTypesFilter.length > 0) payload.column_type = state.columnTypesFilter;
 
     if (state.diameterFilter?.equal !== undefined) payload.pipe_diameter_equal = state.diameterFilter.equal;
     if (state.diameterFilter?.min !== undefined) payload.pipe_diameter_min = state.diameterFilter.min;
     if (state.diameterFilter?.max !== undefined) payload.pipe_diameter_max = state.diameterFilter.max;
+
+    if (hasPipeFilters) {
+        payload.column_type = [ColumnTypesEnum.Balance]; 
+    }
 
     return payload;
 };

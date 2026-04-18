@@ -141,6 +141,7 @@ export const FilterBar = ({ onSearch }: FilterBarProps) => {
                                     clearable
                                 />
                                 <NumberFilter onChange={(data) => setDiameterFilter(data)}/>
+                                {/*
                                 <MultiSelect 
                                     label="COLUMN TYPE" 
                                     placeholder="Any" 
@@ -153,6 +154,7 @@ export const FilterBar = ({ onSearch }: FilterBarProps) => {
                                     onChange={setColumnTypesFilter}
                                     clearable
                                 />
+                                */}
                             </SimpleGrid>
                         </Card>
                     </Stack>
